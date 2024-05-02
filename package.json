@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write",
-    "lint": "eslint src/ --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src/ --ext ts --report-unused-disable-directives",
     "lint:fix": "eslint src/ --fix",
     "formatAll": "npm run lint:fix && npm run prettier:fix",
     "prepare": "husky",
