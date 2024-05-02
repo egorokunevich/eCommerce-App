@@ -1,7 +1,7 @@
 ---
 name: 'chore: RSS-ECOMM-1_XX'
 about: Chore
-title: 'chore: RSS-ECOMM-1_XX'
+title: ''
 labels: ''
 assignees: ''
 
