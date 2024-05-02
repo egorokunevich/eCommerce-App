@@ -1,0 +1,4 @@
+{
+  "pattern": "^(feat|fix|chore|refactor)/\\w+",
+  "errorMsg": "Branch name doesn't follow the defined repository rules"
+}
