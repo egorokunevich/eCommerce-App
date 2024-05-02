@@ -19,7 +19,6 @@
     "pre-commit": "npm run prettier",
     "pre-push": "npm run lint && npm run prettier && npm run tsc"
   },
- 
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
