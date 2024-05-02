@@ -1,7 +1,7 @@
 ---
 name: 'feat: RSS-ECOMM-1_XX'
 about: New feature
-title: 'feat: RSS-ECOMM-1_XX'
+title: ''
 labels: ''
 assignees: ''
 
