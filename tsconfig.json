@@ -25,15 +25,35 @@
 
     /* Builds */
     "baseUrl": ".",
-    "paths": { //- алиасы для путей
-      "@components/*": ["src/app/components/*"],
-    //   "@pages/*": ["src/app/pages/*"],
-    //   "@utils/*": ["src/app/utils/*"],
-    //   "@interfaces/*": ["src/app/interfaces/*"],
-    //   "@services/*": ["src/app/services/*"],
-    //   "@assets/*": ["src/assets/*"],
-    //   "@data/*": ["src/app/data/*"]
-   }
+    "paths": {
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@enums/*": [
+        "src/enums/*"
+      ],
+      "@pages/*": [
+        "src/pages/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@types/*": [
+        "src/types/*"
+      ],
+      "@fonts/*": [
+        "public/fonts/*"
+      ],
+      "@icons/*": [
+        "public/icons/*"
+      ],
+      "@images/*": [
+        "public/images/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+    }
   },
   "include": ["src", "vite.config.ts"]
 }
