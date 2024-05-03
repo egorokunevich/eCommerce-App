@@ -17,7 +17,7 @@
     "prepare": "husky",
     "tsc": "tsc --noEmit",
     "pre-commit": "npm run prettier",
-    "pre-push": "npm run lint && npm run prettier && npm run tsc",
+    "pre-push": "npm run lint && npm run prettier && npm run tsc && npm run vitest",
     "test": "vitest"
   },
   "devDependencies": {
