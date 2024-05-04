@@ -19,10 +19,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run Linting Check
-        run: npm lint
+        run: npm run lint
       - name: Run Formatting Check
-        run: npm prettier
+        run: npm run prettier
       - name: Run Testing
-        run: npm test
+        run: npm run test
       - name: Run TS Compliler
-        run: npm tsc
+        run: npm run tsc
