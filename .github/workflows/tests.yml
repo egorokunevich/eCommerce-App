@@ -1,4 +1,5 @@
 name: Run tests
+run-name: Testing ${{github.event_name}} by ${{github.actor}}
 on:
   push:
   pull_request:
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -17,5 +18,11 @@ jobs:
           node-version: 20
       - name: Install Dependencies
         run: npm ci
-      - name: Run Tests
+      - name: Run Linting Check
+        run: npm lint
+      - name: Run Formatting Check
+        run: npm prettier
+      - name: Run Testing
         run: npm test
+      - name: Run TS Compliler
+        run: npm tsc
