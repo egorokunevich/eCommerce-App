@@ -1,3 +1,6 @@
+use this link
+https://www.youtube.com/watch?v=XteP7ArQmE0&t=52s
+
 To register on the commercetools platform, follow these steps:
 
 Open the website: Go to the commercetools website [link](https://commercetools.com/).
@@ -11,3 +14,4 @@ Confirm your email address: After filling out the form, you'll receive an email 
 Set up your account: After confirming your address, you'll likely be prompted to create a password for your account and sign in.
 
 Get started: Once logged into your account, you can start using the commercetools platform to create and manage your online store.
+
