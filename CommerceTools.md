@@ -1,4 +1,4 @@
-Чтобы зарегистрироваться на платформе commercetools, следуйте этим шагам:
+To register on the commercetools platform, follow these steps:
 
 Open the website: Go to the commercetools website [link](https://commercetools.com/).
 
