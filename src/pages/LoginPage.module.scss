@@ -8,6 +8,10 @@
   width: 100%;
   height: 100%;
   padding: 0 10px;
+  background-image: url('/public/assets/images/login-background.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .login-container {
@@ -20,6 +24,7 @@
   max-height: 540px;
   gap: 35px;
   backdrop-filter: blur(10px) brightness(95%);
+  background-color: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(0, 0, 0, 0.192);
   padding: 2rem;
 }
@@ -75,14 +80,14 @@
 .input_warning {
   &::before {
     opacity: 100%;
-    background-image: url('../../../../static/icons/warning.png');
+    background-image: url('/public/assets/icons/warning.png');
   }
 }
 
 .input_accept {
   &::before {
     opacity: 100%;
-    background-image: url('../../../../static/icons/accept.png');
+    background-image: url('/public/assets/icons/accept.png');
   }
 }
 
@@ -118,6 +123,7 @@
 
 .error-msg_active {
   height: 1.2rem;
+  max-height: 2.4rem;
   opacity: 100%;
   margin-bottom: 3px;
 }

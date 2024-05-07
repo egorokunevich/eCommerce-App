@@ -1,7 +1,13 @@
-import { div, button, h2, p, form, input } from '@control.ts/min';
+import { div, button, h2, p, form, input, label } from '@control.ts/min';
 
 import styles from './LoginPage.module.scss';
 
+type passwordValidationMessages = {
+  lengthMsg: HTMLElement;
+  uppercaseMsg: HTMLElement;
+  digitMsg: HTMLElement;
+  whitespaceMsg: HTMLElement;
+};
 
 export class LoginPage {
   private pageWrapper: HTMLElement;
@@ -9,21 +15,21 @@ export class LoginPage {
 
   constructor() {
     this.parent = document.body;
-    this.pageWrapper = div({className: `${styles.loginPageWrapper}`});
+    this.pageWrapper = div({ className: `${styles.loginPageWrapper}` });
   }
   public render() {
+    const formContainer = div({ className: `${styles.loginContainer}` });
 
-    const formContainer = div({className: `${styles.loginContainer}`});
+    const infoContainer = div({ className: `${styles.loginContainerInfo}` });
 
+    const header = h2({ className: `${styles.infoHeader}`, txt: 'WELCOME' });
 
+    const info = p({
+      className: `${styles.infoDescription}`,
+      txt: `Nice to see you! Please login via Email and Password.`,
+    });
 
-    const infoContainer = div({className: `${styles.loginContainerInfo}`});
-
-    const header = h2({className: `${styles.infoHeader}`, txt: 'WELCOME'});
-
-    const info = p({className: `${styles.infoDescription}`, txt: `Nice to see you! Please login via Email and Password.`});
-
-    const loginForm = form({className: `${styles.loginContainerLoginForm}`});
+    const loginForm = form({ className: `${styles.loginContainerLoginForm}` });
 
     // loginForm.addEventListener('submit', (e) => {
     //   //Prevent page reload on submission
@@ -40,9 +46,9 @@ export class LoginPage {
       required: true,
     });
 
-    const emailValidationMessage =div({
+    const emailValidationMessage = div({
       className: `${styles.loginFormErrorMsg}`,
-      txt: `> Email must be properly formatted (user@example.com)`,
+      txt: `> Wrong email format (user@example.com)`,
     });
 
     const passwordInput = input({
@@ -51,7 +57,7 @@ export class LoginPage {
       className: `${styles.inputField}`,
       required: true,
       autocomplete: 'off',
-      minLength: 8
+      minLength: 8,
     });
 
     const passwordLengthValidationMessage = div({
@@ -62,19 +68,24 @@ export class LoginPage {
       className: `${styles.loginFormErrorMsg}`,
       txt: `> Use both uppercase and lowercase`,
     });
-    const passwordEnglishValidationMessage = div({
-      className: `${styles.loginFormErrorMsg}`,
-      txt: `> Use only English letters and "-"`,
-    });
     const passwordDigitValidationMessage = div({
       className: `${styles.loginFormErrorMsg}`,
-      txt: `> Use only English letters and "-"`,
+      txt: `> Should be at least 1 digit`,
+    });
+    const passwordWhitespaceValidationMessage = div({
+      className: `${styles.loginFormErrorMsg}`,
+      txt: `> No whitespace allowed`,
     });
 
+    const passwordValidationMsgs: passwordValidationMessages = {
+      lengthMsg: passwordLengthValidationMessage,
+      uppercaseMsg: passwordUppercaseValidationMessage,
+      digitMsg: passwordDigitValidationMessage,
+      whitespaceMsg: passwordWhitespaceValidationMessage,
+    };
 
-
-    const emailLabel = div({ className: `${styles.inputLabel}` });
-    const passwordLabel = div({ className: `${styles.inputLabel}` });
+    const emailLabel = label({ className: `${styles.loginFormInputLabel}` });
+    const passwordLabel = label({ className: `${styles.loginFormInputLabel}` });
 
     const submitContainer = div({
       className: `${styles.submitContainer}`,
@@ -94,42 +105,25 @@ export class LoginPage {
       disabled: false,
     });
 
-
-
     const status = div({
       txt: '',
       className: `${styles.loginStatus}`,
     });
 
-
-
-    //Make sure that inputs have values. Otherwise disable login button. Check errors
-    // emailInput.addEventListener('input', () => {
-    //   emailInput.validateEmail();
-    //   validateName(emailInput, nameUppercaseMessage, nameLabel);
-    //   validateBoth(emailInput, nameLengthMessage, nameEnglishMessage, nameLabel);
-    //   checkInputValues();
-    // });
+    // Make sure that inputs have values. Otherwise disable login button. Check errors
+    emailInput.addEventListener('input', () => {
+      emailInput.value = emailInput.value.trim();
+      this.validateEmail(emailInput, emailValidationMessage, emailLabel);
+    });
+    passwordInput.addEventListener('input', () => {
+      this.validatePassword(passwordInput, passwordValidationMsgs, passwordLabel);
+    });
     // passwordInput.element.addEventListener('input', () => {
     //   passwordInput.validateLength();
     //   validatePassword(passwordInput, passwordUppercaseMessage, passwordLabel);
     //   validateBoth(passwordInput, passwordLengthMessage, passwordEnglishMessage, passwordLabel);
     //   checkInputValues();
     // });
-
-    // function checkInputValues() {
-    //   const isNameValid =
-    //     emailInput.isEnglishValid && emailInput.isLengthValid && emailInput.isUppercaseValid;
-    //   const isPasswordValid =
-    //     passwordInput.isEnglishValid &&
-    //     passwordInput.isLengthValid &&
-    //     passwordInput.isUppercaseValid;
-    //   if (isNameValid && isPasswordValid && emailInput.value && passwordInput.value) {
-    //     loginBtn.disabled = false;
-    //   } else {
-    //     loginBtn.disabled = true;
-    //   }
-    // }
 
     // function validateEmail(input: HTMLInputElement, uppercaseOutput: HTMLElement, label: HTMLElement) {
     //   const errorStatus = {
@@ -249,11 +243,7 @@ export class LoginPage {
 
     submitContainer.append(loginBtn, signUpBtn);
 
-    emailContainer.append(
-      emailLabel,
-      emailInput,
-      emailValidationMessage
-    );
+    emailContainer.append(emailLabel, emailInput, emailValidationMessage);
 
     passwordContainer.append(
       passwordLabel,
@@ -261,7 +251,7 @@ export class LoginPage {
       passwordLengthValidationMessage,
       passwordUppercaseValidationMessage,
       passwordDigitValidationMessage,
-      passwordEnglishValidationMessage,
+      passwordWhitespaceValidationMessage,
     );
 
     loginForm.append(emailContainer, passwordContainer, submitContainer, status);
@@ -269,9 +259,102 @@ export class LoginPage {
 
     this.pageWrapper.append(formContainer);
 
-    this.parent.append(this.pageWrapper)
+    this.parent.append(this.pageWrapper);
   }
 
+  // private checkInputValues() {
+  //   const isNameValid =
+  //     emailInput.isEnglishValid && emailInput.isLengthValid && emailInput.isUppercaseValid;
+  //   const isPasswordValid =
+  //     passwordInput.isEnglishValid &&
+  //     passwordInput.isLengthValid &&
+  //     passwordInput.isUppercaseValid;
+  //   if (isNameValid && isPasswordValid && emailInput.value && passwordInput.value) {
+  //     loginBtn.disabled = false;
+  //   } else {
+  //     loginBtn.disabled = true;
+  //   }
+  // }
+
+  private validateEmail(input: HTMLInputElement, inputErrorMsg: HTMLElement, inputLabel: HTMLElement) {
+    const regExp = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+
+    if (input.value[0] && regExp.test(input.value)) {
+      inputErrorMsg.classList.remove(`${styles.errorMsgActive}`);
+      inputLabel.classList.remove(`${styles.inputWarning}`);
+      inputLabel.classList.add(`${styles.inputAccept}`);
+    } else if (input.value[0]) {
+      inputErrorMsg.classList.add(`${styles.errorMsgActive}`);
+      inputLabel.classList.add(`${styles.inputWarning}`);
+      inputLabel.classList.remove(`${styles.inputAccept}`);
+    } else {
+      inputErrorMsg.classList.remove(`${styles.errorMsgActive}`);
+      inputLabel.classList.remove(`${styles.inputWarning}`);
+      inputLabel.classList.remove(`${styles.inputAccept}`);
+    }
+
+    //   const hasErrors = errorStatus.uppercase;
+
+    //   if (input.value && !hasErrors) {
+    //     inputLabel.classList.remove(`${styles.warning}`);
+    //     inputLabel.classList.add(`${styles.accept}`);
+    //   } else if (input.value && hasErrors) {
+    //     inputLabel.classList.remove(`${styles.accept}`);
+    //     inputLabel.classList.add(`${styles.warning}`);
+    //   } else {
+    //     inputLabel.classList.remove(`${styles.warning}`);
+    //     inputLabel.classList.remove(`${styles.accept}`);
+    //   }
+  }
+
+  private validatePassword(
+    input: HTMLInputElement,
+    inputErrorMsgs: passwordValidationMessages,
+    inputLabel: HTMLElement,
+  ) {
+    const uppercaseRegExp = /(?=.*[a-z])(?=.*[A-Z])/;
+    const digitRegExp = /\d/;
+    const whitespaceRegExp = /\s/;
+
+    // Check for correct length
+    if (input.value.length < 8 && input.value[0]) {
+      inputErrorMsgs.lengthMsg.classList.add(`${styles.errorMsgActive}`);
+    } else if (input.value.length >= 8) {
+      inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
+    } else {
+      inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
+    }
+
+    // Check for both uppercase and lowercase
+    if (input.value[0] && uppercaseRegExp.test(input.value)) {
+      inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
+    } else if (input.value[0]) {
+      inputErrorMsgs.uppercaseMsg.classList.add(`${styles.errorMsgActive}`);
+    } else {
+      inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
+    }
+
+    // Check for at least 1 digit
+    if (input.value[0] && digitRegExp.test(input.value)) {
+      inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
+    } else if (input.value[0]) {
+      inputErrorMsgs.digitMsg.classList.add(`${styles.errorMsgActive}`);
+    } else {
+      inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
+    }
+
+    // Check for whitespaces
+    if (input.value[0] && whitespaceRegExp.test(input.value)) {
+      inputErrorMsgs.whitespaceMsg.classList.add(`${styles.errorMsgActive}`);
+    } else if (input.value[0]) {
+      inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
+    } else {
+      inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
+    }
+
+    inputLabel.classList.remove(`${styles.inputWarning}`);
+    inputLabel.classList.remove(`${styles.inputAccept}`);
+  }
   public destroy() {
     this.pageWrapper.remove();
   }
