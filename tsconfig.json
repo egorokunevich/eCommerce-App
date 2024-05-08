@@ -3,9 +3,12 @@
     "target": "ES2021",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2021",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "skipLibCheck": true,
-
     /* Bundler mode */
     "allowJs": true,
     "esModuleInterop": true,
@@ -15,15 +18,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals"],
+    "types": [
+      "vitest/globals"
+    ],
     "noImplicitAny": true,
-
     /* Builds */
     "baseUrl": ".",
     "paths": {
@@ -56,5 +59,9 @@
       ],
     }
   },
-  "include": ["src", "main.ts","declaration.d.ts"]
+  "include": [
+    "src",
+    "main.ts",
+    "declaration.d.ts"
+  ]
 }

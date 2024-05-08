@@ -1,0 +1,69 @@
+.login-form__error-msg {
+  font-weight: 300;
+  color: red;
+  transition: 0.2s;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.error-msg_active {
+  height: 1.2rem;
+  max-height: 2.4rem;
+  opacity: 100%;
+  margin-bottom: 3px;
+}
+
+.login-form__input-label {
+  position: relative;
+  transition: 0.2s;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    z-index: 5;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: 0.2s;
+    opacity: 0;
+  }
+}
+
+.input_warning-icon {
+  &::before {
+    opacity: 100%;
+    background-image: url('/public/assets/icons/warning.png');
+  }
+}
+
+.input_accept-icon {
+  &::before {
+    opacity: 100%;
+    background-image: url('/public/assets/icons/accept.png');
+  }
+}
+
+.show-password-btn {
+  display: block;
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  z-index: 5;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('../../public/assets/icons/showPassword.png');
+  transition: 0.2s;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
