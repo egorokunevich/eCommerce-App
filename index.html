@@ -10,6 +10,41 @@
 </head>
 
 <body>
+  <nav>
+    <ul>
+      <li>
+        <a data-vanilla-route-link="spa" href="/">Home</a>
+      </li>
+      <li>
+        <a data-vanilla-route-link="spa" href="/about">About</a>
+      </li>
+      <li>
+        <a data-vanilla-route-link="spa" href="/about/me?test=work#yes">About Me</a>
+      </li>
+      <li>
+        <a data-vanilla-route-link="spa" href="/learn">Learn</a>
+        <ul>
+          <li>
+            <a data-vanilla-route-link="spa" href="/learn/js?list=es6&don=false#hello">
+              JS</a>
+            <ul>
+              <li>
+                <a data-vanilla-route-link="spa" href="/learn/js/library-cresation?topic=pnpm">Library Creation</a>
+              </li>
+              <li>
+                <a data-vanilla-route-link="spa" href="/learn/js/library-publishing">Library Publishing</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a data-vanilla-route-link="spa" href="/learn/css?k=v">CSS</a>
+            <ul></ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <main data-vanilla-route-ele="router-wrap"></main>
   <script type="module" src="src/main.ts"></script>
 </body>
 
