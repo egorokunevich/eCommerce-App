@@ -8,28 +8,20 @@ import styles from './LoginPage.module.scss';
 
 export class LoginPage {
   private pageWrapper: HTMLElement;
-  private parent: HTMLElement;
-  private emailInputElement: HTMLInputElement;
-  private passwordInputElement: HTMLInputElement;
-  private emailValidationMessage: HTMLElement;
-  private passwordValidationMsgs: PasswordValidationMessages;
-  private emailLabel: HTMLElement;
-  private passwordLabel: HTMLElement;
-  private loginBtn: HTMLButtonElement;
+  private parent: HTMLElement = document.body;
+  private emailInputElement: HTMLInputElement = input({});
+  private passwordInputElement: HTMLInputElement = input({});
+  private emailValidationMessage: HTMLElement = div({});
+  private passwordValidationMsgs: PasswordValidationMessages = {
+    lengthMsg: div({}),
+    uppercaseMsg: div({}),
+    digitMsg: div({}),
+    whitespaceMsg: div({}),
+  };
+  private emailLabel: HTMLElement = div({});
+  private passwordLabel: HTMLElement = div({});
+  private loginBtn: HTMLButtonElement = button({});
   constructor() {
-    this.loginBtn = button({});
-    this.emailLabel = div({});
-    this.passwordLabel = div({});
-    this.emailValidationMessage = div({});
-    this.passwordValidationMsgs = {
-      lengthMsg: div({}),
-      uppercaseMsg: div({}),
-      digitMsg: div({}),
-      whitespaceMsg: div({}),
-    };
-    this.emailInputElement = input({});
-    this.passwordInputElement = input({});
-    this.parent = document.body;
     this.pageWrapper = div({ className: `${styles.loginPageWrapper}` });
   }
 
