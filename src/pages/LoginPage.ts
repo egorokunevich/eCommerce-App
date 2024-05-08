@@ -1,4 +1,4 @@
-import { button, div, form, h2, input, label, p } from '@control.ts/min';
+import { button, div, form, h2, input, label, main, p } from '@control.ts/min';
 
 import type { PasswordValidationMessages } from '@/utils/InputValidations';
 import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@/utils/InputValidations';
@@ -22,7 +22,7 @@ export class LoginPage {
   private passwordLabel: HTMLElement = div({});
   private loginBtn: HTMLButtonElement = button({});
   constructor() {
-    this.pageWrapper = div({ className: `${styles.loginPageWrapper}` });
+    this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
   }
 
   private createEmailInputField(): HTMLElement {
