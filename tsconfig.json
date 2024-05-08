@@ -56,5 +56,5 @@
       ],
     }
   },
-  "include": ["src", "main.ts"]
+  "include": ["src", "main.ts","declaration.d.ts"]
 }
