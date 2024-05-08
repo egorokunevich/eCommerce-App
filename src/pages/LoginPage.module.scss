@@ -56,27 +56,6 @@
   gap: 20px;
 }
 
-.login-form__input-label {
-  position: relative;
-  transition: 0.2s;
-
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 8px;
-    top: 12px;
-    width: 16px;
-    height: 16px;
-    z-index: 5;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    transition: 0.2s;
-    opacity: 0;
-  }
-}
-
 .login-form__login-btn {
   width: 100px;
   height: 35px;

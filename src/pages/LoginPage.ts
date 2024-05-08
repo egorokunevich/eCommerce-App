@@ -41,7 +41,8 @@ export class LoginPage {
       txt: `> Wrong email format (user@example.com)`,
     });
 
-    const emailLabel = label({ className: `${styles.loginFormInputLabel}` });
+    const emailLabel = label({ className: `${validationStyles.loginFormInputLabel}` });
+    this.emailLabel = emailLabel;
 
     emailContainer.append(emailLabel, emailInput, this.emailValidationMessage);
 
@@ -80,7 +81,8 @@ export class LoginPage {
       passwordInput.type =
         passwordInput.type === 'password' ? (passwordInput.type = 'text') : (passwordInput.type = 'password');
     });
-    const passwordLabel = label({ className: `${styles.loginFormInputLabel}` }, showPassBtn);
+    const passwordLabel = label({ className: `${validationStyles.loginFormInputLabel}` }, showPassBtn);
+    this.passwordLabel = passwordLabel;
     passwordContainer.append(
       passwordLabel,
       passwordInput,
