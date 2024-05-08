@@ -1,3 +1,12 @@
+.login-form__error-msg {
+  font-weight: 300;
+  color: red;
+  transition: 0.2s;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
 .error-msg_active {
   height: 1.2rem;
   max-height: 2.4rem;
