@@ -1,7 +1,7 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
-const learnJsRoute: Routes[] = [
+const appRoute: Routes[] = [
   {
     pathname: '/library-creation',
     element: () => {
@@ -39,7 +39,7 @@ const learnRoutes: Routes[] = [
       fragment.appendChild(section);
       return fragment;
     },
-    children: learnJsRoute,
+    children: appRoute,
   },
   {
     pathname: '/css',
@@ -64,10 +64,10 @@ export const routeConfig: Routes[] = [
     },
   },
   {
-    pathname: '/about',
+    pathname: '/catalog',
     element: () => {
       const ele = document.createElement('h2');
-      ele.innerText = 'ABOUT PAGE';
+      ele.innerText = 'CATALOG';
       const btn = document.createElement('button');
       btn.innerText = 'Take me to the About page with details';
       btn.onclick = () => {
