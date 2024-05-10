@@ -19,12 +19,12 @@ export default class NavMain {
 
   private createMenu(): void {
     const menu = nav(
-      { className: styles.navMenu},
+      { className: styles.navMenu },
       ul(
-        { className: styles.menu},
+        { className: styles.menu },
         ...this.links.map((link) =>
           li(
-            { className: styles.menuItem},
+            { className: styles.menuItem },
             setAttributes(a({ href: link.href, txt: link.txt }), {
               type: 'data-vanilla-route-link',
               text: 'spa',
