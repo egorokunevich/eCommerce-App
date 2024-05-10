@@ -5,7 +5,7 @@ import { setAttributes } from '@/utils/BaseComponentProps';
 import styles from './NavMain.module.scss';
 
 export default class NavMain {
-  public links = [
+  private links = [
     { href: '/', txt: 'Home' },
     { href: '/catalog', txt: 'Catalog' },
     { href: '/profile', txt: 'My profile' },
@@ -15,26 +15,42 @@ export default class NavMain {
     { href: '/basket', txt: 'Basket' },
   ];
 
-  constructor() {
+  private menuElement: HTMLElement | null = null;
+
+  private renderMenu(): void {
     const menu = nav(
-      {
-        className: `${styles.navMenu}`,
-      },
+      { className: `${styles.navMenu}` },
       ul(
         { className: `${styles.menu}` },
         ...this.links.map((link) =>
           li(
             { className: `${styles.menuItem}` },
-            setAttributes(a({ href: link.href, txt: link.txt }), { type: 'data-vanilla-route-link', text: 'spa' }),
+            setAttributes(a({ href: link.href, txt: link.txt }), {
+              type: 'data-vanilla-route-link',
+              text: 'spa',
+            }),
           ),
         ),
       ),
     );
-    document.body.appendChild(menu);
+    this.menuElement = menu;
+  }
+
+  public getMenuElement(): HTMLElement | null {
+    if (!this.menuElement) {
+      this.renderMenu();
+    }
+    return this.menuElement;
+  }
+
+  public appendNavToBody(): void {
+    const menu = this.getMenuElement();
+    if (menu) {
+      document.body.appendChild(menu);
+    }
   }
 }
 
 export const createNavMain = (): NavMain => {
-  const navMain = new NavMain();
-  return navMain;
+  return new NavMain();
 };

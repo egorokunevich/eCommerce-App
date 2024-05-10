@@ -14,6 +14,5 @@ export class Layout {
 }
 
 export const createLayout = (): Layout => {
-  const layout = new Layout();
-  return layout;
+  return new Layout();
 };

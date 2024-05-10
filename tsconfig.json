@@ -57,6 +57,9 @@
       "@/utils/*": [
         "src/utils/*"
       ],
+      "@/routing/*": [
+        "src/routing/*"
+      ],
     }
   },
   "include": [

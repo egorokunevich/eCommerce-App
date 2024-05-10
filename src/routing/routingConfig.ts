@@ -1,7 +1,7 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
-import { LoginPage } from '../pages/LoginPage';
+import { LoginPage } from '@pages/LoginPage';
 
 export const routeConfig: Routes[] = [
   {
