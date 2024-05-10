@@ -17,14 +17,14 @@ export default class NavMain {
 
   private menuElement: HTMLElement | null = null;
 
-  private renderMenu(): void {
+  private createMenu(): void {
     const menu = nav(
-      { className: `${styles.navMenu}` },
+      { className: styles.navMenu},
       ul(
-        { className: `${styles.menu}` },
+        { className: styles.menu},
         ...this.links.map((link) =>
           li(
-            { className: `${styles.menuItem}` },
+            { className: styles.menuItem},
             setAttributes(a({ href: link.href, txt: link.txt }), {
               type: 'data-vanilla-route-link',
               text: 'spa',
@@ -38,12 +38,12 @@ export default class NavMain {
 
   public getMenuElement(): HTMLElement | null {
     if (!this.menuElement) {
-      this.renderMenu();
+      this.createMenu();
     }
     return this.menuElement;
   }
 
-  public appendNavToBody(): void {
+  public renderNav(): void {
     const menu = this.getMenuElement();
     if (menu) {
       document.body.appendChild(menu);

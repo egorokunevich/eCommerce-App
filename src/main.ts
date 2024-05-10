@@ -11,9 +11,9 @@ import './components/css/normalise.css';
 
 createLayout();
 const navMain = new NavMain();
-navMain.appendNavToBody();
+navMain.renderNav();
 
-const routerWrapper = setAttributes(main({ className: `${styles.main}` }), {
+const routerWrapper = setAttributes(main({ className: styles.main}), {
   type: 'data-vanilla-route-ele',
   text: 'router-wrap',
 });
