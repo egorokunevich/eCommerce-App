@@ -94,7 +94,7 @@ export class LoginPage {
     return passwordContainer;
   }
 
-  public render(): void {
+  public render(): Element {
     const formContainer = div({ className: `${styles.loginContainer}` });
     const infoContainer = div({ className: `${styles.loginContainerInfo}` });
     const header = h2({ className: `${styles.infoHeader}`, txt: 'WELCOME' });
@@ -130,6 +130,7 @@ export class LoginPage {
     this.pageWrapper.append(formContainer);
     this.parent.append(this.pageWrapper);
     this.validate(this.emailInputElement, this.passwordInputElement, loginBtn);
+    return this.pageWrapper;
   }
 
   private validate(emailInput: HTMLInputElement, passwordInput: HTMLInputElement, loginBtn: HTMLButtonElement): void {
