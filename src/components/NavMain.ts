@@ -2,8 +2,10 @@ import { a, li, nav, ul } from '@control.ts/min';
 
 import { setAttributes } from '@/utils/BaseComponentProps';
 
-class NavMain {
-  links = [
+import styles from './NavMain.module.scss';
+
+export default class NavMain {
+  public links = [
     { href: '/', txt: 'Home' },
     { href: '/catalog', txt: 'Catalog' },
     { href: '/profile', txt: 'My profile' },
@@ -16,13 +18,13 @@ class NavMain {
   constructor() {
     const menu = nav(
       {
-        className: 'nav-menu',
+        className: `${styles.navMenu}`,
       },
       ul(
-        { className: 'menu' },
+        { className: `${styles.menu}` },
         ...this.links.map((link) =>
           li(
-            { className: 'menu-item' },
+            { className: `${styles.menuItem}` },
             setAttributes(a({ href: link.href, txt: link.txt }), { type: 'data-vanilla-route-link', text: 'spa' }),
           ),
         ),
@@ -32,6 +34,7 @@ class NavMain {
   }
 }
 
-export const createNavMain = (): void => {
-  new NavMain();
+export const createNavMain = (): NavMain => {
+  const navMain = new NavMain();
+  return navMain;
 };
