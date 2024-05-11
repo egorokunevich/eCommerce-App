@@ -38,14 +38,14 @@
 .input_warning-icon {
   &::before {
     opacity: 100%;
-    background-image: url('/public/assets/icons/warning.png');
+    background-image: url('/assets/icons/warning.png');
   }
 }
 
 .input_accept-icon {
   &::before {
     opacity: 100%;
-    background-image: url('/public/assets/icons/accept.png');
+    background-image: url('/assets/icons/accept.png');
   }
 }
 
@@ -60,7 +60,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url('../../public/assets/icons/showPassword.png');
+  background-image: url('/assets/icons/showPassword.png');
   transition: 0.2s;
 
   &:hover {

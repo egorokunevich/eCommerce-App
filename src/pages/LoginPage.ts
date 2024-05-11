@@ -1,13 +1,13 @@
 import { button, div, form, h2, input, label, main, p } from '@control.ts/min';
 
-import type { PasswordValidationMessages } from '@/utils/InputValidations';
-import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@/utils/InputValidations';
-import validationStyles from '@/utils/InputValidations.module.scss';
+import type { PasswordValidationMessages } from '@utils/InputValidations';
+import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@utils/InputValidations';
+import validationStyles from '@utils/InputValidations.module.scss';
 
 import styles from './LoginPage.module.scss';
 
 export class LoginPage {
-  private pageWrapper: HTMLElement;
+  public pageWrapper: HTMLElement;
   private parent: HTMLElement = document.body;
   private emailInputElement: HTMLInputElement = input({});
   private passwordInputElement: HTMLInputElement = input({});
@@ -26,7 +26,7 @@ export class LoginPage {
   }
 
   private createEmailInputField(): HTMLElement {
-    const emailContainer = div({ className: `${styles.inputContainer}` });
+    const emailContainer = div({ className: styles.inputContainer });
 
     const emailInput = input({
       placeholder: 'Email',

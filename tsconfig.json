@@ -54,7 +54,7 @@
       "@images/*": [
         "public/images/*"
       ],
-      "@/utils/*": [
+      "@utils/*": [
         "src/utils/*"
       ],
     }
