@@ -27,6 +27,19 @@
   }
 }
 
+.menu-item a[href='/login'],
+.menu-item a[href='/registration'] {
+  display: inline-block;
+  padding-right: 30px;
+  background-image: url(../../public/assets/icons/coffee-bean.png);
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #3842ce;
+  border-bottom: 1px solid #3842ce;
+  transition: all 0.3s ease-out;
+}
+
 .main {
   height: 100%;
 }
