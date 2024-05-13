@@ -51,6 +51,6 @@ export default class NavMain {
   }
 }
 
-export const createNavMain = (): NavMain => {
+export const renderNavMain = (): NavMain => {
   return new NavMain();
 };
