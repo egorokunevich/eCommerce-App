@@ -42,6 +42,7 @@ export default class RegistrationPage {
       { className: 'form_address' },
       p({ txt: 'Address ' }),
       this.createFormLabel('street'),
+      this.createFormLabel('street number'),
       this.createFormLabel('city'),
       this.createFormLabel('code'),
       this.createFormLabel('country'),
@@ -62,16 +63,16 @@ export default class RegistrationPage {
     // const inputTag = document.createElement('input');
     inputTag.addEventListener('input', function () {
       const inputTag = this.value;
-      //we must start today Egor!!!!!!!
-      // emailValidationMessage(inputTag,)
     });
 
-    return label(
-      {},
-      inputTag,
-      // { txt: `${text.slice(0, 1).toLocaleUpperCase() + text.slice(1)}` },
-    );
+    const emailValidationMessage = div({
+      className: `${styles.loginFormErrorMsg}`,
+      txt: `> Wrong email format (user@example.com)`,
+    });
+
+    return label({}, inputTag, emailValidationMessage);
   }
+
   private createTextLoginComponents(): HTMLElement {
     const node = div(
       { className: ['registration_container-login', 'login', styles.loginContainer].join(' ') },
@@ -84,6 +85,12 @@ export default class RegistrationPage {
     return node;
   }
 }
+
+// function createValidationMessage(): HTMLElement {
+//   return div({
+//     className: `${validationStyles.loginFormErrorMsg}`,
+//   });
+// }
 
 // import { pageRegistration } from '@pages/RegistrationPage';
 
