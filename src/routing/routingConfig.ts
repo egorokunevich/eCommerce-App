@@ -2,6 +2,7 @@ import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
 import { LoginPage } from '@pages/LoginPage';
+import { NotFoundPage } from '@pages/NotFoundPage';
 
 export const routeConfig: Routes[] = [
   {
@@ -91,9 +92,7 @@ export const routeConfig: Routes[] = [
   {
     pathname: '*',
     element: (): Element => {
-      const ele = document.createElement('h3');
-      ele.innerText = '404 Page not found';
-      return ele;
+      return new NotFoundPage().render();
     },
   },
 ];
