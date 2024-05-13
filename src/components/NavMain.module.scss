@@ -1,0 +1,49 @@
+.nav-menu {
+  border-bottom: 2px solid #e5eeea;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  list-style: none;
+  background-color: #ccd4d1;
+}
+
+.menu-item {
+  padding: 5px;
+  font-size: 1.2rem;
+  transition: 0.1s;
+
+  &:hover {
+    background-color: #e5eeea;
+    cursor: pointer;
+  }
+
+  & a {
+    text-decoration: none;
+    color: #56615c;
+  }
+}
+
+.menu-item a[href='/login'],
+.menu-item a[href='/registration'] {
+  display: inline-block;
+  padding-right: 30px;
+  background-image: url(../../public/assets/icons/coffee-bean.png);
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #3842ce;
+  border-bottom: 1px solid #3842ce;
+  transition: all 0.3s ease-out;
+}
+
+.main {
+  height: 100%;
+}
+
+.router-wrap {
+  height: 100%;
+}
