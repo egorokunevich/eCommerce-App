@@ -129,4 +129,11 @@
 
 .name {
   font-size: 1rem;
+  text-decoration: none;
+  color: #56615c;
+
+  &:hover {
+    backdrop-filter: brightness(110%);
+    color: black;
+  }
 }

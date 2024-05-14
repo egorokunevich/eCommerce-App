@@ -1,6 +1,7 @@
-import { a, div, li, nav, ul } from '@control.ts/min';
+import { a, div, li, link, nav, ul } from '@control.ts/min';
 
 import styles from './NavMain.module.scss';
+import { setAttributes } from '@utils/BaseComponentProps';
 
 export default class NavMain {
   private navLinks = [
@@ -25,7 +26,10 @@ export default class NavMain {
     this.navLinks.forEach((item) => {
       const listItem = li(
         { className: styles.menuItem },
-        a({ className: styles.link, txt: item.txt, href: item.href }),
+        setAttributes(a({ className: styles.link, href: item.href, txt: item.txt }), {
+          type: 'data-vanilla-route-link',
+          text: 'spa',
+        }),
       );
       list.append(listItem);
     });
@@ -33,9 +37,19 @@ export default class NavMain {
     const authContainer = div({ className: styles.authContainer });
     this.authLinks.forEach((item) => {
       const listItem = div({ className: styles.authBtn });
-      const link = a({ className: styles.link, href: item.href });
-      const icon = div({ className: styles.icon });
-      const name = div({ className: styles.name, txt: item.txt });
+      const link = setAttributes(a({ className: styles.link, href: item.href }), {
+        type: 'data-vanilla-route-link',
+        text: 'spa',
+      });
+
+      const icon = setAttributes(a({ className: styles.icon, href: item.href }), {
+        type: 'data-vanilla-route-link',
+        text: 'spa',
+      });
+      const name = setAttributes(a({ className: styles.name, href: item.href, txt: item.txt }), {
+        type: 'data-vanilla-route-link',
+        text: 'spa',
+      });
       listItem.append(link);
       link.append(icon, name);
       authContainer.append(listItem);
