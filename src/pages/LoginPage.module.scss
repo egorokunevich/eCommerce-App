@@ -88,6 +88,10 @@
   justify-content: space-evenly;
   width: 100%;
   gap: 15px;
+
+  & a {
+    text-decoration: none;
+  }
 }
 
 .login-status {

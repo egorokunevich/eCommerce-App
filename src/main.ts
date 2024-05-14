@@ -1,24 +1,14 @@
 import { main } from '@control.ts/min';
 import { BrowserRoute } from 'vanilla-routing';
 
-import { setAttributes } from '@/utils/BaseComponentProps';
 import styles from '@components/NavMain.module.scss';
 import { Layout } from '@pages/Layout';
-
-import { routeConfig } from './routing/routingConfig';
-// import type { MyCustomerSignin } from '@commercetools/platform-sdk';
-
-// import { LoginPage } from '@pages/LoginPage';
+import { LoginPage } from '@pages/LoginPage';
+import { anonymousClient } from '@services/BuildAnonymousFlowClient';
+import { ClientService } from '@services/ClientService';
+import { setAttributes } from '@utils/BaseComponentProps';
 import './components/css/normalise.css';
-// import {
-//   CustomerService,
-//   // CustomerSignUp, concatDateOfBirth
-// } from '@services/CustomerAPIService';
-
-// const login = new LoginPage();
-// login.render();
-
-// const customerService = new CustomerService();
+import { PageRouting } from './routing/routingConfig';
 
 // SignUp data
 // const customerSignUp: CustomerSignUp = {
@@ -62,18 +52,37 @@ import './components/css/normalise.css';
 //     .catch((error: Error) => console.error('Error !!!!: ', error.message)),
 // );
 
-// Unable after authorization
-// console.log('All Customers: ', await customerService.getAllCustomers());
+class App {
+  private service: ClientService = new ClientService(anonymousClient);
+  private login = new LoginPage(this.service);
+  private loginPage = this.login.createPage();
+  private routing = new PageRouting(this.loginPage);
+  constructor() {
+    this.login.loginBtn.addEventListener('click', async () => {
+      const client = await this.login.getPasswordClient();
+      if (client) {
+        this.service = client;
+      }
+    });
+  }
 
-const layout = new Layout();
-layout.renderLayout();
+  public async render(): Promise<void> {
+    const layout = new Layout();
+    layout.renderLayout();
 
-const routerWrapper = setAttributes(main({ className: styles.main }), {
-  type: 'data-vanilla-route-ele',
-  text: 'router-wrap',
-});
-document.body.appendChild(routerWrapper);
+    const routerWrapper = setAttributes(main({ className: styles.main }), {
+      type: 'data-vanilla-route-ele',
+      text: 'router-wrap',
+    });
+    document.body.appendChild(routerWrapper);
 
-document.addEventListener('DOMContentLoaded', () => {
-  BrowserRoute(routeConfig);
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      BrowserRoute(this.routing.createRouting());
+    });
+
+    // console.log('tokens: ', await this.service.getTokens());
+  }
+}
+
+const app = new App();
+app.render();

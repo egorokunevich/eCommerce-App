@@ -1,6 +1,6 @@
 import { a, header } from '@control.ts/min';
 
-import { setAttributes } from '@/utils/BaseComponentProps';
+import { setAttributes } from '@utils/BaseComponentProps';
 
 import styles from './Header.module.scss';
 

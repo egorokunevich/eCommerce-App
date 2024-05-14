@@ -1,14 +1,23 @@
-import { button, div, form, h2, input, label, main, p } from '@control.ts/min';
+import { a, button, div, form, h2, input, label, main, p } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
-import type { PasswordValidationMessages } from '@utils/InputValidations';
-import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@utils/InputValidations';
+import { ClientService } from '@services/ClientService';
+import {
+  type PasswordValidationMessages,
+  validateEmailClientSide,
+  validateForm,
+  validatePasswordClientSide,
+} from '@utils/InputValidations';
 import validationStyles from '@utils/InputValidations.module.scss';
 
 import styles from './LoginPage.module.scss';
 
+interface FetchError extends Error {
+  statusCode?: number;
+}
+
 export class LoginPage {
   public pageWrapper: HTMLElement;
-  private parent: HTMLElement = document.body;
   private emailInputElement: HTMLInputElement = input({});
   private passwordInputElement: HTMLInputElement = input({});
   private emailValidationMessage: HTMLElement = div({});
@@ -20,8 +29,9 @@ export class LoginPage {
   };
   private emailLabel: HTMLElement = div({});
   private passwordLabel: HTMLElement = div({});
-  private loginBtn: HTMLButtonElement = button({});
-  constructor() {
+  private loginStatus: HTMLElement = div({});
+  public loginBtn: HTMLButtonElement = button({});
+  constructor(private readonly service: ClientService) {
     this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
   }
 
@@ -32,6 +42,7 @@ export class LoginPage {
       placeholder: 'Email',
       className: `${styles.inputField}`,
       required: true,
+      value: 'test@test.com',
     });
 
     this.emailInputElement = emailInput;
@@ -64,8 +75,10 @@ export class LoginPage {
       required: true,
       autocomplete: 'off',
       minLength: 8,
+      value: 'aA123456',
     });
     this.passwordInputElement = passwordInput;
+
     const passwordLengthValidationMessage = this.createValidationMessage();
     const passwordUppercaseValidationMessage = this.createValidationMessage();
     const passwordDigitValidationMessage = this.createValidationMessage();
@@ -94,7 +107,7 @@ export class LoginPage {
     return passwordContainer;
   }
 
-  public render(): Element {
+  public createPage(): Element {
     const formContainer = div({ className: `${styles.loginContainer}` });
     const infoContainer = div({ className: `${styles.loginContainerInfo}` });
     const header = h2({ className: `${styles.infoHeader}`, txt: 'WELCOME' });
@@ -110,25 +123,28 @@ export class LoginPage {
       type: 'submit',
       txt: 'Login',
       className: `${styles.submitBtn}`,
-      disabled: true,
+      disabled: false,
+      // disabled: true,
     });
     this.loginBtn = loginBtn;
+    const signUpWrapper = a({ className: styles.test, href: '/registration' });
     const signUpBtn = button({
       type: 'button',
       txt: 'Sign Up',
       className: `${styles.submitBtn}`,
       disabled: false,
     });
+    signUpWrapper.append(signUpBtn);
     const status = div({
       txt: '',
       className: `${styles.loginStatus}`,
     });
+    this.loginStatus = status;
     infoContainer.append(header, info);
-    submitContainer.append(loginBtn, signUpBtn);
+    submitContainer.append(loginBtn, signUpWrapper);
     loginForm.append(this.createEmailInputField(), this.createPasswordInputField(), submitContainer, status);
     formContainer.append(infoContainer, loginForm);
     this.pageWrapper.append(formContainer);
-    this.parent.append(this.pageWrapper);
     this.validate(this.emailInputElement, this.passwordInputElement, loginBtn);
     return this.pageWrapper;
   }
@@ -144,6 +160,7 @@ export class LoginPage {
       emailInput.value = emailInput.value.trim();
       areInputsValid.email = validateEmailClientSide(emailInput, this.emailValidationMessage, this.emailLabel);
       validateForm(Object.values(areInputsValid), loginBtn);
+      this.loginStatus.innerText = '';
     });
     passwordInput.addEventListener('input', () => {
       areInputsValid.password = validatePasswordClientSide(
@@ -152,10 +169,43 @@ export class LoginPage {
         this.passwordLabel,
       );
       validateForm(Object.values(areInputsValid), loginBtn);
+      this.loginStatus.innerText = '';
     });
-    this.loginBtn.addEventListener('click', (e) => {
+    this.loginBtn.addEventListener('click', async (e): Promise<void> => {
       e.preventDefault();
     });
+  }
+
+  public async getPasswordClient(): Promise<ClientService | null> {
+    let result = null;
+
+    const isFetchError = (error: unknown): error is FetchError => {
+      return typeof error === 'object' && error !== null && 'statusCode' in error;
+    };
+    const handleAuthError = (error: unknown): void => {
+      if (isFetchError(error)) {
+        this.loginStatus.innerText = error.message;
+      }
+    };
+
+    try {
+      const response = await this.service.logInCustomer({
+        email: this.emailInputElement.value,
+        password: this.passwordInputElement.value,
+      });
+
+      if (response.statusCode === 200) {
+        const client = this.service.getPasswordClient(this.emailInputElement.value, this.passwordInputElement.value);
+
+        Router.go('/', { addToHistory: true });
+
+        result = new ClientService(client);
+        // return new ClientService(client);
+      }
+    } catch (e) {
+      handleAuthError(e);
+    }
+    return result;
   }
 
   public destroy(): void {

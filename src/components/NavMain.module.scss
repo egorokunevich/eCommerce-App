@@ -1,43 +1,65 @@
 .nav-menu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  align-items: center;
   border-bottom: 2px solid #e5eeea;
+  background-color: #ccd4d1;
+  height: 4rem;
 }
 
 .menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   list-style: none;
-  background-color: #ccd4d1;
+  max-width: 850px;
+  width: 100%;
+  height: 100%;
 }
 
 .menu-item {
-  padding: 5px;
   font-size: 1.2rem;
-  transition: 0.1s;
-
-  &:hover {
-    background-color: #e5eeea;
-    cursor: pointer;
-  }
+  width: 100%;
+  height: 100%;
 
   & a {
+    padding: 5px 10px;
     text-decoration: none;
     color: #56615c;
+    transition: 0.1s;
+    border-radius: 0;
+
+    &:hover {
+      background-color: #e5eeea;
+      cursor: pointer;
+    }
+  }
+
+  & .link {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    transition: all 0.3s ease-out;
   }
 }
 
 .menu-item a[href='/login'],
 .menu-item a[href='/registration'] {
-  display: inline-block;
-  padding-right: 30px;
-  background-image: url(../../public/assets/icons/coffee-bean.png);
-  background-position: right;
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  background-position: calc(100% - 5px);
   background-repeat: no-repeat;
-  background-size: contain;
-  color: #3842ce;
-  border-bottom: 1px solid #3842ce;
+  background-size: 20px 20px;
+  color: #2b2b31;
+  border: 1px solid #000000;
   transition: all 0.3s ease-out;
+
+  &:hover {
+    justify-content: flex-start;
+  }
 }
 
 .main {
@@ -46,4 +68,65 @@
 
 .router-wrap {
   height: 100%;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 200px;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 75px;
+}
+
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  transition: all 0.3s ease-out;
+  gap: 3px;
+  color: #56615c;
+
+  &:hover {
+    backdrop-filter: brightness(110%);
+    color: black;
+  }
+}
+
+.auth-btn a[href='/login'] {
+  & .icon {
+    width: 25px;
+    height: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    background-image: url(/assets/icons/user.png);
+  }
+}
+.auth-btn a[href='/registration'] {
+  & .icon {
+    width: 25px;
+    height: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(/assets/icons/signUp.png);
+  }
+}
+
+.name {
+  font-size: 1rem;
 }

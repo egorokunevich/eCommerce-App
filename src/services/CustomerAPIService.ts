@@ -10,7 +10,7 @@ import type {
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { v4 as uuidv4 } from 'uuid'; // Library to generate random ID
 
-import { ctpClient } from './BuildClient';
+import { ctpClient } from './BuildCredentialsFlowClient';
 import * as secretVariables from './LoginAPIVariables';
 
 type TokenResponse = {
@@ -20,6 +20,13 @@ type TokenResponse = {
   scope: string;
   token_type: string;
   error_description?: string;
+};
+
+type TokenData = {
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+  tokenType: string;
 };
 
 type Address = {
@@ -136,7 +143,7 @@ export class CustomerService {
     return emails;
   }
 
-  private async generateAnonymousToken(): Promise<string> {
+  private async generateAnonymousToken(): Promise<TokenData | null> {
     const anonymousId = uuidv4();
 
     try {
@@ -160,23 +167,30 @@ export class CustomerService {
       if (!response.ok) {
         throw new Error(data.error_description || 'Failed to obtain token');
       }
-      return data?.access_token;
+
+      const tokenData = {
+        accessToken: data.access_token,
+        expiresIn: data.expires_in,
+        refreshToken: data.refresh_token,
+        tokenType: data.token_type,
+      };
+      return tokenData;
     } catch (error) {
       console.error('Error:', error);
-      return '';
+      return null;
     }
   }
 
   // Only request a token with an anonymous session when the visitor creates a cart, shopping list or other visitor-specific resource to avoid creating unused anonymous sessions.
-  public async getAnonymousToken(): Promise<string> {
-    return this.generateAnonymousToken().then((token: string) => {
+  public async getAnonymousToken(): Promise<TokenData | null> {
+    return this.generateAnonymousToken().then((token: TokenData | null) => {
       if (token) {
         // console.log('Anonymous Token:', token);
         return token;
         // Use the access token to make requests to API endpoints
       }
       // console.log('Failed to obtain anonymous token');
-      return '';
+      return null;
     });
   }
 }

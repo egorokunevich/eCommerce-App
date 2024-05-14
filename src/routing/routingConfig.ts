@@ -1,8 +1,71 @@
+import { div } from '@control.ts/min';
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
-import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
+
+export class PageRouting {
+  constructor(private readonly loginPage: Element) {}
+
+  private createRoute(pathname: string, name: string): Routes {
+    return {
+      pathname,
+      element: (): Element => {
+        const ele = document.createElement('h2');
+        ele.innerText = name;
+        return ele;
+      },
+    };
+  }
+
+  private createItemRoute(): Routes {
+    return {
+      pathname: '/catalog/:id',
+      element: (): Element => {
+        const ele = document.createElement('h2');
+        ele.innerText = `CATALOG with details about ${routeLocation().params.id}`;
+        const btnBack = document.createElement('button');
+        btnBack.innerText = 'Go back';
+        btnBack.onclick = (): void => {
+          Router.back();
+        };
+        const btnForward = document.createElement('button');
+        btnForward.innerText = 'Go Forward';
+        btnForward.onclick = (): void => {
+          Router.forward();
+        };
+
+        ele.appendChild(btnBack);
+        ele.appendChild(btnForward);
+        return ele;
+      },
+    };
+  }
+
+  public createRouting(): Routes[] {
+    return [
+      this.createRoute('/', 'Home'),
+      this.createRoute('/catalog', 'Catalog'),
+      this.createRoute('/profile', 'Profile'),
+      this.createRoute('/about', 'About'),
+      this.createRoute('/registration', 'Registration'),
+      this.createRoute('/basket', 'Basket'),
+      this.createItemRoute(),
+      {
+        pathname: '/login',
+        element: (): Element => {
+          return this.loginPage;
+        },
+      },
+      {
+        pathname: '*',
+        element: (): Element => {
+          return new NotFoundPage().render();
+        },
+      },
+    ];
+  }
+}
 
 export const routeConfig: Routes[] = [
   {
@@ -70,7 +133,7 @@ export const routeConfig: Routes[] = [
   {
     pathname: '/login',
     element: (): Element => {
-      return new LoginPage().render();
+      return div({});
     },
   },
   {
