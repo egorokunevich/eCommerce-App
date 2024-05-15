@@ -28,9 +28,9 @@ class App {
       }
     });
 
-    document.addEventListener('click', () => {
-      console.log(window.location.href);
-    });
+    // document.addEventListener('click', () => {
+    //   console.log(window.location.href);
+    // });
   }
 
   public async render(): Promise<void> {
