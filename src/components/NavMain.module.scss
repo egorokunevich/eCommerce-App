@@ -1,43 +1,49 @@
 .nav-menu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  align-items: center;
   border-bottom: 2px solid #e5eeea;
+  background-color: #ccd4d1;
+  height: 4rem;
 }
 
 .menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   list-style: none;
-  background-color: #ccd4d1;
+  max-width: 800px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
 }
 
 .menu-item {
-  padding: 5px;
   font-size: 1.2rem;
-  transition: 0.1s;
-
-  &:hover {
-    background-color: #e5eeea;
-    cursor: pointer;
-  }
+  width: 100%;
+  height: 100%;
 
   & a {
+    padding: 5px 10px;
     text-decoration: none;
     color: #56615c;
-  }
-}
+    transition: 0.1s;
+    border-radius: 0;
 
-.menu-item a[href='/login'],
-.menu-item a[href='/registration'] {
-  display: inline-block;
-  padding-right: 30px;
-  background-image: url(../../public/assets/icons/coffee-bean.png);
-  background-position: right;
-  background-repeat: no-repeat;
-  background-size: contain;
-  color: #3842ce;
-  border-bottom: 1px solid #3842ce;
-  transition: all 0.3s ease-out;
+    &:hover {
+      background-color: #e5eeea;
+      cursor: pointer;
+    }
+  }
+
+  & .link {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    transition: all 0.3s ease-out;
+  }
 }
 
 .main {
@@ -46,4 +52,80 @@
 
 .router-wrap {
   height: 100%;
+}
+
+.nav-btns-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 200px;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  &.logout {
+    cursor: pointer;
+  }
+
+  &:hover {
+    & div,
+    & a {
+      color: black;
+    }
+  }
+}
+
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  transition: all 0.3s ease-out;
+  gap: 3px;
+  color: #56615c;
+
+  &:hover {
+    backdrop-filter: brightness(110%);
+    color: black;
+  }
+}
+
+.icon {
+  width: 25px;
+  height: 25px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.user-icon {
+  background-image: url(/assets/icons/user.png);
+}
+
+.logout-icon {
+  background-image: url(/assets/icons/logout.png);
+}
+
+.sign-up-icon {
+  background-image: url(/assets/icons/signUp.png);
+}
+
+.name {
+  font-size: 1rem;
+  text-decoration: none;
+  color: #56615c;
+
+  &:hover {
+    color: black;
+  }
 }

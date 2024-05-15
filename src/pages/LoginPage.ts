@@ -1,14 +1,24 @@
-import { button, div, form, h2, input, label, main, p } from '@control.ts/min';
+import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
+import Toastify from 'toastify-js';
+import { Router } from 'vanilla-routing';
 
-import type { PasswordValidationMessages } from '@/utils/InputValidations';
-import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@/utils/InputValidations';
-import validationStyles from '@/utils/InputValidations.module.scss';
+import { ClientService } from '@services/ClientService';
+import {
+  type PasswordValidationMessages,
+  validateEmailClientSide,
+  validateForm,
+  validatePasswordClientSide,
+} from '@utils/InputValidations';
+import validationStyles from '@utils/InputValidations.module.scss';
 
 import styles from './LoginPage.module.scss';
 
+interface FetchError extends Error {
+  statusCode?: number;
+}
+
 export class LoginPage {
-  private pageWrapper: HTMLElement;
-  private parent: HTMLElement = document.body;
+  public pageWrapper: HTMLElement;
   private emailInputElement: HTMLInputElement = input({});
   private passwordInputElement: HTMLInputElement = input({});
   private emailValidationMessage: HTMLElement = div({});
@@ -20,18 +30,21 @@ export class LoginPage {
   };
   private emailLabel: HTMLElement = div({});
   private passwordLabel: HTMLElement = div({});
-  private loginBtn: HTMLButtonElement = button({});
-  constructor() {
-    this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
+  private loginStatus: HTMLElement = div({});
+  public loginBtn: HTMLButtonElement = button({});
+
+  constructor(private readonly service: ClientService) {
+    this.pageWrapper = section({ className: `${styles.loginPageWrapper}` });
   }
 
   private createEmailInputField(): HTMLElement {
-    const emailContainer = div({ className: `${styles.inputContainer}` });
+    const emailContainer = div({ className: styles.inputContainer });
 
     const emailInput = input({
       placeholder: 'Email',
       className: `${styles.inputField}`,
       required: true,
+      // value: 'test@test.com',
     });
 
     this.emailInputElement = emailInput;
@@ -64,6 +77,7 @@ export class LoginPage {
       required: true,
       autocomplete: 'off',
       minLength: 8,
+      // value: 'aA123456',
     });
     this.passwordInputElement = passwordInput;
     const passwordLengthValidationMessage = this.createValidationMessage();
@@ -81,10 +95,8 @@ export class LoginPage {
       passwordInput.type =
         passwordInput.type === 'password' ? (passwordInput.type = 'text') : (passwordInput.type = 'password');
     });
-
     const passwordLabel = label({ className: `${validationStyles.loginFormInputLabel}` }, showPassBtn);
     this.passwordLabel = passwordLabel;
-
     passwordContainer.append(
       passwordLabel,
       passwordInput,
@@ -96,7 +108,7 @@ export class LoginPage {
     return passwordContainer;
   }
 
-  public render(): Element {
+  public createPage(): Element {
     const formContainer = div({ className: `${styles.loginContainer}` });
     const infoContainer = div({ className: `${styles.loginContainerInfo}` });
     const header = h2({ className: `${styles.infoHeader}`, txt: 'WELCOME' });
@@ -121,18 +133,19 @@ export class LoginPage {
       className: `${styles.submitBtn}`,
       disabled: false,
     });
-    const status = div({
+    signUpBtn.addEventListener('click', () => {
+      Router.go('/registration');
+    });
+    this.loginStatus = div({
       txt: '',
       className: `${styles.loginStatus}`,
     });
     infoContainer.append(header, info);
     submitContainer.append(loginBtn, signUpBtn);
-    loginForm.append(this.createEmailInputField(), this.createPasswordInputField(), submitContainer, status);
+    loginForm.append(this.createEmailInputField(), this.createPasswordInputField(), submitContainer, this.loginStatus);
     formContainer.append(infoContainer, loginForm);
     this.pageWrapper.append(formContainer);
-    this.parent.append(this.pageWrapper);
     this.validate(this.emailInputElement, this.passwordInputElement, loginBtn);
-
     return this.pageWrapper;
   }
 
@@ -147,18 +160,75 @@ export class LoginPage {
       emailInput.value = emailInput.value.trim();
       areInputsValid.email = validateEmailClientSide(emailInput, this.emailValidationMessage, this.emailLabel);
       validateForm(Object.values(areInputsValid), loginBtn);
+      this.loginStatus.innerText = '';
     });
     passwordInput.addEventListener('input', () => {
+      passwordInput.value = passwordInput.value.trim();
       areInputsValid.password = validatePasswordClientSide(
         passwordInput,
         this.passwordValidationMsgs,
         this.passwordLabel,
       );
       validateForm(Object.values(areInputsValid), loginBtn);
+      this.loginStatus.innerText = '';
     });
-    this.loginBtn.addEventListener('click', (e) => {
+    this.loginBtn.addEventListener('click', async (e): Promise<void> => {
       e.preventDefault();
     });
+  }
+
+  private showSubmitError(msg: string): void {
+    Toastify({
+      text: msg,
+      duration: 2000,
+      destination: 'https://github.com/apvarun/toastify-js',
+      newWindow: true,
+      close: true,
+      gravity: 'top', // `top` or `bottom`
+      position: 'left', // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        height: '50px',
+        padding: '10px',
+        borderRadius: '5px',
+        position: 'absolute',
+        background: 'linear-gradient(to right, #00b09b, #96c93d)',
+      },
+      onClick() {}, // Callback after click
+    }).showToast();
+  }
+
+  public async getPasswordClient(): Promise<ClientService | null> {
+    let result = null;
+
+    const isFetchError = (error: unknown): error is FetchError => {
+      return typeof error === 'object' && error !== null && 'statusCode' in error;
+    };
+    const handleAuthError = (error: unknown): void => {
+      if (isFetchError(error)) {
+        const msg = error.message;
+        this.showSubmitError(msg);
+      }
+    };
+
+    try {
+      const response = await this.service.logInCustomer({
+        email: this.emailInputElement.value,
+        password: this.passwordInputElement.value,
+      });
+
+      if (response.statusCode === 200) {
+        const client = this.service.getPasswordClient(this.emailInputElement.value, this.passwordInputElement.value);
+
+        Router.go('/', { addToHistory: true });
+
+        result = new ClientService(client);
+        // return new ClientService(client);
+      }
+    } catch (e) {
+      handleAuthError(e);
+    }
+    return result;
   }
 
   public destroy(): void {

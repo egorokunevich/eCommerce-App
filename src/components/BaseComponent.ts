@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '@/utils/BaseComponentProps';
+import type { BaseComponentProps } from '@utils/BaseComponentProps';
 
 // Common class for all HTML Elements
 class BaseComponent {

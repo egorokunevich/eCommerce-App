@@ -1,38 +1,55 @@
-import { a, li, nav, ul } from '@control.ts/min';
+import { a, div, li, nav, ul } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
-import { setAttributes } from '@/utils/BaseComponentProps';
+import { anonymousClient } from '@services/BuildAnonymousFlowClient';
+import type { ClientService } from '@services/ClientService';
+import { setAttributes } from '@utils/BaseComponentProps';
 
 import styles from './NavMain.module.scss';
 
 export default class NavMain {
-  private links = [
+  private service: ClientService;
+  private navBtnsContainer: HTMLElement = div({});
+  private navLinks = [
     { href: '/', txt: 'Home' },
     { href: '/catalog', txt: 'Catalog' },
-    { href: '/profile', txt: 'My profile' },
     { href: '/about', txt: 'About us' },
-    { href: '/login', txt: 'Login' },
-    { href: '/registration', txt: 'Registration' },
     { href: '/basket', txt: 'Basket' },
   ];
 
+  public logoutBtn: HTMLElement = div({});
   private menuElement: HTMLElement | null = null;
+  public nav: HTMLElement = div({});
+
+  constructor(service: ClientService) {
+    this.service = service;
+  }
+
+  public updateService(clientService: ClientService): void {
+    this.service = clientService;
+  }
 
   private createMenu(): void {
-    const menu = nav(
-      { className: styles.navMenu },
-      ul(
-        { className: styles.menu },
-        ...this.links.map((link) =>
-          li(
-            { className: styles.menuItem },
-            setAttributes(a({ href: link.href, txt: link.txt }), {
-              type: 'data-vanilla-route-link',
-              text: 'spa',
-            }),
-          ),
-        ),
-      ),
-    );
+    const menu = nav({ className: styles.navMenu });
+    this.nav = menu;
+    const list = ul({ className: styles.menu });
+
+    this.navLinks.forEach((item) => {
+      const listItem = li(
+        { className: styles.menuItem },
+        setAttributes(a({ className: styles.link, href: item.href, txt: item.txt }), {
+          type: 'data-vanilla-route-link',
+          text: 'spa',
+        }),
+      );
+      list.append(listItem);
+    });
+
+    const navBtnsContainer = div({ className: styles.navBtnsContainer });
+    this.navBtnsContainer = navBtnsContainer;
+    this.renderLoggedOutNav();
+
+    menu.append(list, navBtnsContainer);
     this.menuElement = menu;
   }
 
@@ -49,8 +66,62 @@ export default class NavMain {
       document.body.appendChild(menu);
     }
   }
-}
 
-export const renderNavMain = (): NavMain => {
-  return new NavMain();
-};
+  private createNavBtn(buttonName: string, iconClassName: string): HTMLElement {
+    const btn = div({ className: styles.authBtn });
+
+    btn.classList.add(styles.logout);
+
+    const link = div({ className: styles.link });
+
+    const icon = div({ className: styles.icon });
+    icon.classList.add(iconClassName);
+
+    const name = div({ className: styles.name, txt: buttonName });
+
+    btn.append(link);
+    link.append(icon, name);
+
+    return btn;
+  }
+
+  public renderLoggedInNav(): void {
+    this.navBtnsContainer.innerHTML = '';
+
+    const profileBtn = this.createNavBtn('My Profile', styles.userIcon);
+    const logoutBtn = this.createNavBtn('Log Out', styles.logoutIcon);
+
+    profileBtn.addEventListener('click', () => {
+      Router.go('/profile', { addToHistory: true });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('anonymousToken');
+      localStorage.removeItem('passwordToken');
+
+      this.renderLoggedOutNav();
+
+      this.service.updateClient(anonymousClient);
+      this.service.getAnonymousToken();
+    });
+
+    this.navBtnsContainer.append(profileBtn, logoutBtn);
+  }
+
+  public renderLoggedOutNav(): void {
+    this.navBtnsContainer.innerHTML = '';
+
+    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
+    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
+
+    loginBtn.addEventListener('click', () => {
+      Router.go('/login', { addToHistory: true });
+    });
+
+    signUpBtn.addEventListener('click', () => {
+      Router.go('/registration', { addToHistory: true });
+    });
+
+    this.navBtnsContainer.append(loginBtn, signUpBtn);
+  }
+}

@@ -1,4 +1,4 @@
-import styles from '@/utils/InputValidations.module.scss';
+import styles from '@utils/InputValidations.module.scss';
 
 export type PasswordValidationMessages = {
   lengthMsg: HTMLElement;

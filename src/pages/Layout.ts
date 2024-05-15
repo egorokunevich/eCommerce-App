@@ -2,17 +2,25 @@ import { div } from '@control.ts/min';
 
 import Header from '@components/Header';
 import NavMain from '@components/NavMain';
+import type { ClientService } from '@services/ClientService';
 
 import styles from './Layout.module.scss';
 
 export class Layout {
+  private service: ClientService;
   private layoutElement: HTMLElement | null = null;
   private header: Header;
-  private navMain: NavMain;
+  public navMain: NavMain;
 
-  constructor() {
+  constructor(service: ClientService) {
+    this.service = service;
     this.header = new Header();
-    this.navMain = new NavMain();
+    this.navMain = new NavMain(this.service);
+  }
+
+  public updateService(clientService: ClientService): void {
+    this.service = clientService;
+    this.navMain.updateService(clientService);
   }
 
   private createLayout(): void {
@@ -42,9 +50,16 @@ export class Layout {
       document.body.appendChild(layout);
     }
   }
+
+  public renderLoggedInNav(): void {
+    this.navMain.renderLoggedInNav();
+  }
+  public renderLoggedOutNav(): void {
+    this.navMain.renderLoggedOutNav();
+  }
 }
 
-export const renderLayout = (): void => {
-  const layout = new Layout();
-  layout.renderLayout();
-};
+// export const renderLayout = (): void => {
+//   const layout = new Layout();
+//   layout.renderLayout();
+// };
