@@ -27,6 +27,10 @@ class App {
         this.layout.renderLoggedInNav();
       }
     });
+
+    document.addEventListener('click', () => {
+      console.log(window.location.href);
+    });
   }
 
   public async render(): Promise<void> {
