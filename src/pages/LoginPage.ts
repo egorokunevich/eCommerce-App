@@ -50,7 +50,7 @@ export class LoginPage {
     });
 
     const emailLabel = label({ className: `${styles.loginFormInputLabel}` });
-
+    this.emailLabel = emailLabel;
     emailContainer.append(emailLabel, emailInput, this.emailValidationMessage);
 
     return emailContainer;

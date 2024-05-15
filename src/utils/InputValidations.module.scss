@@ -16,14 +16,14 @@
 
 .input_warning-icon {
   &::before {
-    opacity: 100%;
+    opacity: 100% !important;
     background-image: url('/public/assets/icons/warning.png');
   }
 }
 
 .input_accept-icon {
   &::before {
-    opacity: 100%;
+    opacity: 100% !important;
     background-image: url('/public/assets/icons/accept.png');
   }
 }
