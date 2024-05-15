@@ -156,9 +156,9 @@ export function validateEmailClientSide(
 
 export function validateForm(statuses: boolean[], button: HTMLButtonElement): void {
   const isValid = statuses.every((status) => status === true);
-  // if (isValid) {
-  //   button.disabled = false;
-  // } else {
-  //   button.disabled = true;
-  // }
+  if (isValid) {
+    button.disabled = false;
+  } else {
+    button.disabled = true;
+  }
 }

@@ -1,26 +1,37 @@
-import { a, div, li, link, nav, ul } from '@control.ts/min';
+import { a, div, li, nav, ul } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
-import styles from './NavMain.module.scss';
+import { anonymousClient } from '@services/BuildAnonymousFlowClient';
+import type { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 
+import styles from './NavMain.module.scss';
+
 export default class NavMain {
+  private service: ClientService;
+  private navBtnsContainer: HTMLElement = div({});
   private navLinks = [
     { href: '/', txt: 'Home' },
     { href: '/catalog', txt: 'Catalog' },
-    { href: '/profile', txt: 'My profile' },
     { href: '/about', txt: 'About us' },
     { href: '/basket', txt: 'Basket' },
   ];
 
-  private authLinks = [
-    { href: '/login', txt: 'Log In' },
-    { href: '/registration', txt: 'Sign Up' },
-  ];
-
+  public logoutBtn: HTMLElement = div({});
   private menuElement: HTMLElement | null = null;
+  public nav: HTMLElement = div({});
+
+  constructor(service: ClientService) {
+    this.service = service;
+  }
+
+  public updateService(clientService: ClientService): void {
+    this.service = clientService;
+  }
 
   private createMenu(): void {
     const menu = nav({ className: styles.navMenu });
+    this.nav = menu;
     const list = ul({ className: styles.menu });
 
     this.navLinks.forEach((item) => {
@@ -34,28 +45,11 @@ export default class NavMain {
       list.append(listItem);
     });
 
-    const authContainer = div({ className: styles.authContainer });
-    this.authLinks.forEach((item) => {
-      const listItem = div({ className: styles.authBtn });
-      const link = setAttributes(a({ className: styles.link, href: item.href }), {
-        type: 'data-vanilla-route-link',
-        text: 'spa',
-      });
+    const navBtnsContainer = div({ className: styles.navBtnsContainer });
+    this.navBtnsContainer = navBtnsContainer;
+    this.renderLoggedOutNav();
 
-      const icon = setAttributes(a({ className: styles.icon, href: item.href }), {
-        type: 'data-vanilla-route-link',
-        text: 'spa',
-      });
-      const name = setAttributes(a({ className: styles.name, href: item.href, txt: item.txt }), {
-        type: 'data-vanilla-route-link',
-        text: 'spa',
-      });
-      listItem.append(link);
-      link.append(icon, name);
-      authContainer.append(listItem);
-    });
-
-    menu.append(list, authContainer);
+    menu.append(list, navBtnsContainer);
     this.menuElement = menu;
   }
 
@@ -72,8 +66,62 @@ export default class NavMain {
       document.body.appendChild(menu);
     }
   }
-}
 
-export const renderNavMain = (): NavMain => {
-  return new NavMain();
-};
+  private createNavBtn(buttonName: string, iconClassName: string): HTMLElement {
+    const btn = div({ className: styles.authBtn });
+
+    btn.classList.add(styles.logout);
+
+    const link = div({ className: styles.link });
+
+    const icon = div({ className: styles.icon });
+    icon.classList.add(iconClassName);
+
+    const name = div({ className: styles.name, txt: buttonName });
+
+    btn.append(link);
+    link.append(icon, name);
+
+    return btn;
+  }
+
+  public renderLoggedInNav(): void {
+    this.navBtnsContainer.innerHTML = '';
+
+    const profileBtn = this.createNavBtn('My Profile', styles.userIcon);
+    const logoutBtn = this.createNavBtn('Log Out', styles.logoutIcon);
+
+    profileBtn.addEventListener('click', () => {
+      Router.go('/profile', { addToHistory: true });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('anonymousToken');
+      localStorage.removeItem('passwordToken');
+
+      this.renderLoggedOutNav();
+
+      this.service.updateClient(anonymousClient);
+      this.service.getAnonymousToken();
+    });
+
+    this.navBtnsContainer.append(profileBtn, logoutBtn);
+  }
+
+  public renderLoggedOutNav(): void {
+    this.navBtnsContainer.innerHTML = '';
+
+    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
+    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
+
+    loginBtn.addEventListener('click', () => {
+      Router.go('/login', { addToHistory: true });
+    });
+
+    signUpBtn.addEventListener('click', () => {
+      Router.go('/registration', { addToHistory: true });
+    });
+
+    this.navBtnsContainer.append(loginBtn, signUpBtn);
+  }
+}

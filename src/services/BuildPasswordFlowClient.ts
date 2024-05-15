@@ -1,7 +1,31 @@
-import { ClientBuilder, TokenCache, TokenStore, TokenInfo } from '@commercetools/sdk-client-v2';
-import type { Client, HttpMiddlewareOptions, PasswordAuthMiddlewareOptions } from '@commercetools/sdk-client-v2';
+import { ClientBuilder } from '@commercetools/sdk-client-v2';
+import type {
+  Client,
+  HttpMiddlewareOptions,
+  PasswordAuthMiddlewareOptions,
+  TokenCache,
+  TokenStore,
+} from '@commercetools/sdk-client-v2';
 
 import * as secretVariables from './LoginAPIVariables';
+
+class MyTokenCache implements TokenCache {
+  private myCache: TokenStore = {
+    token: 'null',
+    expirationTime: 10,
+    refreshToken: undefined,
+  };
+
+  public get(): TokenStore {
+    return this.myCache;
+  }
+
+  public set(newCache: TokenStore): void {
+    this.myCache = newCache;
+  }
+}
+
+export const CacheClass = new MyTokenCache();
 
 function getOptions(username: string, password: string): PasswordAuthMiddlewareOptions {
   return {
@@ -16,13 +40,13 @@ function getOptions(username: string, password: string): PasswordAuthMiddlewareO
       },
     },
 
-    // tokenCache:
+    tokenCache: CacheClass,
     scopes: secretVariables.CTP_SCOPES,
     fetch,
   };
 }
 
-export function getPasswordClient(username: string, password: string): Client {
+export function createPasswordClient(username: string, password: string): Client {
   const options = getOptions(username, password);
 
   // Configure middleware options

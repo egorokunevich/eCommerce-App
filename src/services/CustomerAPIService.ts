@@ -8,7 +8,6 @@ import type {
   MyCustomerSignin,
 } from '@commercetools/platform-sdk';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import { v4 as uuidv4 } from 'uuid'; // Library to generate random ID
 
 import { ctpClient } from './BuildCredentialsFlowClient';
 import * as secretVariables from './LoginAPIVariables';
@@ -144,8 +143,6 @@ export class CustomerService {
   }
 
   private async generateAnonymousToken(): Promise<TokenData | null> {
-    const anonymousId = uuidv4();
-
     try {
       const response = await fetch(
         `https://auth.europe-west1.gcp.commercetools.com/oauth/${secretVariables.CTP_PROJECT_KEY}/anonymous/token`,
@@ -158,7 +155,6 @@ export class CustomerService {
           body: new URLSearchParams({
             grant_type: 'client_credentials',
             scope: 'create_anonymous_token:coffee-loop-shop',
-            anonymous_id: anonymousId,
           }),
         },
       );

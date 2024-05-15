@@ -4,71 +4,51 @@ import { BrowserRoute } from 'vanilla-routing';
 import styles from '@components/NavMain.module.scss';
 import { Layout } from '@pages/Layout';
 import { LoginPage } from '@pages/LoginPage';
-import { anonymousClient } from '@services/BuildAnonymousFlowClient';
+import { anonCacheClass, anonymousClient } from '@services/BuildAnonymousFlowClient';
 import { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
+
 import './components/css/normalise.css';
 import { PageRouting } from './routing/routingConfig';
-
-// SignUp data
-// const customerSignUp: CustomerSignUp = {
-//   email: 'test2@test.test',
-//   password: 'aA123456',
-//   firstName: 'Yahor',
-//   lastName: 'Akunevich',
-//   dateOfBirth: concatDateOfBirth(1998, 9, 22),
-//   addresses: [
-//     {
-//       streetName: 'Alexandrova',
-//       streetNumber: '1',
-//       city: 'Minsk',
-//       postalCode: '000000',
-//       country: 'US',
-//     },
-//   ],
-// };
-
-// LogIn data
-// const customerLogIn: MyCustomerSignin = {
-//   email: 'test2@test.test',
-//   password: 'aA123456',
-// };
-
-// LogIn
-// console.log(
-//   'New Customer: ',
-//   await customerService
-//     .logInCustomer(customerLogIn)
-//     .then((data) => data.body.customer)
-//     .catch((error: Error) => console.error('Error !!!!: ', error.message)),
-// );
-
-// SignUp
-// console.log(
-//   'New Customer: ',
-//   await customerService
-//     .createCustomer(customerSignUp)
-//     .then((data) => data.body.customer)
-//     .catch((error: Error) => console.error('Error !!!!: ', error.message)),
-// );
 
 class App {
   private service: ClientService = new ClientService(anonymousClient);
   private login = new LoginPage(this.service);
   private loginPage = this.login.createPage();
   private routing = new PageRouting(this.loginPage);
+  private layout = new Layout(this.service);
   constructor() {
     this.login.loginBtn.addEventListener('click', async () => {
+      // console.log('tok: ', this.service.checkForTokens());
       const client = await this.login.getPasswordClient();
       if (client) {
+        localStorage.setItem('passwordToken', JSON.stringify(anonCacheClass.get()));
         this.service = client;
+        this.layout.renderLoggedInNav();
       }
     });
   }
 
   public async render(): Promise<void> {
-    const layout = new Layout();
+    this.service.getAnonymousToken();
+
+    const { layout } = this;
     layout.renderLayout();
+
+    // Render profile and logout buttons if logged in
+    const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
+    if (user) {
+      this.layout.renderLoggedInNav();
+      this.layout.navMain.logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('anonymousToken');
+        localStorage.removeItem('passwordToken');
+
+        this.layout.renderLoggedOutNav();
+
+        this.service.updateClient(anonymousClient);
+        this.service.getAnonymousToken();
+      });
+    }
 
     const routerWrapper = setAttributes(main({ className: styles.main }), {
       type: 'data-vanilla-route-ele',
@@ -79,8 +59,6 @@ class App {
     document.addEventListener('DOMContentLoaded', () => {
       BrowserRoute(this.routing.createRouting());
     });
-
-    // console.log('tokens: ', await this.service.getTokens());
   }
 }
 

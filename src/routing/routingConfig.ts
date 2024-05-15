@@ -1,11 +1,14 @@
-import { div } from '@control.ts/min';
+import { div, h2 } from '@control.ts/min';
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
 import { NotFoundPage } from '@pages/NotFoundPage';
 
 export class PageRouting {
-  constructor(private readonly loginPage: Element) {}
+  private homePage: Element;
+  constructor(private readonly loginPage: Element) {
+    this.homePage = h2({ txt: 'Home' });
+  }
 
   private createRoute(pathname: string, name: string): Routes {
     return {
@@ -42,18 +45,63 @@ export class PageRouting {
     };
   }
 
+  private createProfileRoute(): Routes {
+    const route = {
+      pathname: '/profile',
+      element: (): Element => {
+        const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
+        if (!user) {
+          Router.go('/');
+          return this.homePage;
+        }
+        const ele = document.createElement('h2');
+        ele.innerText = 'Profile';
+        return ele;
+      },
+    };
+    return route;
+  }
+  private createRegistrationRoute(): Routes {
+    const route = {
+      pathname: '/registration',
+      element: (): Element => {
+        const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
+        if (user) {
+          Router.go('/');
+          return this.homePage;
+        }
+        const ele = document.createElement('h2');
+        ele.innerText = 'Sign Up';
+        return ele;
+      },
+    };
+    return route;
+  }
+
   public createRouting(): Routes[] {
     return [
-      this.createRoute('/', 'Home'),
+      {
+        pathname: '/',
+        element: (): Element => {
+          return this.homePage;
+        },
+      },
       this.createRoute('/catalog', 'Catalog'),
-      this.createRoute('/profile', 'Profile'),
       this.createRoute('/about', 'About'),
-      this.createRoute('/registration', 'Registration'),
+      // this.createRoute('/registration', 'Registration'),
       this.createRoute('/basket', 'Basket'),
+      // this.createRoute('/profile', 'Profile'),
       this.createItemRoute(),
+      this.createProfileRoute(),
+      this.createRegistrationRoute(),
       {
         pathname: '/login',
         element: (): Element => {
+          const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
+          if (user) {
+            Router.go('/');
+            return this.homePage;
+          }
           return this.loginPage;
         },
       },

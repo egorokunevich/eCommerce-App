@@ -6,13 +6,11 @@ import type {
   CustomerPagedQueryResponse,
   CustomerSignInResult,
   MyCustomerSignin,
-  Project,
 } from '@commercetools/platform-sdk';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import type { Client } from '@commercetools/sdk-client-v2';
-import { v4 as uuidv4 } from 'uuid'; // Library to generate random ID
+import type { Client, TokenStore } from '@commercetools/sdk-client-v2';
 
-import { getPasswordClient } from './BuildPasswordFlowClient';
+import { createPasswordClient } from './BuildPasswordFlowClient';
 import * as secretVariables from './LoginAPIVariables';
 
 type TokenResponse = {
@@ -42,7 +40,8 @@ export class ClientService {
   private apiRoot: ByProjectKeyRequestBuilder;
   private apiCustomers: ByProjectKeyCustomersRequestBuilder;
   private apiMe: ByProjectKeyMeRequestBuilder;
-  private anonymousToken: TokenData | null;
+  private anonymousToken: TokenStore | null;
+  public client: Client;
 
   constructor(client: Client) {
     this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
@@ -51,10 +50,20 @@ export class ClientService {
     this.anonymousToken = null;
     this.apiCustomers = this.apiRoot.customers();
     this.apiMe = this.apiRoot.me();
+    this.client = client;
+  }
+
+  public updateClient(client: Client): void {
+    this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
+      projectKey: secretVariables.CTP_PROJECT_KEY,
+    });
+    this.anonymousToken = null;
+    this.apiCustomers = this.apiRoot.customers();
+    this.apiMe = this.apiRoot.me();
+    this.client = client;
   }
 
   private async generateAnonymousToken(): Promise<TokenData | null> {
-    const anonymousId = uuidv4();
     try {
       const response = await fetch(
         `https://auth.europe-west1.gcp.commercetools.com/oauth/${secretVariables.CTP_PROJECT_KEY}/anonymous/token`,
@@ -67,7 +76,6 @@ export class ClientService {
           body: new URLSearchParams({
             grant_type: 'client_credentials',
             scope: `create_anonymous_token:${secretVariables.CTP_PROJECT_KEY}`,
-            anonymous_id: anonymousId,
           }),
         },
       );
@@ -91,13 +99,14 @@ export class ClientService {
     }
   }
 
-  // public getTokens(): Promise<ClientResponse<Project>> {}
-
-  // Only request a token with an anonymous session when the visitor creates a cart, shopping list or other visitor-specific resource to avoid creating unused anonymous sessions.
   public async getAnonymousToken(): Promise<TokenData | null> {
     return this.generateAnonymousToken().then((token: TokenData | null) => {
       if (token) {
-        this.anonymousToken = token;
+        this.anonymousToken = {
+          token: token.access_token,
+          expirationTime: token.expires_in,
+          refreshToken: token.refresh_token,
+        };
         localStorage.setItem('anonymousToken', JSON.stringify(this.anonymousToken));
         return token;
       }
@@ -106,7 +115,8 @@ export class ClientService {
   }
 
   public getPasswordClient(email: string, password: string): Client {
-    return getPasswordClient(email, password);
+    const client = createPasswordClient(email, password);
+    return client;
   }
 
   public checkForTokens(): LocalTokens {

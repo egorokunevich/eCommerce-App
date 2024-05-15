@@ -1,7 +1,39 @@
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
-import type { AnonymousAuthMiddlewareOptions, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
+import type {
+  AnonymousAuthMiddlewareOptions,
+  HttpMiddlewareOptions,
+  TokenCache,
+  TokenStore,
+} from '@commercetools/sdk-client-v2';
 
 import * as secretVariables from './LoginAPIVariables';
+
+class MyTokenCache implements TokenCache {
+  constructor() {
+    const existingCache = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
+    if (existingCache) {
+      this.myCache = existingCache;
+    }
+  }
+
+  private myCache: TokenStore = {
+    token: 'null',
+    expirationTime: 10,
+    refreshToken: undefined,
+  };
+
+  public get(): TokenStore {
+    return this.myCache;
+  }
+
+  // SDK sets new token cache automatically
+  public set(newCache: TokenStore): void {
+    localStorage.setItem('passwordToken', JSON.stringify(newCache));
+    this.myCache = newCache;
+  }
+}
+
+export const anonCacheClass = new MyTokenCache();
 
 // Configure middleware options
 const options: AnonymousAuthMiddlewareOptions = {
@@ -11,6 +43,7 @@ const options: AnonymousAuthMiddlewareOptions = {
     clientId: secretVariables.CTP_CLIENT_ID,
     clientSecret: secretVariables.CTP_CLIENT_SECRET,
   },
+  tokenCache: anonCacheClass,
   scopes: secretVariables.CTP_SCOPES,
   fetch,
 };
@@ -31,6 +64,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 
 // Export the ClientBuilder
 export const anonymousClient = new ClientBuilder()
+  .withProjectKey(secretVariables.CTP_PROJECT_KEY)
   .withAnonymousSessionFlow(options)
   .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware()

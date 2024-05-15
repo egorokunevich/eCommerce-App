@@ -1,4 +1,5 @@
 import { a, button, div, form, h2, input, label, main, p } from '@control.ts/min';
+import Toastify from 'toastify-js';
 import { Router } from 'vanilla-routing';
 
 import { ClientService } from '@services/ClientService';
@@ -31,6 +32,7 @@ export class LoginPage {
   private passwordLabel: HTMLElement = div({});
   private loginStatus: HTMLElement = div({});
   public loginBtn: HTMLButtonElement = button({});
+
   constructor(private readonly service: ClientService) {
     this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
   }
@@ -123,8 +125,7 @@ export class LoginPage {
       type: 'submit',
       txt: 'Login',
       className: `${styles.submitBtn}`,
-      disabled: false,
-      // disabled: true,
+      disabled: true,
     });
     this.loginBtn = loginBtn;
     const signUpWrapper = a({ className: styles.test, href: '/registration' });
@@ -163,6 +164,7 @@ export class LoginPage {
       this.loginStatus.innerText = '';
     });
     passwordInput.addEventListener('input', () => {
+      passwordInput.value = passwordInput.value.trim();
       areInputsValid.password = validatePasswordClientSide(
         passwordInput,
         this.passwordValidationMsgs,
@@ -176,6 +178,27 @@ export class LoginPage {
     });
   }
 
+  private showSubmitError(msg: string): void {
+    Toastify({
+      text: msg,
+      duration: 2000,
+      destination: 'https://github.com/apvarun/toastify-js',
+      newWindow: true,
+      close: true,
+      gravity: 'top', // `top` or `bottom`
+      position: 'left', // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        height: '50px',
+        padding: '10px',
+        borderRadius: '5px',
+        position: 'absolute',
+        background: 'linear-gradient(to right, #00b09b, #96c93d)',
+      },
+      onClick() {}, // Callback after click
+    }).showToast();
+  }
+
   public async getPasswordClient(): Promise<ClientService | null> {
     let result = null;
 
@@ -184,7 +207,8 @@ export class LoginPage {
     };
     const handleAuthError = (error: unknown): void => {
       if (isFetchError(error)) {
-        this.loginStatus.innerText = error.message;
+        const msg = error.message;
+        this.showSubmitError(msg);
       }
     };
 
