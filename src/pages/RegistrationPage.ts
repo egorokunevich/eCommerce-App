@@ -1,7 +1,8 @@
 import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
-import { setAttributes } from '@/utils/BaseComponentProps';
-import { isRegistrationActive, validationText } from '@/utils/RegistrationValidationsData';
+import { setAttributes } from '@utils/BaseComponentProps';
+import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
 
 import styles from './LoginPage.module.scss';
 import stylesValid from '../utils/InputValidations.module.scss';
@@ -161,6 +162,7 @@ export default class RegistrationPage {
   private createTextLoginComponents(): HTMLElement {
     const buttonLoginPage = button({ className: ['login-btn', 'btn', styles.submitBtn].join(' '), txt: 'Login' });
     buttonLoginPage.addEventListener('click', () => {
+      Router.go('/login');
       // Toastify({
       //   text: "This is a toast",
       //   className: "info",

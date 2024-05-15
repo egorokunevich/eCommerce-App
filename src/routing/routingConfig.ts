@@ -3,6 +3,7 @@ import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
 import { NotFoundPage } from '@pages/NotFoundPage';
+import { pageRegistration } from '@pages/RegistrationPage';
 
 export class PageRouting {
   private homePage: Element;
@@ -70,9 +71,7 @@ export class PageRouting {
           Router.go('/');
           return this.homePage;
         }
-        const ele = document.createElement('h2');
-        ele.innerText = 'Sign Up';
-        return ele;
+        return pageRegistration.createRegistration();
       },
     };
     return route;

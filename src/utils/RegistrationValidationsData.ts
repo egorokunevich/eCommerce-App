@@ -1,4 +1,4 @@
-import { validationFunctions } from '@/utils/RegistrationValidations';
+import { validationFunctions } from '@utils/RegistrationValidations';
 
 type ValidationFunction = (input: string) => boolean;
 

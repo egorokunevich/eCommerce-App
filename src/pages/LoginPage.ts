@@ -1,4 +1,4 @@
-import { a, button, div, form, h2, input, label, main, p } from '@control.ts/min';
+import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
 import Toastify from 'toastify-js';
 import { Router } from 'vanilla-routing';
 
@@ -34,7 +34,7 @@ export class LoginPage {
   public loginBtn: HTMLButtonElement = button({});
 
   constructor(private readonly service: ClientService) {
-    this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
+    this.pageWrapper = section({ className: `${styles.loginPageWrapper}` });
   }
 
   private createEmailInputField(): HTMLElement {
@@ -44,7 +44,7 @@ export class LoginPage {
       placeholder: 'Email',
       className: `${styles.inputField}`,
       required: true,
-      value: 'test@test.com',
+      // value: 'test@test.com',
     });
 
     this.emailInputElement = emailInput;
@@ -77,10 +77,9 @@ export class LoginPage {
       required: true,
       autocomplete: 'off',
       minLength: 8,
-      value: 'aA123456',
+      // value: 'aA123456',
     });
     this.passwordInputElement = passwordInput;
-
     const passwordLengthValidationMessage = this.createValidationMessage();
     const passwordUppercaseValidationMessage = this.createValidationMessage();
     const passwordDigitValidationMessage = this.createValidationMessage();
@@ -96,10 +95,8 @@ export class LoginPage {
       passwordInput.type =
         passwordInput.type === 'password' ? (passwordInput.type = 'text') : (passwordInput.type = 'password');
     });
-
     const passwordLabel = label({ className: `${validationStyles.loginFormInputLabel}` }, showPassBtn);
     this.passwordLabel = passwordLabel;
-
     passwordContainer.append(
       passwordLabel,
       passwordInput,
@@ -130,26 +127,25 @@ export class LoginPage {
       disabled: true,
     });
     this.loginBtn = loginBtn;
-    const signUpWrapper = a({ className: styles.test, href: '/registration' });
     const signUpBtn = button({
       type: 'button',
       txt: 'Sign Up',
       className: `${styles.submitBtn}`,
       disabled: false,
     });
-    signUpWrapper.append(signUpBtn);
-    const status = div({
+    signUpBtn.addEventListener('click', () => {
+      Router.go('/registration');
+    });
+    this.loginStatus = div({
       txt: '',
       className: `${styles.loginStatus}`,
     });
-    this.loginStatus = status;
     infoContainer.append(header, info);
-    submitContainer.append(loginBtn, signUpWrapper);
-    loginForm.append(this.createEmailInputField(), this.createPasswordInputField(), submitContainer, status);
+    submitContainer.append(loginBtn, signUpBtn);
+    loginForm.append(this.createEmailInputField(), this.createPasswordInputField(), submitContainer, this.loginStatus);
     formContainer.append(infoContainer, loginForm);
     this.pageWrapper.append(formContainer);
     this.validate(this.emailInputElement, this.passwordInputElement, loginBtn);
-
     return this.pageWrapper;
   }
 
