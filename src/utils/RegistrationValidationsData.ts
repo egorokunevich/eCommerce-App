@@ -1,15 +1,17 @@
 import { validationFunctions } from '@/utils/RegistrationValidations';
 
-export type validationTextType = {
-  [key: string]: { nameMsg: string; text: string; func: Function }[];
+type ValidationFunction = (input: string) => boolean;
+
+export type ValidationTextType = {
+  [key: string]: { nameMsg: string; text: string; func: ValidationFunction }[];
 };
 
-export function isRegistrationActive(validationMessages: { [key: string]: boolean }) {
+export function isRegistrationActive(validationMessages: { [key: string]: boolean }): boolean {
   return Object.values(validationMessages).every((status) => status === true);
 }
 
-//add new  label + inputs like  [key: string]: { nameMsg: string; text: string; func: Function }[]; to create
-export const validationText: validationTextType = {
+// add new  label + inputs like  [key: string]: { nameMsg: string; text: string; func: Function }[]; to create
+export const validationText: ValidationTextType = {
   mail: [{ nameMsg: 'mail', text: `> Wrong email format (user@example.com)`, func: validationFunctions.validateEmail }],
   password: [
     {
@@ -51,8 +53,8 @@ export const validationText: validationTextType = {
       text: 'Must follow the format for the country',
       func: validationFunctions.validateUSPostalCode,
     },
-  ], //add code too discus
+  ], // add code too discus
   country: [
     { nameMsg: 'validCountry', text: 'Must be a valid country from list', func: validationFunctions.isValidCountry },
-  ], //add country too discus
+  ],
 };

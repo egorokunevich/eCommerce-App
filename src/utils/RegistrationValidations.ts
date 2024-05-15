@@ -1,4 +1,4 @@
-//add a new validations function for new fields
+// add a new validations function for new fields
 export const validationFunctions = {
   validateEmail: (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,8 +25,8 @@ export const validationFunctions = {
     const regex = /^[a-zA-Z\s]+$/;
     return regex.test(input);
   },
-  howOldAreYou: (years: number): boolean => {
-    return years >= 13;
+  howOldAreYou: (years: string): boolean => {
+    return +years >= 13;
   },
   validateUSPostalCode: (input: string): boolean => {
     // Регулярное выражение для проверки корректного почтового кода США
@@ -34,7 +34,7 @@ export const validationFunctions = {
     return regex.test(input);
   },
   isValidCountry: (country: string): boolean => {
-    //write our country
+    // write our country
     const validCountries = ['USA', 'Canada', 'UK', 'Germany', 'France'];
     return validCountries.includes(country);
   },

@@ -23,7 +23,6 @@ function checkLength(
   if (passwordInput.value.length < 8 && passwordInput.value[0]) {
     inputErrorMsgs.lengthMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = true;
-    console.log(inputErrorMsgs);
   } else if (passwordInput.value.length >= 8) {
     inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = false;
@@ -111,7 +110,6 @@ export function validatePasswordClientSide(
   checkUppercase(passwordInput, inputErrorMsgs, errorStatuses);
   checkDigits(passwordInput, inputErrorMsgs, errorStatuses);
   checkWhitespaces(passwordInput, inputErrorMsgs, errorStatuses);
-
   const isValid = Object.values(errorStatuses).every((status) => status === false);
 
   if (isValid) {

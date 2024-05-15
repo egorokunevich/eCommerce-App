@@ -1,18 +1,20 @@
 import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
 
 import { setAttributes } from '@/utils/BaseComponentProps';
+import { isRegistrationActive, validationText } from '@/utils/RegistrationValidationsData';
 
 import styles from './LoginPage.module.scss';
 import stylesValid from '../utils/InputValidations.module.scss';
-import { isRegistrationActive, validationText } from '@/utils/RegistrationValidationsData';
 
-type errorMsgType = { nameMsg: string; text: string; func: Function }[];
+type ValidationFunction = (input: string) => boolean;
+type ErrorMsgType = { nameMsg: string; text: string; func: ValidationFunction }[];
 type ValidationErrors = { [key: string]: boolean };
 
 export default class RegistrationPage {
-  validationMessages: ValidationErrors;
-  registrationBtN: HTMLElement | null;
-  inputTag: HTMLElement | null;
+  private validationMessages: ValidationErrors;
+  private registrationBtN: HTMLElement | null;
+  private nodeLabel: HTMLElement | null;
+  private inputTag: HTMLInputElement | HTMLElement | null;
   constructor() {
     this.validationMessages = {};
 
@@ -33,7 +35,9 @@ export default class RegistrationPage {
 
     this.registrationBtN = null;
     this.inputTag = null;
+    this.nodeLabel = null;
   }
+
   public createRegistration(): HTMLElement {
     const regSection = section(
       { className: 'registration' },
@@ -47,8 +51,8 @@ export default class RegistrationPage {
         this.createTextLoginComponents(),
       ),
     );
-    //написать куда она будет аппендиттся
-    document.querySelector(`.${styles.loginPageWrapper}`)?.append(regSection);
+    // написать куда она будет аппендиттся
+    // document.querySelector(`.${styles.loginPageWrapper}`)?.append(regSection);
     return regSection;
   }
 
@@ -81,30 +85,30 @@ export default class RegistrationPage {
     return node;
   }
 
-  createRegistrationBtn(): HTMLElement {
+  private createRegistrationBtn(): HTMLElement {
     this.registrationBtN = setAttributes(
       button({ className: ['register-btn', 'btn', styles.submitBtn].join(' '), txt: 'Register' }),
       [{ text: true, type: 'disabled' }],
     );
     this.registrationBtN.addEventListener('click', () => {
-      //write function routing
-      console.log('routing');
+      // write function routing
+      // console.log('routing');
     });
     return this.registrationBtN;
   }
 
-  private createFormLabel(text: string, textMessageError: errorMsgType): HTMLLabelElement {
-    //at the end we must made this node Input as HTMLInputElement
+  private createFormLabel(text: string, textMessageError: ErrorMsgType): HTMLElement {
+    // at the end we must made this node Input as HTMLInputElement
     this.inputTag = setAttributes(input({ className: styles.inputField, id: `user-${text}` }), [
       {
         type: 'user',
         text: `user-${text}`,
       },
       { type: 'placeholder', text: `${text.slice(0, 1).toLocaleUpperCase() + text.slice(1)}` },
-    ]) as HTMLInputElement;
+    ]);
 
-    let node: HTMLElement = this.createInputField(textMessageError);
-    const nodeLabel = label({ className: `${styles.loginFormInputLabel}` }, this.inputTag, node);
+    const node: HTMLElement = this.createInputField(textMessageError);
+    this.nodeLabel = label({ className: `${styles.loginFormInputLabel}` }, this.inputTag, node);
 
     // const nodeInput = this.inputTag;
     this.inputTag.addEventListener('input', () => {
@@ -112,33 +116,39 @@ export default class RegistrationPage {
         this.registrationBtN?.removeAttribute('disabled');
       }
     });
-    return nodeLabel;
+    return this.nodeLabel;
   }
 
-  private createValidationMessage(text: { nameMsg: string; text: string; func: Function }): HTMLElement {
+  private createValidationMessage(text: { nameMsg: string; text: string; func: ValidationFunction }): HTMLElement {
     const node = setAttributes(div({ txt: text.text, className: `${stylesValid.loginFormErrorMsg}` }), {
       type: 'data-msg',
       text: `${text.nameMsg}`,
     });
-    const nameMsg = text.nameMsg;
+    const { nameMsg } = text;
     this.validationMessages[nameMsg] = false;
 
-    if (this.inputTag) {
-      const nodeInput = this.inputTag as HTMLInputElement;
+    if (this.inputTag && this.inputTag instanceof HTMLInputElement) {
+      const nodeInput = this.inputTag;
 
       this.inputTag.addEventListener('input', () => {
-        //проверяем будет успешная валидация или нет
-        const isValid = text.func(nodeInput.value);
-        node.classList.toggle(`${stylesValid.errorMsgActive}`, !isValid);
+        // проверяем будет успешная валидация или нет
 
-        const nameMsg = text.nameMsg;
+        const isValid = text.func(nodeInput.value);
+        const label1 = this.nodeLabel;
+        node.classList.toggle(`${stylesValid.errorMsgActive}`, !isValid);
+        if (this.nodeLabel && label1) {
+          this.nodeLabel.classList.toggle(`${stylesValid.inputWarningIcon}`, !isValid);
+          label1.classList.add('input_accept-icon');
+        }
+        // node.classList.toggle(`${stylesValid.inputWarningIcon}`, isValid);
+        // .classList.remove(`${stylesValid.inputWarningIcon}`
         this.validationMessages[nameMsg] = isValid;
       });
     }
     return node;
   }
 
-  private createInputField(textMessageError: errorMsgType): HTMLElement {
+  private createInputField(textMessageError: ErrorMsgType): HTMLElement {
     const passwordContainer = div({ className: `${styles.inputContainer}` });
 
     textMessageError.forEach((text) => {
@@ -151,9 +161,15 @@ export default class RegistrationPage {
   private createTextLoginComponents(): HTMLElement {
     const buttonLoginPage = button({ className: ['login-btn', 'btn', styles.submitBtn].join(' '), txt: 'Login' });
     buttonLoginPage.addEventListener('click', () => {
-      const parentElement = document.querySelector(`.${styles.loginPageWrapper}`);
-      parentElement
-      //routing too login page
+      // Toastify({
+      //   text: "This is a toast",
+      //   className: "info",
+      //   style: {
+      //     background: "linear-gradient(to right, #00b09b, #96c93d)",
+      //   }
+      // }).showToast();
+      // const parentElement = document.querySelector(`.${styles.loginPageWrapper}`);
+      // routing too login page
     });
 
     const node = div(
