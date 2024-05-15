@@ -81,7 +81,7 @@ export class LoginPage {
       passwordInput.type =
         passwordInput.type === 'password' ? (passwordInput.type = 'text') : (passwordInput.type = 'password');
     });
-    
+
     const passwordLabel = label({ className: `${validationStyles.loginFormInputLabel}` }, showPassBtn);
     this.passwordLabel = passwordLabel;
 
@@ -95,7 +95,6 @@ export class LoginPage {
     );
     return passwordContainer;
   }
-
 
   public render(): Element {
     const formContainer = div({ className: `${styles.loginContainer}` });
