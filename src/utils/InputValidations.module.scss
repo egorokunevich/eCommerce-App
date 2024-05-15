@@ -44,8 +44,8 @@
 
 .input_accept-icon {
   &::before {
-    opacity: 100%;
     background-image: url('/assets/icons/accept.png');
+    opacity: 100% !important;
   }
 }
 
