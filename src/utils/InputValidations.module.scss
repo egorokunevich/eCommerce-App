@@ -37,7 +37,7 @@
 
 .input_warning-icon {
   &::before {
-    opacity: 100%;
+    opacity: 100% !important;
     background-image: url('/assets/icons/warning.png');
   }
 }
