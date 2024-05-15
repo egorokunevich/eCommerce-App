@@ -14,9 +14,30 @@
   margin-bottom: 3px;
 }
 
+.login-form__input-label {
+  position: relative;
+  transition: 0.2s;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    z-index: 5;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: 0.2s;
+    opacity: 0;
+  }
+}
+
 .input_warning-icon {
   &::before {
-    opacity: 100% !important;
+    opacity: 100%;
     background-image: url('/public/assets/icons/warning.png');
   }
 }

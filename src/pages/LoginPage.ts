@@ -1,4 +1,4 @@
-import { button, div, form, h2, input, label, p } from '@control.ts/min';
+import { button, div, form, h2, input, label, main, p } from '@control.ts/min';
 
 import type { PasswordValidationMessages } from '@/utils/InputValidations';
 import { validateEmailClientSide, validateForm, validatePasswordClientSide } from '@/utils/InputValidations';
@@ -8,29 +8,21 @@ import styles from './LoginPage.module.scss';
 
 export class LoginPage {
   private pageWrapper: HTMLElement;
-  private parent: HTMLElement;
-  private emailInputElement: HTMLInputElement;
-  private passwordInputElement: HTMLInputElement;
-  private emailValidationMessage: HTMLElement;
-  private passwordValidationMsgs: PasswordValidationMessages;
-  private emailLabel: HTMLElement;
-  private passwordLabel: HTMLElement;
-  private loginBtn: HTMLButtonElement;
+  private parent: HTMLElement = document.body;
+  private emailInputElement: HTMLInputElement = input({});
+  private passwordInputElement: HTMLInputElement = input({});
+  private emailValidationMessage: HTMLElement = div({});
+  private passwordValidationMsgs: PasswordValidationMessages = {
+    lengthMsg: div({}),
+    uppercaseMsg: div({}),
+    digitMsg: div({}),
+    whitespaceMsg: div({}),
+  };
+  private emailLabel: HTMLElement = div({});
+  private passwordLabel: HTMLElement = div({});
+  private loginBtn: HTMLButtonElement = button({});
   constructor() {
-    this.loginBtn = button({});
-    this.emailLabel = div({});
-    this.passwordLabel = div({});
-    this.emailValidationMessage = div({});
-    this.passwordValidationMsgs = {
-      lengthMsg: div({}),
-      uppercaseMsg: div({}),
-      digitMsg: div({}),
-      whitespaceMsg: div({}),
-    };
-    this.emailInputElement = input({});
-    this.passwordInputElement = input({});
-    this.parent = document.body;
-    this.pageWrapper = div({ className: `${styles.loginPageWrapper}` });
+    this.pageWrapper = main({ className: `${styles.loginPageWrapper}` });
   }
 
   private createEmailInputField(): HTMLElement {
@@ -49,8 +41,9 @@ export class LoginPage {
       txt: `> Wrong email format (user@example.com)`,
     });
 
-    const emailLabel = label({ className: `${styles.loginFormInputLabel}` });
+    const emailLabel = label({ className: `${validationStyles.loginFormInputLabel}` });
     this.emailLabel = emailLabel;
+
     emailContainer.append(emailLabel, emailInput, this.emailValidationMessage);
 
     return emailContainer;
@@ -88,7 +81,10 @@ export class LoginPage {
       passwordInput.type =
         passwordInput.type === 'password' ? (passwordInput.type = 'text') : (passwordInput.type = 'password');
     });
-    const passwordLabel = label({ className: `${styles.loginFormInputLabel}` }, showPassBtn);
+    
+    const passwordLabel = label({ className: `${validationStyles.loginFormInputLabel}` }, showPassBtn);
+    this.passwordLabel = passwordLabel;
+
     passwordContainer.append(
       passwordLabel,
       passwordInput,
@@ -100,7 +96,8 @@ export class LoginPage {
     return passwordContainer;
   }
 
-  public render(): void {
+
+  public render(): Element {
     const formContainer = div({ className: `${styles.loginContainer}` });
     const infoContainer = div({ className: `${styles.loginContainerInfo}` });
     const header = h2({ className: `${styles.infoHeader}`, txt: 'WELCOME' });
@@ -136,6 +133,8 @@ export class LoginPage {
     this.pageWrapper.append(formContainer);
     this.parent.append(this.pageWrapper);
     this.validate(this.emailInputElement, this.passwordInputElement, loginBtn);
+
+    return this.pageWrapper;
   }
 
   private validate(emailInput: HTMLInputElement, passwordInput: HTMLInputElement, loginBtn: HTMLButtonElement): void {

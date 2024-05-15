@@ -110,6 +110,7 @@ export function validatePasswordClientSide(
   checkUppercase(passwordInput, inputErrorMsgs, errorStatuses);
   checkDigits(passwordInput, inputErrorMsgs, errorStatuses);
   checkWhitespaces(passwordInput, inputErrorMsgs, errorStatuses);
+
   const isValid = Object.values(errorStatuses).every((status) => status === false);
 
   if (isValid) {

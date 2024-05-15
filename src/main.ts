@@ -1,14 +1,22 @@
-// import './components/css/normalise.css';
+import { main } from '@control.ts/min';
+import { BrowserRoute } from 'vanilla-routing';
 
-import { LoginPage } from '@pages/LoginPage';
-// import { pageRegistration } from '@pages/RegistrationPage';
+import { setAttributes } from '@/utils/BaseComponentProps';
+import styles from '@components/NavMain.module.scss';
+import { Layout } from '@pages/Layout';
 
-const loginPage = new LoginPage();
+import { routeConfig } from './routing/routingConfig';
+import './components/css/normalise.css';
 
-loginPage.render();
+const layout = new Layout();
+layout.renderLayout();
 
-// const main = document.querySelector('._login-container_mg680_15') as HTMLElement;
-// we must disaded we we will keep
-// const main = document.querySelector('._login-page-wrapper_mg680_1') as HTMLElement;
-// main.append(pageRegistration.createRegistration());
-// pageRegistration.createRegistration();
+const routerWrapper = setAttributes(main({ className: styles.main }), {
+  type: 'data-vanilla-route-ele',
+  text: 'router-wrap',
+});
+document.body.appendChild(routerWrapper);
+
+document.addEventListener('DOMContentLoaded', () => {
+  BrowserRoute(routeConfig);
+});
