@@ -5,8 +5,6 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "predeploy": "npm run build",
-    "deploy": "npm run build && npx gh-pages -d dist -e eCommerce-App",
     "build": "vite build",
     "preview": "vite preview",
     "prettier": "prettier ./src --check",
@@ -25,7 +23,6 @@
     "@commercetools/history-sdk": "^4.3.0",
     "@commercetools/importapi-sdk": "^5.4.0",
     "@types/toastify-js": "^1.12.3",
-    "@types/node-fetch": "^2.6.11",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0",
@@ -66,6 +63,7 @@
     "@commercetools/sdk-client-v2": "^2.5.0",
     "@control.ts/min": "^0.1.7",
     "toastify-js": "^1.12.0",
+    "@types/node-fetch": "^2.6.11",
     "vanilla-routing": "^0.0.4"
   }
 }
