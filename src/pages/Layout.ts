@@ -50,13 +50,6 @@ export class Layout {
       document.body.appendChild(layout);
     }
   }
-
-  public renderLoggedInNav(): void {
-    this.navMain.renderLoggedInNav();
-  }
-  public renderLoggedOutNav(): void {
-    this.navMain.renderLoggedOutNav();
-  }
 }
 
 // export const renderLayout = (): void => {
