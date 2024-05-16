@@ -47,7 +47,7 @@ export default class NavMain {
 
     const navBtnsContainer = div({ className: styles.navBtnsContainer });
     this.navBtnsContainer = navBtnsContainer;
-    this.renderLoggedOutNav();
+    this.renderNavButtons();
 
     menu.append(list, navBtnsContainer);
     this.menuElement = menu;
@@ -85,34 +85,17 @@ export default class NavMain {
     return btn;
   }
 
-  public renderLoggedInNav(): void {
+  public renderNavButtons(): void {
     this.navBtnsContainer.innerHTML = '';
 
+    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
+    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
     const profileBtn = this.createNavBtn('My Profile', styles.userIcon);
     const logoutBtn = this.createNavBtn('Log Out', styles.logoutIcon);
 
     profileBtn.addEventListener('click', () => {
       Router.go('/profile', { addToHistory: true });
     });
-
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('anonymousToken');
-      localStorage.removeItem('passwordToken');
-
-      this.renderLoggedOutNav();
-
-      this.service.updateClient(anonymousClient);
-      this.service.getAnonymousToken();
-    });
-
-    this.navBtnsContainer.append(profileBtn, logoutBtn);
-  }
-
-  public renderLoggedOutNav(): void {
-    this.navBtnsContainer.innerHTML = '';
-
-    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
-    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
 
     loginBtn.addEventListener('click', () => {
       Router.go('/login', { addToHistory: true });
@@ -121,7 +104,14 @@ export default class NavMain {
     signUpBtn.addEventListener('click', () => {
       Router.go('/registration', { addToHistory: true });
     });
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('anonymousToken');
+      localStorage.removeItem('passwordToken');
 
-    this.navBtnsContainer.append(loginBtn, signUpBtn);
+      this.service.updateClient(anonymousClient);
+      this.service.getAnonymousToken();
+    });
+
+    this.navBtnsContainer.append(loginBtn, signUpBtn, profileBtn, logoutBtn);
   }
 }
