@@ -24,7 +24,6 @@ class App {
       if (client) {
         localStorage.setItem('passwordToken', JSON.stringify(anonCacheClass.get()));
         this.service = client;
-        this.layout.renderLoggedInNav();
       }
     });
 
@@ -42,12 +41,9 @@ class App {
     // Render profile and logout buttons if logged in
     const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
     if (user) {
-      this.layout.renderLoggedInNav();
       this.layout.navMain.logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('anonymousToken');
         localStorage.removeItem('passwordToken');
-
-        this.layout.renderLoggedOutNav();
 
         this.service.updateClient(anonymousClient);
         this.service.getAnonymousToken();
