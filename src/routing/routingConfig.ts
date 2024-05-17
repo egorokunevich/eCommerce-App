@@ -1,14 +1,15 @@
-import { div, h2 } from '@control.ts/min';
+import { div } from '@control.ts/min';
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
+import { HomePage } from '@pages/HomePage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { pageRegistration } from '@pages/RegistrationPage';
 
 export class PageRouting {
   private homePage: Element;
   constructor(private readonly loginPage: Element) {
-    this.homePage = h2({ txt: 'Home' });
+    this.homePage = new HomePage().createPage();
   }
 
   private createRoute(pathname: string, name: string): Routes {
