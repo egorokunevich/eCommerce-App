@@ -11,19 +11,23 @@ export function showToastMessage(message: string, color: ToastColors): void {
   let shadow: string;
   switch (color) {
     case ToastColors.Red:
-      (gradient = `#ff3c16, #ff8400`), (shadow = `255, 60, 22`); // Color in RGB
+      gradient = `#ff3c16, #ff8400`;
+      shadow = `255, 60, 22`; // Color in RGB
       break;
 
     case ToastColors.Blue:
-      (gradient = `#73a5ff, #5477f5`), (shadow = `77, 96, 232`);
+      gradient = `#73a5ff, #5477f5`;
+      shadow = `77, 96, 232`;
       break;
 
     case ToastColors.Green:
-      (gradient = `#0be433, #5cb433`), (shadow = `92, 180, 44`);
+      gradient = `#0be433, #5cb433`;
+      shadow = `92, 180, 44`;
       break;
 
     default:
-      (gradient = `#73a5ff, #5477f5`), (shadow = `77, 96, 232`);
+      gradient = `#73a5ff, #5477f5`;
+      shadow = `77, 96, 232`;
       break;
   }
   Toastify({

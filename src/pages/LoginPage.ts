@@ -1,5 +1,4 @@
 import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
-import Toastify from 'toastify-js';
 import { Router } from 'vanilla-routing';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
