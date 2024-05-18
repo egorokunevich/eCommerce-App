@@ -2,6 +2,7 @@ import { button, div, form, h2, input, label, p, section } from '@control.ts/min
 import Toastify from 'toastify-js';
 import { Router } from 'vanilla-routing';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
 import { ClientService } from '@services/ClientService';
 import {
   type PasswordValidationMessages,
@@ -177,27 +178,6 @@ export class LoginPage {
     });
   }
 
-  private showSubmitError(msg: string): void {
-    Toastify({
-      text: msg,
-      duration: 2000,
-      destination: 'https://github.com/apvarun/toastify-js',
-      newWindow: true,
-      close: true,
-      gravity: 'top', // `top` or `bottom`
-      position: 'left', // `left`, `center` or `right`
-      stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        height: '50px',
-        padding: '10px',
-        borderRadius: '5px',
-        position: 'absolute',
-        background: 'linear-gradient(to right, #00b09b, #96c93d)',
-      },
-      onClick() {}, // Callback after click
-    }).showToast();
-  }
-
   public async getPasswordClient(): Promise<ClientService | null> {
     let result = null;
 
@@ -206,8 +186,7 @@ export class LoginPage {
     };
     const handleAuthError = (error: unknown): void => {
       if (isFetchError(error)) {
-        const msg = error.message;
-        this.showSubmitError(msg);
+        showToastMessage(error.message, ToastColors.Red);
       }
     };
 
