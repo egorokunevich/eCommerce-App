@@ -6,7 +6,7 @@ export enum ToastColors {
   Green,
 }
 
-export function showToastMessage(message: string, color: ToastColors): void {
+export function showToastMessage(message: string, color: ToastColors = ToastColors.Red): void {
   let gradient: string;
   let shadow: string;
   switch (color) {

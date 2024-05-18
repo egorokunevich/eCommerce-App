@@ -1,7 +1,7 @@
 import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
-import { ToastColors, showToastMessage } from '@components/Toast';
+import { showToastMessage } from '@components/Toast';
 import { ClientService } from '@services/ClientService';
 import {
   type PasswordValidationMessages,
@@ -185,7 +185,7 @@ export class LoginPage {
     };
     const handleAuthError = (error: unknown): void => {
       if (isFetchError(error)) {
-        showToastMessage(error.message, ToastColors.Red);
+        showToastMessage(error.message);
       }
     };
 
