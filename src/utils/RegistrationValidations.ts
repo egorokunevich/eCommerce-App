@@ -19,14 +19,16 @@ export const validationFunctions = {
     return !/\s/.test(password);
   },
   validateAtLeastOneCharacter: (input: string): boolean => {
-    return input.length > 0;
+    return input.length > 0 && /^[a-zA-Z]+/.test(input);
   },
   validateNoSpecialCharactersOrNumbers: (input: string): boolean => {
     const regex = /^[a-zA-Z\s]+$/;
     return regex.test(input);
   },
   howOldAreYou: (years: string): boolean => {
-    return +years >= 13;
+    const dateBirthday = new Date(years).getTime();
+    const dateNow = new Date().getTime();
+    return Math.floor((dateNow - dateBirthday) / 1000 / 60 / 60 / 24 / 365) >= 13;
   },
   validateUSPostalCode: (input: string): boolean => {
     // Регулярное выражение для проверки корректного почтового кода США
