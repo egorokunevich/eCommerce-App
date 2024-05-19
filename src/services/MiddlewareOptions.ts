@@ -2,6 +2,7 @@ import type { AuthMiddlewareOptions, HttpMiddlewareOptions } from '@commercetool
 
 import tokenCache from './TokenCache';
 
+// Import secret variables from .env
 const {
   VITE_CTP_PROJECT_KEY: projectKey,
   VITE_CTP_CLIENT_SECRET: clientSecret,
@@ -11,9 +12,10 @@ const {
   VITE_CTP_SCOPES: scopesString,
 } = import.meta.env;
 
+// Scopes in .env is a single string. We need to split it in order to get an array.
 const scopes = scopesString.split(' ');
 
-// Configure middleware options
+// Configure middleware options for HTTP requests
 export const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: apiUrl,
   maskSensitiveHeaderData: true,
@@ -27,7 +29,7 @@ export const httpMiddlewareOptions: HttpMiddlewareOptions = {
   fetch,
 };
 
-// Configure middleware options
+// Configure middleware options, common for most session flows
 export const middlewareOptions: AuthMiddlewareOptions = {
   host: authUrl,
   projectKey,

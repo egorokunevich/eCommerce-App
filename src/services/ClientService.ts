@@ -24,6 +24,7 @@ export class ClientService {
     this.handleToken();
   }
 
+  // Change current flow/client
   public async updateClient(client: Client, isLoggedIn: boolean): Promise<void> {
     this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
       projectKey,
@@ -31,21 +32,21 @@ export class ClientService {
     localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
   }
 
-  public async login(email: string, password: string): Promise<void> {
-    const isFetchError = (error: unknown): error is FetchError => {
-      return typeof error === 'object' && error !== null && 'statusCode' in error;
-    };
-    const handleAuthError = (error: unknown): void => {
-      if (isFetchError(error)) {
-        showToastMessage(error.message);
-      }
-    };
+  // On failed login / signup show a notification with error message
+  private handleAuthError(error: unknown): void {
+    if (this.isFetchError(error)) {
+      showToastMessage(error.message); // Show notification
+    }
+  }
 
+  public async login(email: string, password: string): Promise<void> {
     this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
       projectKey,
     });
-
+    const pendingStart = new CustomEvent('pendingStart');
+    const pendingEnd = new CustomEvent('pendingEnd');
     try {
+      document.dispatchEvent(pendingStart);
       const response = await this.apiRoot
         .login()
         .post({
@@ -57,60 +58,65 @@ export class ClientService {
         .execute();
 
       if (response.statusCode === 200) {
-        // console.log('waiting...');
-
         await this.updateClient(getPasswordClient(email, password), true);
 
         Router.go('/', { addToHistory: true });
-        // console.log('logged in.');
-        // this.apiRoot.get().execute();
+
         this.apiRoot.me().get().execute();
-        showToastMessage('Logged in successfully', ToastColors.Green);
+
+        document.dispatchEvent(pendingEnd);
+
+        showToastMessage('Logged in successfully', ToastColors.Green); // Show notification
       }
     } catch (e) {
-      handleAuthError(e);
+      this.handleAuthError(e);
+      document.dispatchEvent(pendingEnd);
     }
   }
 
   private handleToken(): void {
     const existingToken = tokenCache.get();
+    // If there is no token, create anonymous client
     if (!existingToken) {
       this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
         projectKey,
       });
     } else {
-      // console.log('token exist');
+      // If there is a token
       const expirationDate = new Date(existingToken.expirationTime);
       const diff = expirationDate.getTime() - new Date().getTime();
+      // If token is not about to expire, use existingTokenFlow
       if (diff > 60000) {
         this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
           projectKey,
         });
+        // If token is about to expire in one minute, use refreshTokenFlow
       } else {
         this.apiRoot = createApiBuilderFromCtpClient(getRefreshTokenClient()).withProjectKey({
           projectKey,
         });
       }
     }
-    this.apiRoot.get().execute(); // Initial request to get token
+    this.apiRoot.get().execute(); // Initial request to get the access token
   }
 
   public async logout(): Promise<void> {
-    // const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
-    // if (isLoggedIn === true) {
-    // }
     tokenCache.delete();
-    tokenCache.set({
-      token: '',
-      expirationTime: 0,
-      refreshToken: undefined,
-    });
+
     this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
       projectKey,
     });
-    this.apiRoot.get().execute();
+
+    this.apiRoot.get().execute(); // Initial request to get the access token
+
     localStorage.setItem('isLoggedIn', JSON.stringify(false));
-    showToastMessage('Logged out', ToastColors.Blue);
+
+    showToastMessage('Logged out', ToastColors.Blue); // Show notification
+  }
+
+  // Is used to handle unknown error as an object with statusCode property.
+  private isFetchError(error: unknown): error is FetchError {
+    return typeof error === 'object' && error !== null && 'statusCode' in error;
   }
 
   //   public async getAllCustomers(

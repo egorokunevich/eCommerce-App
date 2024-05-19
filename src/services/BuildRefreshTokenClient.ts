@@ -12,6 +12,8 @@ export function getRefreshTokenClient(): Client {
     return getAnonymousClient();
   }
 
+  tokenCache.delete();
+
   return new ClientBuilder()
     .withRefreshTokenFlow({ ...middlewareOptions, refreshToken })
     .withHttpMiddleware(httpMiddlewareOptions)
