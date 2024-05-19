@@ -41,9 +41,12 @@ export class ClientService {
       }
     };
 
+    this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
+      projectKey,
+    });
+
     try {
       const response = await this.apiRoot
-        .me()
         .login()
         .post({
           body: {
@@ -55,12 +58,13 @@ export class ClientService {
 
       if (response.statusCode === 200) {
         // console.log('waiting...');
+
         await this.updateClient(getPasswordClient(email, password), true);
 
         Router.go('/', { addToHistory: true });
         // console.log('logged in.');
-        this.apiRoot.get().execute();
-        // this.apiRoot.me().get().execute();
+        // this.apiRoot.get().execute();
+        this.apiRoot.me().get().execute();
         showToastMessage('Logged in successfully', ToastColors.Green);
       }
     } catch (e) {
