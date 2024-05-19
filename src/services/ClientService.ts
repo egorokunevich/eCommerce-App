@@ -96,7 +96,7 @@ export class ClientService {
     // localStorage.setItem('isLoggedIn', JSON.stringify(false));
   }
 
-  public async logout(): void {
+  public async logout(): Promise<void> {
     // const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
     // if (isLoggedIn === true) {
     // }
