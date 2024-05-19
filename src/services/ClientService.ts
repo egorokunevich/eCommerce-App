@@ -74,13 +74,10 @@ export class ClientService {
 
   private handleToken(): void {
     const existingToken = tokenCache.get();
-    // console.log(existingToken);
-    if (!existingToken.token) {
-      // console.log('no token saved');
+    if (!existingToken) {
       this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
         projectKey,
       });
-      this.apiRoot.get().execute(); // Initial request to get token
     } else {
       // console.log('token exist');
       const expirationDate = new Date(existingToken.expirationTime);
@@ -94,10 +91,8 @@ export class ClientService {
           projectKey,
         });
       }
-      this.apiRoot.get().execute();
     }
-
-    // localStorage.setItem('isLoggedIn', JSON.stringify(false));
+    this.apiRoot.get().execute(); // Initial request to get token
   }
 
   public async logout(): Promise<void> {
