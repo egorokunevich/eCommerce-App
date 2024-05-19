@@ -65,6 +65,7 @@
   "include": [
     "src",
     "main.ts",
-    "declaration.d.ts"
+    "declaration.d.ts",
+    "vite-env.d.ts"
   ]
 }
