@@ -3,7 +3,6 @@ import { Router } from 'vanilla-routing';
 
 import { showToastMessage } from '@components/Toast';
 import type { ClientService } from '@services/ClientService';
-
 import {
   type PasswordValidationMessages,
   validateEmailClientSide,
