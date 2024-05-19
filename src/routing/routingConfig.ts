@@ -51,8 +51,8 @@ export class PageRouting {
     const route = {
       pathname: '/profile',
       element: (): Element => {
-        const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
-        if (!user) {
+        const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+        if (!isLoggedIn) {
           Router.go('/');
           return this.homePage;
         }
@@ -67,8 +67,8 @@ export class PageRouting {
     const route = {
       pathname: '/registration',
       element: (): Element => {
-        const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
-        if (user) {
+        const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+        if (isLoggedIn) {
           Router.go('/');
           return this.homePage;
         }
@@ -97,8 +97,8 @@ export class PageRouting {
       {
         pathname: '/login',
         element: (): Element => {
-          const user = JSON.parse(localStorage.getItem('passwordToken') ?? 'null');
-          if (user) {
+          const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+          if (isLoggedIn) {
             Router.go('/');
             return this.homePage;
           }

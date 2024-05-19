@@ -1,7 +1,6 @@
 import { a, div, li, nav, ul } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
-import { anonymousClient } from '@services/BuildAnonymousFlowClient';
 import type { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 
@@ -105,11 +104,10 @@ export default class NavMain {
       Router.go('/registration', { addToHistory: true });
     });
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('anonymousToken');
-      localStorage.removeItem('passwordToken');
-
-      this.service.updateClient(anonymousClient);
-      this.service.getAnonymousToken();
+      const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+      if (isLoggedIn) {
+        this.service.logout();
+      }
     });
 
     this.navBtnsContainer.append(loginBtn, signUpBtn, profileBtn, logoutBtn);

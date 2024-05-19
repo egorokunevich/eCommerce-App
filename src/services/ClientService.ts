@@ -1,154 +1,132 @@
-import type {
-  ByProjectKeyCustomersRequestBuilder,
-  ByProjectKeyMeRequestBuilder,
-  ByProjectKeyRequestBuilder,
-  ClientResponse,
-  CustomerPagedQueryResponse,
-  CustomerSignInResult,
-  MyCustomerSignin,
-} from '@commercetools/platform-sdk';
+import type { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import type { Client, TokenStore } from '@commercetools/sdk-client-v2';
+import type { Client } from '@commercetools/sdk-client-v2';
+import { Router } from 'vanilla-routing';
 
-import { createPasswordClient } from './BuildPasswordFlowClient';
-import * as secretVariables from './LoginAPIVariables';
+import { ToastColors, showToastMessage } from '@components/Toast';
 
-type TokenResponse = {
-  access_token: string;
-  expires_in: number;
-  refresh_token: string;
-  scope: string;
-  token_type: string;
-  error_description?: string;
-};
+import { getAnonymousClient } from './BuildAnonymousFlowClient';
+import { getExistingTokenClient } from './BuildExistingTokenClient';
+import { getPasswordClient } from './BuildPasswordFlowClient';
+import { getRefreshTokenClient } from './BuildRefreshTokenClient';
+import tokenCache from './TokenCache';
 
-type TokenData = {
-  access_token: string;
-  expires_in: number;
-  refresh_token: string;
-  token_type: string;
-  when_created: Date;
-};
+const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
 
-type LocalTokens = {
-  anonymousToken: TokenData;
-  credentialsToken: TokenData;
-  passwordToken: TokenData;
-};
+interface FetchError extends Error {
+  statusCode?: number;
+}
 
 export class ClientService {
-  private apiRoot: ByProjectKeyRequestBuilder;
-  private apiCustomers: ByProjectKeyCustomersRequestBuilder;
-  private apiMe: ByProjectKeyMeRequestBuilder;
-  private anonymousToken: TokenStore | null;
-  public client: Client;
+  private apiRoot!: ByProjectKeyRequestBuilder;
 
-  constructor(client: Client) {
-    this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
-      projectKey: secretVariables.CTP_PROJECT_KEY,
-    });
-    this.anonymousToken = null;
-    this.apiCustomers = this.apiRoot.customers();
-    this.apiMe = this.apiRoot.me();
-    this.client = client;
+  constructor() {
+    this.handleToken();
   }
 
-  public updateClient(client: Client): void {
+  public async updateClient(client: Client, isLoggedIn: boolean): Promise<void> {
     this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
-      projectKey: secretVariables.CTP_PROJECT_KEY,
+      projectKey,
     });
-    this.anonymousToken = null;
-    this.apiCustomers = this.apiRoot.customers();
-    this.apiMe = this.apiRoot.me();
-    this.client = client;
+    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
   }
 
-  private async generateAnonymousToken(): Promise<TokenData | null> {
-    try {
-      const response = await fetch(
-        `https://auth.europe-west1.gcp.commercetools.com/oauth/${secretVariables.CTP_PROJECT_KEY}/anonymous/token`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Basic ${Buffer.from(`${secretVariables.CTP_CLIENT_ID}:${secretVariables.CTP_CLIENT_SECRET}`).toString('base64')}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            grant_type: 'client_credentials',
-            scope: `create_anonymous_token:${secretVariables.CTP_PROJECT_KEY}`,
-          }),
-        },
-      );
-
-      const data: TokenResponse = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error_description || 'Failed to obtain token');
+  public async login(email: string, password: string): Promise<void> {
+    const isFetchError = (error: unknown): error is FetchError => {
+      return typeof error === 'object' && error !== null && 'statusCode' in error;
+    };
+    const handleAuthError = (error: unknown): void => {
+      if (isFetchError(error)) {
+        showToastMessage(error.message);
       }
+    };
 
-      const tokenData: TokenData = {
-        access_token: data.access_token,
-        expires_in: data.expires_in,
-        refresh_token: data.refresh_token,
-        token_type: data.token_type,
-        when_created: new Date(Date.now()),
-      };
-      return tokenData;
-    } catch (error) {
-      console.error('Error:', error);
-      return null;
+    try {
+      const response = await this.apiRoot
+        .me()
+        .login()
+        .post({
+          body: {
+            email,
+            password,
+          },
+        })
+        .execute();
+
+      if (response.statusCode === 200) {
+        // console.log('waiting...');
+        await this.updateClient(getPasswordClient(email, password), true);
+
+        Router.go('/', { addToHistory: true });
+        // console.log('logged in.');
+        this.apiRoot.get().execute();
+        // this.apiRoot.me().get().execute();
+        showToastMessage('Logged in successfully', ToastColors.Green);
+      }
+    } catch (e) {
+      handleAuthError(e);
     }
   }
 
-  public async getAnonymousToken(): Promise<TokenData | null> {
-    return this.generateAnonymousToken().then((token: TokenData | null) => {
-      if (token) {
-        this.anonymousToken = {
-          token: token.access_token,
-          expirationTime: token.expires_in,
-          refreshToken: token.refresh_token,
-        };
-        localStorage.setItem('anonymousToken', JSON.stringify(this.anonymousToken));
-        return token;
+  private handleToken(): void {
+    const existingToken = tokenCache.get();
+    // console.log(existingToken);
+    if (!existingToken.token) {
+      // console.log('no token saved');
+      this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
+        projectKey,
+      });
+      this.apiRoot.get().execute(); // Initial request to get token
+    } else {
+      // console.log('token exist');
+      const expirationDate = new Date(existingToken.expirationTime);
+      const diff = expirationDate.getTime() - new Date().getTime();
+      if (diff > 60000) {
+        this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
+          projectKey,
+        });
+      } else {
+        this.apiRoot = createApiBuilderFromCtpClient(getRefreshTokenClient()).withProjectKey({
+          projectKey,
+        });
       }
-      return null;
+      this.apiRoot.get().execute();
+    }
+
+    // localStorage.setItem('isLoggedIn', JSON.stringify(false));
+  }
+
+  public async logout(): void {
+    // const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+    // if (isLoggedIn === true) {
+    // }
+    tokenCache.delete();
+    tokenCache.set({
+      token: '',
+      expirationTime: 0,
+      refreshToken: undefined,
     });
+    this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
+      projectKey,
+    });
+    this.apiRoot.get().execute();
+    localStorage.setItem('isLoggedIn', JSON.stringify(false));
+    showToastMessage('Logged out', ToastColors.Blue);
   }
 
-  public getPasswordClient(email: string, password: string): Client {
-    const client = createPasswordClient(email, password);
-    return client;
-  }
-
-  public checkForTokens(): LocalTokens {
-    return {
-      anonymousToken: JSON.parse(localStorage.getItem('anonymousToken') ?? 'null'),
-      credentialsToken: JSON.parse(localStorage.getItem('credentialsToken') ?? 'null'),
-      passwordToken: JSON.parse(localStorage.getItem('passwordToken') ?? 'null'),
-    };
-  }
-
-  public async logInCustomer(customer: MyCustomerSignin): Promise<ClientResponse<CustomerSignInResult>> {
-    const root = this.apiMe.login();
-    return root
-      .post({
-        body: customer,
-      })
-      .execute();
-  }
-
-  public async getAllCustomers(
-    limit?: number,
-    offset?: number,
-    sort?: string | string[],
-  ): Promise<ClientResponse<CustomerPagedQueryResponse>> {
-    return this.apiCustomers
-      .get({
-        queryArgs: {
-          limit,
-          offset,
-          sort, // e.g 'firstName asc', e.g 'email desc'
-        },
-      })
-      .execute();
-  }
+  //   public async getAllCustomers(
+  //     limit?: number,
+  //     offset?: number,
+  //     sort?: string | string[],
+  //   ): Promise<ClientResponse<CustomerPagedQueryResponse>> {
+  //     return this.apiRoot.customers()
+  //       .get({
+  //         queryArgs: {
+  //           limit,
+  //           offset,
+  //           sort, // e.g 'firstName asc', e.g 'email desc'
+  //         },
+  //       })
+  //       .execute();
+  //   }
 }

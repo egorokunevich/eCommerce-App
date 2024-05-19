@@ -1,8 +1,7 @@
 import { button, div, form, h2, input, label, p, section } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
-import { showToastMessage } from '@components/Toast';
-import { ClientService } from '@services/ClientService';
+import type { ClientService } from '@services/ClientService';
 import {
   type PasswordValidationMessages,
   validateEmailClientSide,
@@ -12,10 +11,6 @@ import {
 import validationStyles from '@utils/InputValidations.module.scss';
 
 import styles from './LoginPage.module.scss';
-
-interface FetchError extends Error {
-  statusCode?: number;
-}
 
 export class LoginPage {
   public pageWrapper: HTMLElement;
@@ -44,7 +39,7 @@ export class LoginPage {
       placeholder: 'Email',
       className: `${styles.inputField}`,
       required: true,
-      // value: 'test@test.com',
+      value: 'test@test.com',
     });
 
     this.emailInputElement = emailInput;
@@ -77,7 +72,7 @@ export class LoginPage {
       required: true,
       autocomplete: 'off',
       minLength: 8,
-      // value: 'aA123456',
+      value: 'aA123456',
     });
     this.passwordInputElement = passwordInput;
     const passwordLengthValidationMessage = this.createValidationMessage();
@@ -174,40 +169,41 @@ export class LoginPage {
     });
     this.loginBtn.addEventListener('click', async (e): Promise<void> => {
       e.preventDefault();
+      this.service.login(this.emailInputElement.value, this.passwordInputElement.value);
     });
   }
 
-  public async getPasswordClient(): Promise<ClientService | null> {
-    let result = null;
+  // public async login(): Promise<void> {
+  //   const isFetchError = (error: unknown): error is FetchError => {
+  //     return typeof error === 'object' && error !== null && 'statusCode' in error;
+  //   };
+  //   const handleAuthError = (error: unknown): void => {
+  //     if (isFetchError(error)) {
+  //       showToastMessage(error.message);
+  //     }
+  //   };
 
-    const isFetchError = (error: unknown): error is FetchError => {
-      return typeof error === 'object' && error !== null && 'statusCode' in error;
-    };
-    const handleAuthError = (error: unknown): void => {
-      if (isFetchError(error)) {
-        showToastMessage(error.message);
-      }
-    };
+  //   try {
+  //     const response = await this.service.logInCustomer({
+  //       email: this.emailInputElement.value,
+  //       password: this.passwordInputElement.value,
+  //     });
 
-    try {
-      const response = await this.service.logInCustomer({
-        email: this.emailInputElement.value,
-        password: this.passwordInputElement.value,
-      });
+  //     if (response.statusCode === 200) {
+  //       console.log('waiting...');
+  //       await this.service.updateClient(
+  //         getPasswordClient(this.emailInputElement.value, this.passwordInputElement.value),
+  //         true,
+  //       );
 
-      if (response.statusCode === 200) {
-        const client = this.service.getPasswordClient(this.emailInputElement.value, this.passwordInputElement.value);
-
-        Router.go('/', { addToHistory: true });
-
-        result = new ClientService(client);
-        // return new ClientService(client);
-      }
-    } catch (e) {
-      handleAuthError(e);
-    }
-    return result;
-  }
+  //       Router.go('/', { addToHistory: true });
+  //       console.log('logged in.');
+  //       showToastMessage('Logged in successfully', ToastColors.Green);
+  //     }
+  //   } catch (e) {
+  //     handleAuthError(e);
+  //   }
+  // }
 
   public destroy(): void {
     this.pageWrapper.remove();
