@@ -154,11 +154,12 @@ export function validateEmailClientSide(
   return false;
 }
 
-export function validateForm(statuses: boolean[], button: HTMLButtonElement): void {
+export function validateForm(statuses: boolean[], button: HTMLButtonElement): boolean {
   const isValid = statuses.every((status) => status === true);
   if (isValid) {
     button.disabled = false;
   } else {
-    button.disabled = true;
+    button.disabled = false; // Set this to 'true' to disable login Btn on invalid inputs
   }
+  return isValid;
 }

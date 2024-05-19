@@ -1,41 +1,21 @@
-import type { Client, HttpMiddlewareOptions, RefreshAuthMiddlewareOptions } from '@commercetools/sdk-client-v2';
+import type { Client } from '@commercetools/sdk-client-v2';
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
 
-import * as secretVariables from './LoginAPIVariables';
+import { getAnonymousClient } from './BuildAnonymousFlowClient';
+import { httpMiddlewareOptions, middlewareOptions } from './MiddlewareOptions';
+import tokenCache from './TokenCache';
 
-function getOptions(refreshToken: string): RefreshAuthMiddlewareOptions {
-  return {
-    host: secretVariables.CTP_AUTH_URL,
-    projectKey: secretVariables.CTP_PROJECT_KEY,
-    credentials: {
-      clientId: secretVariables.CTP_CLIENT_ID,
-      clientSecret: secretVariables.CTP_CLIENT_SECRET,
-    },
-    refreshToken,
-    // tokenCache: TokenCache,
-    fetch,
-  };
-}
+export function getRefreshTokenClient(): Client {
+  const { refreshToken } = tokenCache.get();
 
-export function getRefreshTokenClient(refreshToken: string): Client {
-  const options = getOptions(refreshToken);
+  if (!refreshToken) {
+    return getAnonymousClient();
+  }
 
-  // Configure middleware options
-  const httpMiddlewareOptions: HttpMiddlewareOptions = {
-    host: secretVariables.CTP_API_URL,
-    maskSensitiveHeaderData: true,
-    enableRetry: true,
-    retryConfig: {
-      maxRetries: 3,
-      retryDelay: 200,
-      backoff: false,
-      retryCodes: [503],
-    },
-    fetch,
-  };
+  tokenCache.delete();
 
   return new ClientBuilder()
-    .withRefreshTokenFlow(options)
+    .withRefreshTokenFlow({ ...middlewareOptions, refreshToken })
     .withHttpMiddleware(httpMiddlewareOptions)
     .withLoggerMiddleware()
     .build();
