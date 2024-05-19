@@ -1,19 +1,20 @@
 import type { AuthMiddlewareOptions, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
 
+import { apiUrl, authUrl, clientId, clientSecret, projectKey, scopes } from './apiVariables';
 import tokenCache from './TokenCache';
 
 // Import secret variables from .env
-const {
-  VITE_CTP_PROJECT_KEY: projectKey,
-  VITE_CTP_CLIENT_SECRET: clientSecret,
-  VITE_CTP_CLIENT_ID: clientId,
-  VITE_CTP_AUTH_URL: authUrl,
-  VITE_CTP_API_URL: apiUrl,
-  VITE_CTP_SCOPES: scopesString,
-} = import.meta.env;
+// const {
+//   VITE_CTP_PROJECT_KEY: projectKey,
+//   VITE_CTP_CLIENT_SECRET: clientSecret,
+//   VITE_CTP_CLIENT_ID: clientId,
+//   VITE_CTP_AUTH_URL: authUrl,
+//   VITE_CTP_API_URL: apiUrl,
+//   VITE_CTP_SCOPES: scopesString,
+// } = import.meta.env;
 
 // Scopes in .env is a single string. We need to split it in order to get an array.
-const scopes = scopesString.split(' ');
+// const scopes = scopesString.split(' ');
 
 // Configure middleware options for HTTP requests
 export const httpMiddlewareOptions: HttpMiddlewareOptions = {
