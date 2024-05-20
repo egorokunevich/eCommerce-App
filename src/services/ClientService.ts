@@ -124,6 +124,7 @@ export class ClientService {
   public async logout(): Promise<void> {
     tokenCache.delete();
 
+
     this.apiRoot = createApiBuilderFromCtpClient(getAnonymousClient()).withProjectKey({
       projectKey,
     });
