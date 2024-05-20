@@ -146,10 +146,10 @@ export class LoginPage {
     );
     // Activates spinner
     document.addEventListener('pendingStart', () => {
-      this.spinner.classList.add(styles.active);
+      this.spinner.classList.add(styles.activeSpinner);
     });
     document.addEventListener('pendingEnd', () => {
-      this.spinner.classList.remove(styles.active);
+      this.spinner.classList.remove(styles.activeSpinner);
     });
     infoContainer.append(header, info);
     submitContainer.append(this.loginBtn);
