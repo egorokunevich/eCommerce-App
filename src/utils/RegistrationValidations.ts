@@ -19,7 +19,8 @@ export const validationFunctions = {
     return !/\s/.test(password);
   },
   validateAtLeastOneCharacter: (input: string): boolean => {
-    return input.length > 0 && /^[a-zA-Z]+/.test(input);
+    return input.trim().length > 0;
+    // return input.length > 0 && /^[a-zA-Z]+/.test(input);
   },
   validateNoSpecialCharactersOrNumbers: (input: string): boolean => {
     const regex = /^[a-zA-Z\s]+$/;

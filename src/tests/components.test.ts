@@ -12,7 +12,7 @@ const navMain = new NavMain(service);
 const homePage = new HomePage();
 const layout = new Layout(service);
 const loginPage = new LoginPage(service);
-const registrationPage = new RegistrationPage();
+const registrationPage = new RegistrationPage(service);
 
 test('getHeaderElement method in Header class should return HTMLElement', () => {
   expect(header.getHeaderElement()).toBeInstanceOf(HTMLElement);

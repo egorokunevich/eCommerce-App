@@ -52,9 +52,9 @@ test(`Should correctly check for whitespace absence`, () => {
 });
 
 test(`Should correctly check for at least one character presence`, () => {
-  expect(validationFunctions.validateAtLeastOneCharacter('12345678')).toBe(false);
+  expect(validationFunctions.validateAtLeastOneCharacter('12345678')).toBe(true);
   expect(validationFunctions.validateAtLeastOneCharacter('x')).toBe(true);
-  expect(validationFunctions.validateAtLeastOneCharacter('!')).toBe(false);
+  expect(validationFunctions.validateAtLeastOneCharacter('!')).toBe(true);
   expect(validationFunctions.validateAtLeastOneCharacter('')).toBe(false);
   expect(validationFunctions.validateAtLeastOneCharacter(' ')).toBe(false);
 });
