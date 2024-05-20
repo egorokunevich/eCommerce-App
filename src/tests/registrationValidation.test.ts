@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { validationFunctions } from '@utils/RegistrationValidations';
+import { isRegistrationActive } from '@utils/RegistrationValidationsData';
 
 test('Email validation should correctly check email input', () => {
   expect(validationFunctions.validateEmail('test@test.com')).toBe(true);
@@ -80,4 +81,25 @@ test(`Should return true if user is older than 13 years old`, () => {
   expect(validationFunctions.howOldAreYou('number 1')).toBe(false);
   expect(validationFunctions.howOldAreYou('')).toBe(false);
   expect(validationFunctions.howOldAreYou(' ')).toBe(false);
+});
+
+test(`isRegistrationActive should correctly check if every status is valid`, () => {
+  expect(isRegistrationActive({ '1': true, '2': true })).toBe(true);
+  expect(isRegistrationActive({ '1': true, '2': false })).toBe(false);
+  expect(isRegistrationActive({ '1': false, '2': true })).toBe(false);
+  expect(isRegistrationActive({ '1': false, '2': false })).toBe(false);
+});
+
+test(`isValidCountry should correctly check if such country is allowed`, () => {
+  expect(validationFunctions.isValidCountry('Belarus')).toBe(false);
+  expect(validationFunctions.isValidCountry('USA')).toBe(true);
+  expect(validationFunctions.isValidCountry('UK')).toBe(true);
+  expect(validationFunctions.isValidCountry('Ukraine')).toBe(false);
+});
+
+test(`validateUSPostalCode should correctly check postal code`, () => {
+  expect(validationFunctions.validateUSPostalCode('12345-1234')).toBe(true);
+  expect(validationFunctions.validateUSPostalCode('12345')).toBe(true);
+  expect(validationFunctions.validateUSPostalCode('AB 00-12')).toBe(false);
+  expect(validationFunctions.validateUSPostalCode('1234')).toBe(false);
 });

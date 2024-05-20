@@ -61,39 +61,45 @@ export function checkDigits(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   const digitRegExp = /\d/;
 
   // Check for at least 1 digit
   if (passwordInput.value[0] && digitRegExp.test(passwordInput.value)) {
     inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.digitError = false;
-  } else if (passwordInput.value[0]) {
+    return true;
+  }
+  if (passwordInput.value[0]) {
     inputErrorMsgs.digitMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.digitError = true;
-  } else {
-    inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.digitError = false;
+    return false;
   }
+  inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.digitError = false;
+  return false;
 }
 export function checkUppercase(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   const uppercaseRegExp = /(?=.*[a-z])(?=.*[A-Z])/;
 
   // Check for english uppercase and lowercase
   if (passwordInput.value[0] && uppercaseRegExp.test(passwordInput.value)) {
     inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.uppercaseError = false;
-  } else if (passwordInput.value[0]) {
+    return true;
+  }
+  if (passwordInput.value[0]) {
     inputErrorMsgs.uppercaseMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.uppercaseError = true;
-  } else {
-    inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.uppercaseError = false;
+    return false;
   }
+  inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.uppercaseError = false;
+  return false;
 }
 
 export function validatePasswordClientSide(
@@ -131,6 +137,7 @@ export function validatePasswordClientSide(
   if (passwordInput.value.length < 1) {
     inputLabel.classList.remove(`${styles.inputWarningIcon}`);
     inputLabel.classList.remove(`${styles.inputAcceptIcon}`);
+    return false;
   }
 
   return isValid;
