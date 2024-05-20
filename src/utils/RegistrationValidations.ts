@@ -34,11 +34,11 @@ export const validationFunctions = {
   validateUSPostalCode: (input: string): boolean => {
     // const regexPL = /^\d{2}-\d{3}$/;
     // const regexBY = /^\d{6}$/;
-    return /^\d{6}$/.test(input);
+    return /^\d{5}$/.test(input);
   },
   isValidCountry: (country: string): boolean => {
     // write our country
-    const validCountries = ['DE', 'UK'];
+    const validCountries = ['DE', 'UA'];
     return validCountries.includes(country);
   },
 };

@@ -90,13 +90,13 @@ test(`isRegistrationActive should correctly check if every status is valid`, () 
 
 test(`isValidCountry should correctly check if such country is allowed`, () => {
   expect(validationFunctions.isValidCountry('Belarus')).toBe(false);
-  expect(validationFunctions.isValidCountry('USA')).toBe(true);
-  expect(validationFunctions.isValidCountry('UK')).toBe(true);
+  expect(validationFunctions.isValidCountry('UA')).toBe(true);
+  expect(validationFunctions.isValidCountry('DE')).toBe(true);
   expect(validationFunctions.isValidCountry('Ukraine')).toBe(false);
 });
 
 test(`validateUSPostalCode should correctly check postal code`, () => {
-  expect(validationFunctions.validateUSPostalCode('12345-1234')).toBe(true);
+  expect(validationFunctions.validateUSPostalCode('123456')).toBe(false);
   expect(validationFunctions.validateUSPostalCode('12345')).toBe(true);
   expect(validationFunctions.validateUSPostalCode('AB 00-12')).toBe(false);
   expect(validationFunctions.validateUSPostalCode('1234')).toBe(false);

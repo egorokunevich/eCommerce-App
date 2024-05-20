@@ -155,7 +155,7 @@ export default class RegistrationPage {
     const node: HTMLElement = this.createInputField(textMessageError);
     this.nodeLabel = label({ className: `${styles.loginFormInputLabel}` }, this.inputTag, node);
     if (text === 'country') {
-      this.nodeLabel.append(p({ txt: 'Select UK:Ukraine or DE:Germany' }));
+      this.nodeLabel.append(p({ txt: 'Select UA:Ukraine or DE:Germany' }));
     }
 
     const nodeInput = this.inputTag;
