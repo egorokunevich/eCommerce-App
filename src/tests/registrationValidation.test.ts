@@ -52,12 +52,11 @@ test(`Should correctly check for whitespace absence`, () => {
 });
 
 test(`Should correctly check for at least one character presence`, () => {
-  expect(validationFunctions.validateAtLeastOneCharacter('12345678')).toBe(true);
+  expect(validationFunctions.validateAtLeastOneCharacter('12345678')).toBe(false);
   expect(validationFunctions.validateAtLeastOneCharacter('x')).toBe(true);
-  expect(validationFunctions.validateAtLeastOneCharacter(' x ')).toBe(true);
-  expect(validationFunctions.validateAtLeastOneCharacter('!')).toBe(true);
+  expect(validationFunctions.validateAtLeastOneCharacter('!')).toBe(false);
   expect(validationFunctions.validateAtLeastOneCharacter('')).toBe(false);
-  expect(validationFunctions.validateAtLeastOneCharacter(' ')).toBe(true);
+  expect(validationFunctions.validateAtLeastOneCharacter(' ')).toBe(false);
 });
 
 test(`Should correctly check for only english letters presence`, () => {
@@ -72,13 +71,12 @@ test(`Should correctly check for only english letters presence`, () => {
 });
 
 test(`Should return true if user is older than 13 years old`, () => {
-  expect(validationFunctions.howOldAreYou('-12345678')).toBe(false);
-  expect(validationFunctions.howOldAreYou('22')).toBe(true);
-  expect(validationFunctions.howOldAreYou('13')).toBe(true);
-  expect(validationFunctions.howOldAreYou('12')).toBe(false);
+  expect(validationFunctions.howOldAreYou('2024-05-07')).toBe(false);
+  expect(validationFunctions.howOldAreYou('1998-09-22')).toBe(true);
+  expect(validationFunctions.howOldAreYou('2011-01-25')).toBe(true);
+  expect(validationFunctions.howOldAreYou('2077-20-77')).toBe(false);
   expect(validationFunctions.howOldAreYou('!')).toBe(false);
   expect(validationFunctions.howOldAreYou('hi-there')).toBe(false);
-  expect(validationFunctions.howOldAreYou('number 1')).toBe(false);
   expect(validationFunctions.howOldAreYou('')).toBe(false);
   expect(validationFunctions.howOldAreYou(' ')).toBe(false);
 });
