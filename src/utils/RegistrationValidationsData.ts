@@ -11,32 +11,22 @@ export function isRegistrationActive(validationMessages: { [key: string]: boolea
 }
 
 export interface IRegistrationObject {
-  body: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    dateOfBirth: string;
-    addresses: [
-      {
-        streetName: string;
-        streetNumber: string;
-        postalCode: string;
-        city: string;
-        country: string;
-      },
-      {
-        streetName: string;
-        streetNumber: string;
-        postalCode: string;
-        city: string;
-        country: string;
-      },
-    ];
-    // спросить сашу за опционал
-    defaultBillingAddress?: number;
-    defaultShippingAddress?: number;
-  };
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  dateOfBirth: string;
+  addresses: BaseAddress[];
+  defaultBillingAddress?: number | undefined;
+  defaultShippingAddress?: number | undefined;
+}
+
+interface BaseAddress {
+  streetName: string;
+  streetNumber: string;
+  postalCode: string;
+  city: string;
+  country: string;
 }
 
 // add new  label + inputs like  [key: string]: { nameMsg: string; text: string; func: Function }[]; to create

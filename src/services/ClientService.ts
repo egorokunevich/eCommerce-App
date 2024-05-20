@@ -1,4 +1,9 @@
-import type { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk';
+import type {
+  ByProjectKeyRequestBuilder,
+  ClientResponse,
+  CustomerSignInResult,
+  MyCustomerDraft,
+} from '@commercetools/platform-sdk';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import type { Client } from '@commercetools/sdk-client-v2';
 import { Router } from 'vanilla-routing';
@@ -99,6 +104,21 @@ export class ClientService {
       }
     }
     this.apiRoot.get().execute(); // Initial request to get the access token
+  }
+
+  public async registerUser(user: MyCustomerDraft): Promise<ClientResponse<CustomerSignInResult>> {
+    try {
+      const response = await this.apiRoot
+        .customers()
+        .post({
+          body: user,
+        })
+        .execute();
+      return response;
+    } catch (error) {
+      console.error('Error during user registration:', error);
+      throw error;
+    }
   }
 
   public async logout(): Promise<void> {
