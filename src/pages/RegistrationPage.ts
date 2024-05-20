@@ -3,7 +3,7 @@ import { button, div, form, h2, input, label, p, section, span } from '@control.
 import { Router } from 'vanilla-routing';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
-import { ClientService } from '@services/ClientService';
+import type { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 import type { IRegistrationObject } from '@utils/RegistrationValidationsData';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
