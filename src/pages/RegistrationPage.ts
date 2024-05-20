@@ -1,7 +1,8 @@
-import type { MyCustomerDraft } from '@commercetools/platform-sdk';
+import type { MyCustomerDraft} from '@commercetools/platform-sdk';
 import { button, div, form, h2, input, label, p, section, span } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
 import { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 import type { IRegistrationObject } from '@utils/RegistrationValidationsData';
@@ -97,8 +98,8 @@ export default class RegistrationPage {
       this.createFormLabel('streetName', validationText.streetName),
       this.createFormLabel('streetNumber', validationText.streetNumber),
       this.createFormLabel('city', validationText.city),
-      this.createFormLabel('postalCode', validationText.postalCode),
-      this.createFormLabel('country', validationText.country),
+      this.createFormLabel('country', validationText.country, 'countryShipping'),
+      this.createFormLabel('postalCode', validationText.postalCode, 'postalShipping'),
     ];
 
     const node = div(
@@ -119,8 +120,8 @@ export default class RegistrationPage {
       this.createFormLabel('streetName', validationText.streetNameBilling),
       this.createFormLabel('streetNumber', validationText.streetNumberBilling),
       this.createFormLabel('city', validationText.cityBilling),
-      this.createFormLabel('postalCode', validationText.postalCodeBilling),
-      this.createFormLabel('country', validationText.countryBilling),
+      this.createFormLabel('country', validationText.countryBilling, 'countryBilling'),
+      this.createFormLabel('postalCode', validationText.postalCodeBilling, 'postalBilling'),
     ];
     const switchBtn = this.createDefaultSwitchBtn('Billing');
     switchBtn.addEventListener('click', () => {
@@ -136,19 +137,25 @@ export default class RegistrationPage {
     return node;
   }
 
-  private createFormLabel(text: string, textMessageError: ErrorMsgType): HTMLElement {
-    this.inputTag = setAttributes(input({ className: styles.inputField, id: `user-${text}` }), [
-      {
-        type: 'user',
-        text: `${text}`,
-      },
-      { type: 'placeholder', text: `${text.slice(0, 1).toLocaleUpperCase() + text.slice(1)}` },
-    ]);
+  private createFormLabel(text: string, textMessageError: ErrorMsgType, isAddressType?: string): HTMLElement {
+    this.inputTag = setAttributes(
+      input({ className: [styles.inputField, isAddressType].join(' '), id: `user-${text}` }),
+      [
+        {
+          type: 'user',
+          text: `${text}`,
+        },
+        { type: 'placeholder', text: `${text.slice(0, 1).toLocaleUpperCase() + text.slice(1)}` },
+      ],
+    );
     if (text === 'dateOfBirth') {
       setAttributes(this.inputTag, [{ type: 'type', text: 'date' }]);
     }
     const node: HTMLElement = this.createInputField(textMessageError);
     this.nodeLabel = label({ className: `${styles.loginFormInputLabel}` }, this.inputTag, node);
+    if (text === 'country') {
+      this.nodeLabel.append(p({ txt: 'Select UK:Ukraine or DE:Germany' }));
+    }
 
     const nodeInput = this.inputTag;
     this.inputTag.addEventListener('input', () => {
@@ -282,9 +289,14 @@ export default class RegistrationPage {
 
   private async sendRegistrOnj(objUser: MyCustomerDraft): Promise<void> {
     try {
-      this.clientService.registerUser(objUser);
+      const res = await this.clientService.registerUser(objUser);
+      if (res.statusCode === 201) {
+        showToastMessage('Registration in successfull', ToastColors.Green);
+        this.clientService.login(this.userRegistrationData.email, this.userRegistrationData.password);
+      }
     } catch (error) {
       console.error('Error during registration or login:', error);
+      this.clientService.handleAuthError(error);
     }
   }
 
@@ -353,6 +365,7 @@ export default class RegistrationPage {
         // проверяем будет успешная валидация или нет
 
         const isValid = text.func(nodeInput.value);
+
         node.classList.toggle(`${stylesValid.errorMsgActive}`, !isValid);
         // если вводим один адрес на два поля то копируем значения  обьекта
 
@@ -363,7 +376,6 @@ export default class RegistrationPage {
         this.validationMessages[nameMsg] = isValid;
       });
     }
-    // console.log(this.validationMessages);
     return node;
   }
 

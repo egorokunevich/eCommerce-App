@@ -39,7 +39,7 @@ export class ClientService {
   }
 
   // On failed login / signup show a notification with error message
-  private handleAuthError(error: unknown): void {
+  public handleAuthError(error: unknown): void {
     if (this.isFetchError(error)) {
       showToastMessage(error.message); // Show notification
     }
