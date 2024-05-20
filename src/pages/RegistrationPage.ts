@@ -29,9 +29,10 @@ export default class RegistrationPage {
   private defaultShipping: number | undefined = undefined;
   private defaultBilling: number | undefined = undefined;
   private userRegistrationData: IRegistrationObject;
-  private clientService = new ClientService();
+  private clientService: ClientService;
 
-  constructor() {
+  constructor(service: ClientService) {
+    this.clientService = service;
     this.userRegistrationData = {
       email: 'example@example.com',
       password: 'password123',
@@ -265,7 +266,6 @@ export default class RegistrationPage {
         if (this.billingAddressInput) {
           this.preparingWriteRegistrationObj(this.billingAddressInput, 1);
         }
-
         this.sendRegistrOnj(this.createUserObjToSend());
       }
       // Toastify
@@ -397,9 +397,8 @@ export default class RegistrationPage {
 
     const node = div(
       { className: ['registration_container-login', 'login', styles.loginContainer].join(' ') },
-      h2({ className: styles.infoHeader, txt: 'LOGIN' }),
       p({
-        txt: `Registering on this site will allow you to access the status and history of your orders. Simply fill out the fields below and we'll quickly create a new account for you. We will only ask you the information necessary to make the purchasing process faster and easier`,
+        txt: `Already have an account?`,
       }),
       buttonLoginPage,
     );
@@ -411,4 +410,4 @@ export default class RegistrationPage {
 
 // pageRegistration.createRegistration();
 
-export const pageRegistration = new RegistrationPage();
+// export const pageRegistration = new RegistrationPage();

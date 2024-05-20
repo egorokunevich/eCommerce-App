@@ -4,6 +4,7 @@ import { BrowserRoute } from 'vanilla-routing';
 import styles from '@components/NavMain.module.scss';
 import { Layout } from '@pages/Layout';
 import { LoginPage } from '@pages/LoginPage';
+import RegistrationPage from '@pages/RegistrationPage';
 import { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 
@@ -14,7 +15,9 @@ class App {
   private service: ClientService = new ClientService();
   private login = new LoginPage(this.service);
   private loginPage = this.login.createPage();
-  private routing = new PageRouting(this.loginPage);
+  private registration = new RegistrationPage(this.service);
+  private registrationPage = this.registration.createRegistration();
+  private routing = new PageRouting(this.loginPage, this.registrationPage);
   private layout = new Layout(this.service);
 
   public async render(): Promise<void> {

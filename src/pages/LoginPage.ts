@@ -40,7 +40,7 @@ export class LoginPage {
       placeholder: 'Email',
       className: `${styles.inputField}`,
       required: true,
-      value: 'test@test.com',
+      // value: 'test@test.com',
     });
 
     this.emailInputElement = emailInput;
@@ -82,7 +82,7 @@ export class LoginPage {
       required: true,
       autocomplete: 'off',
       minLength: 8,
-      value: 'aA123456',
+      // value: 'aA123456',
     });
     this.passwordInputElement = passwordInput;
     const passwordLengthValidationMessage = this.createValidationMessage();
@@ -146,10 +146,10 @@ export class LoginPage {
     );
     // Activates spinner
     document.addEventListener('pendingStart', () => {
-      this.spinner.classList.add(styles.active);
+      this.spinner.classList.add(styles.activeSpinner);
     });
     document.addEventListener('pendingEnd', () => {
-      this.spinner.classList.remove(styles.active);
+      this.spinner.classList.remove(styles.activeSpinner);
     });
     infoContainer.append(header, info);
     submitContainer.append(this.loginBtn);

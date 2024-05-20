@@ -84,7 +84,7 @@ export const validationText: ValidationTextType = {
     {
       nameMsg: 'characterStreetNumber',
       text: 'Must contain at least one character',
-      func: validationFunctions.validateNoSpecialCharactersOrNumbers,
+      func: validationFunctions.validateAtLeastOneCharacter,
     },
   ],
   city: [
