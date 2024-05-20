@@ -1,4 +1,4 @@
-import type { MyCustomerDraft} from '@commercetools/platform-sdk';
+import type { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { button, div, form, h2, input, label, p, section, span } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
