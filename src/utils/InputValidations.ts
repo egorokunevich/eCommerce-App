@@ -7,50 +7,57 @@ export type PasswordValidationMessages = {
   whitespaceMsg: HTMLElement;
 };
 
-type ErrorStatusesType = {
+export type ErrorStatusesType = {
   lengthError: boolean;
   uppercaseError: boolean;
   digitError: boolean;
   whitespaceError: boolean;
 };
 
-function checkLength(
+export function checkLength(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   // Check for correct length
+
   if (passwordInput.value.length < 8 && passwordInput.value[0]) {
     inputErrorMsgs.lengthMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = true;
+    return false;
   } else if (passwordInput.value.length >= 8) {
     inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = false;
+    return true;
   } else {
     inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = false;
+    return false;
   }
 }
-function checkWhitespaces(
+export function checkWhitespaces(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   // Check for whiteSpaces
   const whitespaceRegExp = /\s/;
 
   if (passwordInput.value[0] && whitespaceRegExp.test(passwordInput.value)) {
     inputErrorMsgs.whitespaceMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = true;
+    return false;
   } else if (passwordInput.value[0]) {
     inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = false;
+    return true;
   } else {
     inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = false;
+    return true;
   }
 }
-function checkDigits(
+export function checkDigits(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
@@ -69,7 +76,7 @@ function checkDigits(
     errorStatuses.digitError = false;
   }
 }
-function checkUppercase(
+export function checkUppercase(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
