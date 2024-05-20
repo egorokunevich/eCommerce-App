@@ -1,7 +1,8 @@
 import { div, input } from '@control.ts/min';
+import { expect, test } from 'vitest';
+
 import { checkLength, checkWhitespaces } from '@utils/InputValidations';
 import type { ErrorStatusesType, PasswordValidationMessages } from '@utils/InputValidations';
-import { expect, test } from 'vitest';
 
 const statuses: ErrorStatusesType = {
   lengthError: false,

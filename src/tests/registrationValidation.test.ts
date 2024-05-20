@@ -1,5 +1,6 @@
-import { validationFunctions } from '@utils/RegistrationValidations';
 import { expect, test } from 'vitest';
+
+import { validationFunctions } from '@utils/RegistrationValidations';
 
 test('Email validation should correctly check email input', () => {
   expect(validationFunctions.validateEmail('test@test.com')).toBe(true);

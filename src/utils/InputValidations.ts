@@ -25,15 +25,15 @@ export function checkLength(
     inputErrorMsgs.lengthMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = true;
     return false;
-  } else if (passwordInput.value.length >= 8) {
+  }
+  if (passwordInput.value.length >= 8) {
     inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = false;
     return true;
-  } else {
-    inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.lengthError = false;
-    return false;
   }
+  inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.lengthError = false;
+  return false;
 }
 export function checkWhitespaces(
   passwordInput: HTMLInputElement,
@@ -47,15 +47,15 @@ export function checkWhitespaces(
     inputErrorMsgs.whitespaceMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = true;
     return false;
-  } else if (passwordInput.value[0]) {
-    inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.whitespaceError = false;
-    return true;
-  } else {
+  }
+  if (passwordInput.value[0]) {
     inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = false;
     return true;
   }
+  inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.whitespaceError = false;
+  return true;
 }
 export function checkDigits(
   passwordInput: HTMLInputElement,
