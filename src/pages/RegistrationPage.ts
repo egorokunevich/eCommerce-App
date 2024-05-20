@@ -2,7 +2,7 @@ import type { MyCustomerDraft } from '@commercetools/platform-sdk';
 import { button, div, form, h2, input, label, p, section, span } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
-import { ClientService } from '@services/ClientService';
+import type { ClientService } from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 import type { IRegistrationObject } from '@utils/RegistrationValidationsData';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
@@ -28,9 +28,10 @@ export default class RegistrationPage {
   private defaultShipping: number | undefined = undefined;
   private defaultBilling: number | undefined = undefined;
   private userRegistrationData: IRegistrationObject;
-  private clientService = new ClientService();
+  private clientService: ClientService;
 
-  constructor() {
+  constructor(service: ClientService) {
+    this.clientService = service;
     this.userRegistrationData = {
       email: 'example@example.com',
       password: 'password123',
@@ -399,4 +400,4 @@ export default class RegistrationPage {
 
 // pageRegistration.createRegistration();
 
-export const pageRegistration = new RegistrationPage();
+// export const pageRegistration = new RegistrationPage();

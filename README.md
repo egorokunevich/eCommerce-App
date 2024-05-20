@@ -8,21 +8,21 @@ Coffee Loop is an eCommerce application designed to provide users with a compreh
 
 ## Features
 
-- ***Product Discovery***: Browse through a diverse range of products, including coffee beans, tea leaves, equipment, and more. 📚👗👟
-- ***Detailed Descriptions***: View detailed descriptions and specifications of each product to make informed purchasing decisions. 🔍
-- ***Easy Checkout***: Add your favorite items to the basket with just a click and proceed to checkout seamlessly. 💳
-- ***User Authentication***: Register and log in to your account to access personalized recommendations and order history. 📝🔐
-- ***Responsive Design***: Enjoy a seamless shopping experience on various devices, including desktops, tablets, and smartphones. 📲
+- **_Product Discovery_**: Browse through a diverse range of products, including coffee beans, tea leaves, equipment, and more. 📚👗👟
+- **_Detailed Descriptions_**: View detailed descriptions and specifications of each product to make informed purchasing decisions. 🔍
+- **_Easy Checkout_**: Add your favorite items to the basket with just a click and proceed to checkout seamlessly. 💳
+- **_User Authentication_**: Register and log in to your account to access personalized recommendations and order history. 📝🔐
+- **_Responsive Design_**: Enjoy a seamless shopping experience on various devices, including desktops, tablets, and smartphones. 📲
 
 ## Technology Stack
 
 Coffee Loop is built using modern technologies to ensure performance, scalability, and maintainability. Our tech stack includes:
 
-- ***Typescript***: Provides type-checking capabilities and improves code quality.
-- ***Eslint & Prettier***: Enforce code style consistency and best practices.
-- ***Husky***: Implements Git hooks for automated code linting and formatting.
-- ***Vite***: Lightning-fast build tool for modern web development.
-- ***Vitest***: Efficient testing framework for unit and integration testing.
+- **_Typescript_**: Provides type-checking capabilities and improves code quality.
+- **_Eslint & Prettier_**: Enforce code style consistency and best practices.
+- **_Husky_**: Implements Git hooks for automated code linting and formatting.
+- **_Vite_**: Lightning-fast build tool for modern web development.
+- **_Vitest_**: Efficient testing framework for unit and integration testing.
 
 ## Available Scripts
 
@@ -81,6 +81,10 @@ Watches for changes and runs tests using Vitest in watch mode.
 ### `npm run test`
 
 Runs tests using Vitest.
+
+### `npm run test:coverage`
+
+Runs tests using Vitest and displays how much code is covered with tests.
 
 ### `npm run predeploy`
 
@@ -153,7 +157,7 @@ If you install the project by yourself:
     "errorMsg": "Branch name doesn't follow the defined repository rules"
   }`
 
-Make sure: 
+Make sure:
 
 file .husky/pre-commit contains:
 `npx validate-branch-name`
@@ -164,7 +168,7 @@ file .husky/pre-push contains:
 ## 8. Install Vitest
 
 - run `npm install -D vitest` (Vitest 1.0 requires Vite >=v5.0.0 and Node >=v18.0.0)
+- run `npm install -D @vitest/coverage-v8` (This is used for checking test coverage)
 - create file `vitest.config.ts` (it will have the higher priority, then vite.config.ts)
-
 
 if you need to create file package.json, run `npm init -y`

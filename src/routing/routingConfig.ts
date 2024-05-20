@@ -3,11 +3,13 @@ import type { Routes } from 'vanilla-routing';
 
 import { HomePage } from '@pages/HomePage';
 import { NotFoundPage } from '@pages/NotFoundPage';
-import { pageRegistration } from '@pages/RegistrationPage';
 
 export class PageRouting {
   private homePage: Element;
-  constructor(private readonly loginPage: Element) {
+  constructor(
+    private readonly loginPage: Element,
+    private readonly registrationPage: Element,
+  ) {
     this.homePage = new HomePage().createPage();
   }
 
@@ -71,7 +73,7 @@ export class PageRouting {
           Router.go('/');
           return this.homePage;
         }
-        return pageRegistration.createRegistration();
+        return this.registrationPage;
       },
     };
     return route;

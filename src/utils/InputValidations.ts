@@ -7,86 +7,99 @@ export type PasswordValidationMessages = {
   whitespaceMsg: HTMLElement;
 };
 
-type ErrorStatusesType = {
+export type ErrorStatusesType = {
   lengthError: boolean;
   uppercaseError: boolean;
   digitError: boolean;
   whitespaceError: boolean;
 };
 
-function checkLength(
+export function checkLength(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   // Check for correct length
+
   if (passwordInput.value.length < 8 && passwordInput.value[0]) {
     inputErrorMsgs.lengthMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.lengthError = true;
-  } else if (passwordInput.value.length >= 8) {
-    inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.lengthError = false;
-  } else {
-    inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.lengthError = false;
+    return false;
   }
+  if (passwordInput.value.length >= 8) {
+    inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
+    errorStatuses.lengthError = false;
+    return true;
+  }
+  inputErrorMsgs.lengthMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.lengthError = false;
+  return false;
 }
-function checkWhitespaces(
+export function checkWhitespaces(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   // Check for whiteSpaces
   const whitespaceRegExp = /\s/;
 
   if (passwordInput.value[0] && whitespaceRegExp.test(passwordInput.value)) {
     inputErrorMsgs.whitespaceMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.whitespaceError = true;
-  } else if (passwordInput.value[0]) {
-    inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.whitespaceError = false;
-  } else {
-    inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.whitespaceError = false;
+    return false;
   }
+  if (passwordInput.value[0]) {
+    inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
+    errorStatuses.whitespaceError = false;
+    return true;
+  }
+  inputErrorMsgs.whitespaceMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.whitespaceError = false;
+  return true;
 }
-function checkDigits(
+export function checkDigits(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   const digitRegExp = /\d/;
 
   // Check for at least 1 digit
   if (passwordInput.value[0] && digitRegExp.test(passwordInput.value)) {
     inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.digitError = false;
-  } else if (passwordInput.value[0]) {
+    return true;
+  }
+  if (passwordInput.value[0]) {
     inputErrorMsgs.digitMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.digitError = true;
-  } else {
-    inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.digitError = false;
+    return false;
   }
+  inputErrorMsgs.digitMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.digitError = false;
+  return false;
 }
-function checkUppercase(
+export function checkUppercase(
   passwordInput: HTMLInputElement,
   inputErrorMsgs: PasswordValidationMessages,
   errorStatuses: ErrorStatusesType,
-): void {
+): boolean {
   const uppercaseRegExp = /(?=.*[a-z])(?=.*[A-Z])/;
 
   // Check for english uppercase and lowercase
   if (passwordInput.value[0] && uppercaseRegExp.test(passwordInput.value)) {
     inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
     errorStatuses.uppercaseError = false;
-  } else if (passwordInput.value[0]) {
+    return true;
+  }
+  if (passwordInput.value[0]) {
     inputErrorMsgs.uppercaseMsg.classList.add(`${styles.errorMsgActive}`);
     errorStatuses.uppercaseError = true;
-  } else {
-    inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
-    errorStatuses.uppercaseError = false;
+    return false;
   }
+  inputErrorMsgs.uppercaseMsg.classList.remove(`${styles.errorMsgActive}`);
+  errorStatuses.uppercaseError = false;
+  return false;
 }
 
 export function validatePasswordClientSide(
@@ -124,6 +137,7 @@ export function validatePasswordClientSide(
   if (passwordInput.value.length < 1) {
     inputLabel.classList.remove(`${styles.inputWarningIcon}`);
     inputLabel.classList.remove(`${styles.inputAcceptIcon}`);
+    return false;
   }
 
   return isValid;
