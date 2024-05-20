@@ -32,13 +32,13 @@ export const validationFunctions = {
     return Math.floor((dateNow - dateBirthday) / 1000 / 60 / 60 / 24 / 365) >= 13;
   },
   validateUSPostalCode: (input: string): boolean => {
-    // Регулярное выражение для проверки корректного почтового кода США
-    const regex = /^[0-9]{5}(?:-[0-9]{4})?$/;
-    return regex.test(input);
+    // const regexPL = /^\d{2}-\d{3}$/;
+    // const regexBY = /^\d{6}$/;
+    return /^\d{5}$/.test(input);
   },
   isValidCountry: (country: string): boolean => {
     // write our country
-    const validCountries = ['USA', 'Canada', 'UK', 'Germany', 'France'];
+    const validCountries = ['DE', 'UA'];
     return validCountries.includes(country);
   },
 };

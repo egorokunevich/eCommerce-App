@@ -101,9 +101,7 @@ export const validationText: ValidationTextType = {
       func: validationFunctions.validateUSPostalCode,
     },
   ], // add code too discus
-  country: [
-    { nameMsg: 'validCountry', text: 'Must be a valid country from list', func: validationFunctions.isValidCountry },
-  ],
+  country: [{ nameMsg: 'validCountry', text: 'Must be UA or DE', func: validationFunctions.isValidCountry }],
   streetNameBilling: [
     {
       nameMsg: 'characterStreetNameBilling',
@@ -135,7 +133,7 @@ export const validationText: ValidationTextType = {
   countryBilling: [
     {
       nameMsg: 'validCountryBilling',
-      text: 'Must be a valid country from list',
+      text: 'Must be UA or DE',
       func: validationFunctions.isValidCountry,
     },
   ],
