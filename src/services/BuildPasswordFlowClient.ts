@@ -4,17 +4,7 @@ import type { Client } from '@commercetools/sdk-client-v2';
 import { httpMiddlewareOptions, middlewareOptions } from './MiddlewareOptions';
 import tokenCache from './TokenCache';
 
-const { VITE_CTP_CLIENT_SECRET: clientSecretEnv, VITE_CTP_CLIENT_ID: clientIdEnv } = import.meta.env;
-
-// Mock data for Vitest tests.
-let clientSecret = 'data for Vitest testing';
-let clientId = 'data for Vitest testing';
-
-// Take .env parameters if it's not a testing
-if (clientSecretEnv) {
-  clientSecret = clientSecretEnv;
-  clientId = clientIdEnv;
-}
+const { VITE_CTP_CLIENT_SECRET: clientSecret, VITE_CTP_CLIENT_ID: clientId } = import.meta.env;
 
 export function getPasswordClient(username: string, password: string): Client {
   tokenCache.delete();

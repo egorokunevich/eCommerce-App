@@ -4,32 +4,15 @@ import tokenCache from './TokenCache';
 
 // Import secret variables from .env
 const {
-  VITE_CTP_PROJECT_KEY: projectKeyEnv,
-  VITE_CTP_CLIENT_SECRET: clientSecretEnv,
-  VITE_CTP_CLIENT_ID: clientIdEnv,
-  VITE_CTP_AUTH_URL: authUrlEnv,
-  VITE_CTP_API_URL: apiUrlEnv,
+  VITE_CTP_PROJECT_KEY: projectKey,
+  VITE_CTP_CLIENT_SECRET: clientSecret,
+  VITE_CTP_CLIENT_ID: clientId,
+  VITE_CTP_AUTH_URL: authUrl,
+  VITE_CTP_API_URL: apiUrl,
   VITE_CTP_SCOPES: scopesEnv,
 } = import.meta.env;
 
-// Mock data for Vitest tests.
-let scopes = ['data for Vitest testing'];
-let projectKey = 'data for Vitest testing';
-let clientSecret = 'data for Vitest testing';
-let clientId = 'data for Vitest testing';
-let authUrl = 'data for Vitest testing';
-let apiUrl = 'data for Vitest testing';
-
-// Take .env parameters if it's not a testing
-if (scopesEnv) {
-  // Scopes in .env is a single string. We need to split it in order to get an array.
-  scopes = scopesEnv.split(' ');
-  projectKey = projectKeyEnv;
-  clientSecret = clientSecretEnv;
-  clientId = clientIdEnv;
-  authUrl = authUrlEnv;
-  apiUrl = apiUrlEnv;
-}
+const scopes = scopesEnv.split(' ');
 
 // Configure middleware options for HTTP requests
 export const httpMiddlewareOptions: HttpMiddlewareOptions = {
