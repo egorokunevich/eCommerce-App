@@ -24,7 +24,7 @@ export const validationFunctions = {
   },
   validateNoSpecialCharactersOrNumbers: (input: string): boolean => {
     const regex = /^[a-zA-Z\s]+$/;
-    return regex.test(input);
+    return regex.test(input.trim());
   },
   howOldAreYou: (years: string): boolean => {
     const dateBirthday = new Date(years).getTime();
