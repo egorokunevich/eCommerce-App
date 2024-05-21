@@ -11,7 +11,6 @@ export function getPasswordClient(username: string, password: string): Client {
   const credentials = {
     clientId,
     clientSecret,
-
     user: {
       username,
       password,
