@@ -97,7 +97,7 @@ export const validationText: ValidationTextType = {
   postalCode: [
     {
       nameMsg: 'formatPostalCode',
-      text: 'Must follow the format for the country',
+      text: `Must be in 'NNNNN' format`,
       func: validationFunctions.validateUSPostalCode,
     },
   ], // add code too discus
@@ -113,7 +113,7 @@ export const validationText: ValidationTextType = {
     {
       nameMsg: 'characterStreetNumberBilling',
       text: 'Must contain at least one character',
-      func: validationFunctions.validateNoSpecialCharactersOrNumbers,
+      func: validationFunctions.validateAtLeastOneCharacter,
     },
   ],
   cityBilling: [
@@ -126,7 +126,7 @@ export const validationText: ValidationTextType = {
   postalCodeBilling: [
     {
       nameMsg: 'formatPostalCodeBilling',
-      text: 'Must follow the format for the country',
+      text: `Must be in 'NNNNN' format`,
       func: validationFunctions.validateUSPostalCode,
     },
   ], // add code too discus

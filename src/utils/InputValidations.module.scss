@@ -12,6 +12,7 @@
   max-height: 2.4rem;
   opacity: 100%;
   margin-bottom: 3px;
+  font-size: 1rem;
   font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
 }
 
@@ -33,6 +34,12 @@
     background-size: cover;
     transition: 0.2s;
     opacity: 0;
+  }
+
+  @media screen and (max-width: 650px) {
+    &::before {
+      top: 10px;
+    }
   }
 }
 
@@ -74,5 +81,9 @@
 
   &.hide {
     background-image: url('/assets/icons/hide.png');
+  }
+
+  @media screen and (max-width: 650px) {
+    top: 6px;
   }
 }

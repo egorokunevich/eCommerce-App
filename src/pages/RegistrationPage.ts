@@ -104,7 +104,7 @@ export default class RegistrationPage {
     ];
 
     const node = div(
-      { className: ['form_address', 'shipping_address'].join(' ') },
+      { className: [styles.formAddress, 'shipping_address'].join(' ') },
       p({ txt: 'Shipping Address ' }),
       ...this.shippingAddressInput,
       this.createBtn(),
@@ -129,7 +129,7 @@ export default class RegistrationPage {
       this.defaultBilling = this.defaultBilling === undefined ? 1 : undefined;
     });
     const node = div(
-      { className: ['form_address', styles.billingAddress].join(' ') },
+      { className: [styles.formAddress, styles.billingAddress].join(' ') },
       p({ txt: 'Billing Address ' }),
       ...this.billingAddressInput,
       switchBtn,
@@ -396,7 +396,7 @@ export default class RegistrationPage {
     });
 
     const node = div(
-      { className: ['registration_container-login', 'login', styles.loginContainer].join(' ') },
+      { className: [styles.registrationContainerLogin, 'login', styles.loginContainer].join(' ') },
       p({
         txt: `Already have an account?`,
       }),

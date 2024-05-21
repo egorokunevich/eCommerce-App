@@ -67,7 +67,7 @@ test(`Should correctly check for only english letters presence`, () => {
   expect(validationFunctions.validateNoSpecialCharactersOrNumbers('hi-there')).toBe(false);
   expect(validationFunctions.validateNoSpecialCharactersOrNumbers('number 1')).toBe(false);
   expect(validationFunctions.validateNoSpecialCharactersOrNumbers('')).toBe(false);
-  expect(validationFunctions.validateNoSpecialCharactersOrNumbers(' ')).toBe(true);
+  expect(validationFunctions.validateNoSpecialCharactersOrNumbers(' ')).toBe(false);
 });
 
 test(`Should return true if user is older than 13 years old`, () => {

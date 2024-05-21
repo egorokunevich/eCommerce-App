@@ -3,8 +3,8 @@
   // display: flex;
   gap: 10px;
   position: relative;
-  width: 3.5rem;
-  height: 2.2rem;
+  width: 50px;
+  height: 25px;
   margin: 10px 0;
 }
 
@@ -21,7 +21,7 @@
   bottom: 0;
   left: 0;
   background-color: #fff;
-  border-radius: 3rem;
+  border-radius: 1.5rem;
   transition: 0.3s;
   cursor: pointer;
 }
@@ -30,20 +30,20 @@
   position: absolute;
   content: '';
   background: #fff;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 20px;
+  height: 20px;
   border-radius: 1.5rem;
   top: 2px;
   bottom: 0;
   left: 0.12rem;
   box-shadow: 0 0.2rem 0.5rem #000;
-  transition: 0.5s;
+  transition: 0.3s;
   z-index: 2;
 }
 
 .switch-input:checked + .registration-move {
   background-color: #5fdd54;
-  border: 0.1rem solid transparent;
+  // border: 0.1rem solid transparent;
 }
 
 .switch-input:checked + .registration-move::before {
@@ -53,4 +53,19 @@
 .default-input {
   width: 20px !important;
   height: 20px;
+}
+
+@media screen and (max-width: 650px) {
+  .registration-switch {
+    width: 40px;
+    height: 20px;
+  }
+  .registration-move::before {
+    width: 16px;
+    height: 16px;
+    top: 2px;
+  }
+  .switch-input:checked + .registration-move::before {
+    transform: translateX(1.2rem);
+  }
 }
