@@ -78,10 +78,10 @@ export default class RegistrationPage {
 
   private createFormComponents(): HTMLElement {
     this.userMainInput = [
-      this.createFormLabel('Email', validationText.email),
-      this.createFormLabel('Password', validationText.password),
-      this.createFormLabel('First Name', validationText.firstName),
-      this.createFormLabel('Last Name', validationText.lastName),
+      this.createFormLabel('email', validationText.email),
+      this.createFormLabel('password', validationText.password),
+      this.createFormLabel('firstName', validationText.firstName),
+      this.createFormLabel('lastName', validationText.lastName),
       this.createFormLabel('dateOfBirth', validationText.dateOfBirth),
     ];
     const node = form(
@@ -96,11 +96,11 @@ export default class RegistrationPage {
 
   private createFormAddress(): HTMLElement {
     this.shippingAddressInput = [
-      this.createFormLabel('Street Name', validationText.streetName),
-      this.createFormLabel('Street Number', validationText.streetNumber),
-      this.createFormLabel('City', validationText.city),
-      this.createFormLabel('Country', validationText.country, 'countryShipping'),
-      this.createFormLabel('Postal Code', validationText.postalCode, 'postalShipping'),
+      this.createFormLabel('streetName', validationText.streetName),
+      this.createFormLabel('streetNumber', validationText.streetNumber),
+      this.createFormLabel('city', validationText.city),
+      this.createFormLabel('country', validationText.country, 'countryShipping'),
+      this.createFormLabel('postalCode', validationText.postalCode, 'postalShipping'),
     ];
 
     const node = div(
@@ -118,11 +118,11 @@ export default class RegistrationPage {
 
   private createCopyFormAddress(): HTMLElement {
     this.billingAddressInput = [
-      this.createFormLabel('Street Name', validationText.streetNameBilling),
-      this.createFormLabel('Street Number', validationText.streetNumberBilling),
-      this.createFormLabel('City', validationText.cityBilling),
-      this.createFormLabel('Country', validationText.countryBilling, 'countryBilling'),
-      this.createFormLabel('Postal Code', validationText.postalCodeBilling, 'postalBilling'),
+      this.createFormLabel('streetName', validationText.streetNameBilling),
+      this.createFormLabel('streetNumber', validationText.streetNumberBilling),
+      this.createFormLabel('city', validationText.cityBilling),
+      this.createFormLabel('country', validationText.countryBilling, 'countryBilling'),
+      this.createFormLabel('postalCode', validationText.postalCodeBilling, 'postalBilling'),
     ];
     const switchBtn = this.createDefaultSwitchBtn('Billing');
     switchBtn.addEventListener('click', () => {
