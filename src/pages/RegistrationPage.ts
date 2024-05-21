@@ -291,7 +291,7 @@ export default class RegistrationPage {
     try {
       const res = await this.clientService.registerUser(objUser);
       if (res.statusCode === 201) {
-        showToastMessage('Registration in successfull', ToastColors.Green);
+        showToastMessage('Registration is successfull', ToastColors.Green);
         this.clientService.login(this.userRegistrationData.email, this.userRegistrationData.password);
       }
     } catch (error) {

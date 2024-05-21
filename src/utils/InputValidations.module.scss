@@ -12,6 +12,7 @@
   max-height: 2.4rem;
   opacity: 100%;
   margin-bottom: 3px;
+  font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
 }
 
 .login-form__input-label {
