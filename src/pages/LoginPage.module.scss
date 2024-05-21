@@ -66,6 +66,9 @@
 }
 
 .login-form__input-label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   position: relative;
   transition: 0.2s;
 
@@ -202,9 +205,9 @@
   gap: clamp(0.313rem, -0.886rem + 4.918vw, 2.188rem);
 }
 
-.registration_form input {
-  width: clamp(12.5rem, 5.313rem + 23vw, 19.688rem);
-}
+// .registration_form input {
+//   width: clamp(12.5rem, 5.313rem + 23vw, 19.688rem);
+// }
 
 .form-btn {
   display: flex;
@@ -302,4 +305,8 @@
   width: 500px;
   padding: 8px;
   font-size: 8px;
+}
+
+.form-address {
+  width: 100%;
 }

@@ -10,14 +10,13 @@ import { Router } from 'vanilla-routing';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
 
-import { projectKey } from './apiVariables';
 import { getAnonymousClient } from './BuildAnonymousFlowClient';
 import { getExistingTokenClient } from './BuildExistingTokenClient';
 import { getPasswordClient } from './BuildPasswordFlowClient';
 import { getRefreshTokenClient } from './BuildRefreshTokenClient';
 import tokenCache from './TokenCache';
 
-// const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
+const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
 
 interface FetchError extends Error {
   statusCode?: number;
