@@ -1,3 +1,5 @@
+import { div } from '@control.ts/min';
+
 import Header from '@components/Header';
 import NavMain from '@components/NavMain';
 import { HomePage } from '@pages/HomePage';
@@ -5,6 +7,7 @@ import { Layout } from '@pages/Layout';
 import { LoginPage } from '@pages/LoginPage';
 import RegistrationPage from '@pages/RegistrationPage';
 import { ClientService } from '@services/ClientService';
+import { setAttributes } from '@utils/BaseComponentProps';
 
 const service = new ClientService();
 const header = new Header();
@@ -13,6 +16,10 @@ const homePage = new HomePage();
 const layout = new Layout(service);
 const loginPage = new LoginPage(service);
 const registrationPage = new RegistrationPage(service);
+
+test('setAttributes should return HTMLElement', () => {
+  expect(setAttributes(div({}), { text: 'text', type: 'type' })).toBeInstanceOf(HTMLElement);
+});
 
 test('getHeaderElement method in Header class should return HTMLElement', () => {
   expect(header.getHeaderElement()).toBeInstanceOf(HTMLElement);

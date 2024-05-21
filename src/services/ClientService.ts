@@ -16,7 +16,15 @@ import { getPasswordClient } from './BuildPasswordFlowClient';
 import { getRefreshTokenClient } from './BuildRefreshTokenClient';
 import tokenCache from './TokenCache';
 
-const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
+const { VITE_CTP_PROJECT_KEY: projectKeyEnv } = import.meta.env;
+
+// Mock data for Vitest tests.
+let projectKey = 'data for Vitest testing';
+
+// Take .env parameters if it's not a testing
+if (projectKeyEnv) {
+  projectKey = projectKeyEnv;
+}
 
 interface FetchError extends Error {
   statusCode?: number;
