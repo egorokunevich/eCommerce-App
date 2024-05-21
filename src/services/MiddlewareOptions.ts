@@ -13,7 +13,7 @@ const {
 } = import.meta.env;
 
 // Scopes in .env is a single string. We need to split it in order to get an array.
-const scopes = scopesString.split(' ');
+const scopes = scopesString ? scopesString.split(' ') : 'create_anonymous_token:coffee-loop-shop';
 
 // Configure middleware options for HTTP requests
 export const httpMiddlewareOptions: HttpMiddlewareOptions = {
