@@ -85,7 +85,6 @@ export default class NavMain {
 
     profileBtn.addEventListener('click', () => {
       Router.go('/profile', { addToHistory: true });
-      clientService.displayProducts();
     });
 
     loginBtn.addEventListener('click', () => {
