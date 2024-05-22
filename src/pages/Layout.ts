@@ -2,25 +2,17 @@ import { div } from '@control.ts/min';
 
 import Header from '@components/Header';
 import NavMain from '@components/NavMain';
-import type { ClientService } from '@services/ClientService';
 
 import styles from './Layout.module.scss';
 
 export class Layout {
-  private service: ClientService;
   private layoutElement: HTMLElement | null = null;
   private header: Header;
   public navMain: NavMain;
 
-  constructor(service: ClientService) {
-    this.service = service;
+  constructor() {
     this.header = new Header();
-    this.navMain = new NavMain(this.service);
-  }
-
-  public updateService(clientService: ClientService): void {
-    this.service = clientService;
-    this.navMain.updateService(clientService);
+    this.navMain = new NavMain();
   }
 
   private createLayout(): void {

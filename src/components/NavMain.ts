@@ -1,13 +1,12 @@
 import { a, div, li, nav, ul } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
-import type { ClientService } from '@services/ClientService';
+import clientService from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 
 import styles from './NavMain.module.scss';
 
 export default class NavMain {
-  private service: ClientService;
   private navBtnsContainer: HTMLElement = div({});
   private navLinks = [
     { href: '/', txt: 'Home' },
@@ -19,14 +18,6 @@ export default class NavMain {
   public logoutBtn: HTMLElement = div({});
   private menuElement: HTMLElement | null = null;
   public nav: HTMLElement = div({});
-
-  constructor(service: ClientService) {
-    this.service = service;
-  }
-
-  public updateService(clientService: ClientService): void {
-    this.service = clientService;
-  }
 
   private createMenu(): void {
     const menu = nav({ className: styles.navMenu });
@@ -106,7 +97,7 @@ export default class NavMain {
     logoutBtn.addEventListener('click', () => {
       const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
       if (isLoggedIn) {
-        this.service.logout();
+        clientService.logout();
       }
     });
 

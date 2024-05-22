@@ -2,17 +2,11 @@ import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
 import { HomePage } from '@pages/HomePage';
+import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
+import RegistrationPage from '@pages/RegistrationPage';
 
 export class PageRouting {
-  private homePage: Element;
-  constructor(
-    private readonly loginPage: Element,
-    private readonly registrationPage: Element,
-  ) {
-    this.homePage = new HomePage().createPage();
-  }
-
   private createRoute(pathname: string, name: string): Routes {
     return {
       pathname,
@@ -55,7 +49,7 @@ export class PageRouting {
         const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
         if (!isLoggedIn) {
           Router.go('/');
-          return this.homePage;
+          return new HomePage().createPage();
         }
         const ele = document.createElement('h2');
         ele.innerText = 'Profile';
@@ -71,9 +65,9 @@ export class PageRouting {
         const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
         if (isLoggedIn) {
           Router.go('/');
-          return this.homePage;
+          return new HomePage().createPage();
         }
-        return this.registrationPage;
+        return new RegistrationPage().createRegistration();
       },
     };
     return route;
@@ -84,7 +78,7 @@ export class PageRouting {
       {
         pathname: '/',
         element: (): Element => {
-          return this.homePage;
+          return new HomePage().createPage();
         },
       },
       this.createRoute('/catalog', 'Catalog'),
@@ -101,9 +95,9 @@ export class PageRouting {
           const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
           if (isLoggedIn) {
             Router.go('/');
-            return this.homePage;
+            return new HomePage().createPage();
           }
-          return this.loginPage;
+          return new LoginPage().createPage();
         },
       },
       {

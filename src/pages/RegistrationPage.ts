@@ -3,7 +3,7 @@ import { button, div, form, h2, input, label, p, section, span } from '@control.
 import { Router } from 'vanilla-routing';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
-import type { ClientService } from '@services/ClientService';
+import clientService from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 import type { IRegistrationObject } from '@utils/RegistrationValidationsData';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
@@ -29,10 +29,8 @@ export default class RegistrationPage {
   private defaultShipping: number | undefined = undefined;
   private defaultBilling: number | undefined = undefined;
   private userRegistrationData: IRegistrationObject;
-  private clientService: ClientService;
 
-  constructor(service: ClientService) {
-    this.clientService = service;
+  constructor() {
     this.userRegistrationData = {
       email: 'example@example.com',
       password: 'password123',
@@ -289,14 +287,14 @@ export default class RegistrationPage {
 
   private async sendRegistrOnj(objUser: MyCustomerDraft): Promise<void> {
     try {
-      const res = await this.clientService.registerUser(objUser);
+      const res = await clientService.registerUser(objUser);
       if (res.statusCode === 201) {
         showToastMessage('Registration is successfull', ToastColors.Green);
-        this.clientService.login(this.userRegistrationData.email, this.userRegistrationData.password);
+        clientService.login(this.userRegistrationData.email, this.userRegistrationData.password);
       }
     } catch (error) {
       console.error('Error during registration or login:', error);
-      this.clientService.handleAuthError(error);
+      clientService.handleAuthError(error);
     }
   }
 
