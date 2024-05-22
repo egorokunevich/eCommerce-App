@@ -66,6 +66,6 @@
     "src",
     "main.ts",
     "declaration.d.ts",
-    "vite-env.d.ts"
+    "vite-env.d.ts",
   ]
 }
