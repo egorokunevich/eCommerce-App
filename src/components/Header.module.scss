@@ -1,0 +1,30 @@
+.header {
+  width: 100%;
+  max-height: 60px;
+  padding: clamp(5px, 15px, 15px);
+  background-color: #f3f3f3;
+
+  @media screen and (max-width: 500px) {
+    padding: 5px;
+  }
+}
+
+.header a {
+  display: block;
+  padding-left: 40px;
+  background-image: url('/assets/images/logo.png');
+  background-repeat: no-repeat;
+  background-size: 45px;
+  background-position: left;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: #000;
+
+  @media screen and (max-width: 500px) {
+    display: flex;
+    justify-content: center;
+    background-position: calc(50% - 65px);
+    font-size: 1.2rem;
+    background-size: 35px;
+  }
+}

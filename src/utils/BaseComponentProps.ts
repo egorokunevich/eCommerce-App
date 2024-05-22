@@ -1,22 +1,22 @@
-// Element properties
-export interface BaseComponentProps {
-  tag: string;
-  innerText: string;
-  classList: string | string[];
+type Attribute = {
   type: string;
-  placeholder: string;
-  required: boolean;
-  disabled: boolean;
-  value: string;
-  minlength: number;
-  maxlength: number;
-  draggable: boolean;
-  title: string;
-  src: string;
-  autocomplete: 'on' | 'off';
-  href: string;
-}
+  text: string | boolean;
+};
 
-export interface ButtonProps extends BaseComponentProps {
-  type: 'button' | 'submit' | 'reset';
-}
+type ValueAttributes = Attribute[] | Attribute;
+
+export const setAttributes = (node: HTMLElement, valueAttributes: ValueAttributes): HTMLElement => {
+  if (!valueAttributes) {
+    return node;
+  }
+
+  if (Array.isArray(valueAttributes)) {
+    valueAttributes.forEach((attribute) => {
+      node.setAttribute(attribute.type, attribute.text.toString());
+    });
+    return node;
+  }
+  node.setAttribute(valueAttributes.type, valueAttributes.text.toString());
+
+  return node;
+};

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { isNotNullable, isNullable } from '@/utils/isNull';
+import { isNotNullable, isNullable } from '@utils/isNull';
 
 test('isNullable should correctly identify null and undefined values', () => {
   expect(isNullable(null)).toBe(true);
