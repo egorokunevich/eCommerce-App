@@ -25,10 +25,6 @@ interface FetchError extends Error {
 export class ClientService {
   private apiRoot!: ByProjectKeyRequestBuilder;
 
-  constructor() {
-    this.handleToken();
-  }
-
   // Change current flow/client
   public async updateClient(client: Client, isLoggedIn: boolean): Promise<void> {
     this.apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({
@@ -79,7 +75,7 @@ export class ClientService {
     }
   }
 
-  private handleToken(): void {
+  public handleToken(): void {
     const existingToken = tokenCache.get();
     // If there is no token, create anonymous client
     if (!existingToken) {
@@ -157,4 +153,5 @@ export class ClientService {
 }
 
 const clientService = new ClientService();
+clientService.handleToken();
 export default clientService;
