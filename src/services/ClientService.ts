@@ -155,3 +155,6 @@ export class ClientService {
   //       .execute();
   //   }
 }
+
+const clientService = new ClientService();
+export default clientService;

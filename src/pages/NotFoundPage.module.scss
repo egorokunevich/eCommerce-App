@@ -1,11 +1,19 @@
 .not-found-page-wrapper {
-  width: 100vw;
+  width: 100%;
+  overflow: hidden;
   height: 100%;
   background-color: aliceblue;
   background-image: url(/assets/images/not-found-page.png);
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
+
+  @media screen and (max-width: 650px) {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-size: 70%;
+  }
 }
 .info-container,
 .links-container {
@@ -20,6 +28,10 @@
 .info-container {
   top: 20%;
   left: 20%;
+
+  @media screen and (max-width: 650px) {
+    left: 0;
+  }
 }
 
 .info-header {
@@ -43,5 +55,9 @@
 
   & a:hover {
     background-color: #e5eeea;
+  }
+
+  @media screen and (max-width: 650px) {
+    left: 0;
   }
 }

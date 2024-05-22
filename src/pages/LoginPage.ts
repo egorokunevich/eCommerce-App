@@ -2,7 +2,7 @@ import { button, div, form, h2, input, label, p, section } from '@control.ts/min
 import { Router } from 'vanilla-routing';
 
 import { showToastMessage } from '@components/Toast';
-import type { ClientService } from '@services/ClientService';
+import clientService from '@services/ClientService';
 import {
   type PasswordValidationMessages,
   validateEmailClientSide,
@@ -29,7 +29,7 @@ export class LoginPage {
   public spinner: HTMLElement = div({});
   private loginBtn: HTMLButtonElement = button({});
 
-  constructor(private readonly service: ClientService) {
+  constructor() {
     this.pageWrapper = section({ className: `${styles.loginPageWrapper}` });
   }
 
@@ -215,7 +215,7 @@ export class LoginPage {
       const isValid = validateForm(Object.values(areInputsValid), loginBtn);
 
       if (isValid) {
-        this.service.login(this.emailInputElement.value, this.passwordInputElement.value);
+        clientService.login(this.emailInputElement.value, this.passwordInputElement.value);
       } else if (!this.emailInputElement.value || !this.passwordInputElement.value) {
         showToastMessage('Fill all inputs.');
       } else {
