@@ -1,3 +1,5 @@
+import type { ClientResponse, Product, ProductPagedQueryResponse } from '@commercetools/platform-sdk';
+
 import clientService from './ClientService';
 
 export class ProductsService {
@@ -6,12 +8,19 @@ export class ProductsService {
     this.productsRoot = clientService.apiRoot.products();
   }
 
-  public getProducts(): void {
-    this.productsRoot.get().execute();
+  public async getProducts(): Promise<ClientResponse<ProductPagedQueryResponse>> {
+    return this.productsRoot.get().execute();
+  }
+
+  public async getProductByKey(key: string): Promise<ClientResponse<Product>> {
+    return this.productsRoot
+      .withKey({
+        key,
+      })
+      .get()
+      .execute();
   }
 }
 
 const productsService = new ProductsService();
 export default productsService;
-
-// You can call method getProducts in main.ts, for example, to see the response

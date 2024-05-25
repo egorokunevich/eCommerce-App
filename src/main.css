@@ -14,13 +14,19 @@
   font-family: 'FuturaMediumC';
   src:
     local('Futura Medium C'),
-    url('/fonts/FuturaMediumC.ttf') format('truetype');
+    url('/assets/fonts/FuturaMediumC.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Futura Light';
   src:
     local('Futura Light'),
-    url('/fonts/Futura Light.otf') format('opentype');
+    url('/assets/fonts/Futura Light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Inter';
+  src:
+    local('Inter'),
+    url('/public/assets/fonts/Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
 }
 
 * {
