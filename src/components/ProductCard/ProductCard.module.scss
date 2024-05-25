@@ -1,0 +1,103 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 250px;
+  width: 100%;
+  background-color: #ccd4d1;
+  transition: 0.3s;
+  cursor: pointer;
+  border-radius: 15px;
+
+  &:hover {
+    background-color: #cdf7d3;
+    box-shadow:
+      2px 2px 15px 0px rgba(0, 0, 0, 0.5),
+      -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+
+    & .pic {
+      scale: 110%;
+    }
+
+    & .description {
+      color: rgb(0, 0, 0);
+    }
+
+    & .name {
+      color: rgb(0, 0, 0);
+    }
+  }
+}
+
+.pic-container {
+  position: relative;
+  max-height: 250px;
+  max-width: 250px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px 15px 0 0;
+
+  &::after {
+    content: '';
+    display: block;
+    padding-bottom: 100%;
+  }
+}
+
+.pic {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  scale: 100%;
+  transition: 0.3s;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0.6rem;
+  gap: 0.7rem;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: 1.2rem;
+  font-family: 'Inter';
+  color: rgb(40, 40, 40);
+}
+
+.description {
+  font-family: 'FuturaMediumC';
+  font-size: 1.2rem;
+  color: rgb(40, 40, 40);
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.price-value {
+  font-weight: bold;
+  font-family: 'Inter';
+  font-size: 1.3rem;
+
+  &.crossed {
+    text-decoration: line-through;
+    color: rgb(88, 88, 88);
+  }
+}

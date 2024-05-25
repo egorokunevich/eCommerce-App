@@ -1,6 +1,7 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
+import { CatalogPage } from '@pages/CatalogPage/CatalogPage';
 import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
@@ -58,6 +59,16 @@ export class PageRouting {
     };
     return route;
   }
+  private createCatalogRoute(): Routes {
+    const route = {
+      pathname: '/catalog',
+      element: (): Element => {
+        return new CatalogPage().createPage();
+      },
+    };
+    return route;
+  }
+
   private createRegistrationRoute(): Routes {
     const route = {
       pathname: '/registration',
@@ -81,7 +92,8 @@ export class PageRouting {
           return new HomePage().createPage();
         },
       },
-      this.createRoute('/catalog', 'Catalog'),
+      this.createCatalogRoute(),
+      // this.createRoute('/catalog', 'Catalog'),
       this.createRoute('/about', 'About'),
       // this.createRoute('/registration', 'Registration'),
       this.createRoute('/basket', 'Basket'),

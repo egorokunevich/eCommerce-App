@@ -23,7 +23,7 @@ interface FetchError extends Error {
 }
 
 export class ClientService {
-  private apiRoot!: ByProjectKeyRequestBuilder;
+  public apiRoot!: ByProjectKeyRequestBuilder;
 
   // Change current flow/client
   public async updateClient(client: Client, isLoggedIn: boolean): Promise<void> {
