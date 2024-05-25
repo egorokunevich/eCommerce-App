@@ -37,27 +37,31 @@
     }
 
     &.sale {
-      &::after {
-        transform: translate(-50%, -25%);
+      & .sale-percentage {
+        transform: translate(-50%, -15%);
       }
     }
   }
 
   &.sale {
-    &::after {
+    & .sale-percentage {
       position: absolute;
       content: 'SALE';
+      display: flex;
+      justify-content: center;
+      align-items: center;
       color: white;
       width: 100%;
-      height: 2.5rem;
+      height: 3rem;
       font-size: 2rem;
       top: 0;
       left: 50%;
-      text-align: center;
       padding-top: 1rem;
+      padding-bottom: 0.5rem;
       transform: translate(-50%, -100%);
       background-color: rgba(253, 1, 1, 0.459);
       transition: 0.3s;
+      z-index: 20;
     }
   }
 }
