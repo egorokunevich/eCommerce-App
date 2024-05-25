@@ -1,6 +1,8 @@
 import type { Product, TypedMoney } from '@commercetools/platform-sdk';
 import { div, img, span } from '@control.ts/min';
 
+import productsService from '@services/ProductsService';
+
 import styles from './ProductCard.module.scss';
 
 export class ProductCard {
@@ -10,6 +12,17 @@ export class ProductCard {
       : null;
 
     const card = div({ className: styles.card });
+    if (this.checkForDiscount(product)) {
+      card.classList.add(styles.sale);
+    }
+
+    if (this.checkForDiscount(product)) {
+      const salePercentage = div({
+        className: styles.salePercentage,
+        txt: await this.countDiscountPercentage(product),
+      });
+      card.append(salePercentage);
+    }
 
     const picContainer = div({ className: styles.picContainer });
 
@@ -43,12 +56,15 @@ export class ProductCard {
       const currency = span({ className: styles.priceValue, txt: priceData.value.currencyCode });
 
       const finalPrice = div({ className: styles.price });
-      const discountedPrice = span({ className: styles.priceValue });
-      const discountedData = priceData.discounted?.value;
+
       finalPrice.append(basePrice);
-      if (discountedData) {
+      if (this.checkForDiscount(product) && priceData.discounted) {
+        const discountedPrice = span({ className: styles.priceValue });
+        const discountedData = priceData.discounted?.value;
         discountedPrice.innerText = this.countPrice(discountedData).toString();
+        discountedPrice.classList.add(styles.discount);
         basePrice.classList.add(styles.crossed);
+        finalPrice.classList.add(styles.withDiscount);
         finalPrice.append(discountedPrice);
       }
       finalPrice.append(currency);
@@ -59,6 +75,29 @@ export class ProductCard {
 
   private countPrice(price: TypedMoney): number {
     return price.centAmount / 10 ** price.fractionDigits; // Divide by 100 cents
+  }
+
+  private checkForDiscount(product: Product): boolean {
+    if (product.masterData.current.masterVariant.prices) {
+      return !!product.masterData.current.masterVariant.prices[0].discounted;
+    }
+    return false;
+  }
+
+  private async countDiscountPercentage(product: Product): Promise<string> {
+    let percentage = `null`;
+    if (
+      product.masterData.current.masterVariant.prices &&
+      product.masterData.current.masterVariant.prices[0].discounted
+    ) {
+      const discount = await productsService.getDiscountById(
+        product.masterData.current.masterVariant.prices[0].discounted?.discount.id,
+      );
+      if (discount.body.value.type === 'relative') {
+        percentage = `${discount.body.value.permyriad / 100}% SALE`;
+      }
+    }
+    return percentage;
   }
 }
 

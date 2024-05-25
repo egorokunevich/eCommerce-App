@@ -1,4 +1,4 @@
-import type { ClientResponse, Product, ProductPagedQueryResponse } from '@commercetools/platform-sdk';
+import type { ClientResponse, Product, ProductDiscount, ProductPagedQueryResponse } from '@commercetools/platform-sdk';
 
 import clientService from './ClientService';
 
@@ -19,6 +19,10 @@ export class ProductsService {
       })
       .get()
       .execute();
+  }
+
+  public async getDiscountById(ID: string): Promise<ClientResponse<ProductDiscount>> {
+    return clientService.apiRoot.productDiscounts().withId({ ID }).get().execute();
   }
 }
 

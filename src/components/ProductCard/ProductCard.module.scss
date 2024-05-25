@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,9 +10,10 @@
   transition: 0.3s;
   cursor: pointer;
   border-radius: 15px;
+  overflow: hidden;
 
   &:hover {
-    background-color: #cdf7d3;
+    background-color: #e0f7e3;
     box-shadow:
       2px 2px 15px 0px rgba(0, 0, 0, 0.5),
       -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
@@ -26,6 +28,40 @@
 
     & .name {
       color: rgb(0, 0, 0);
+    }
+
+    & .with-discount {
+      &::before {
+        background-color: rgb(255, 0, 0);
+      }
+    }
+
+    &.sale {
+      & .sale-percentage {
+        transform: translate(-50%, -15%);
+      }
+    }
+  }
+
+  &.sale {
+    & .sale-percentage {
+      position: absolute;
+      content: 'SALE';
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      width: 100%;
+      height: 3rem;
+      font-size: 2rem;
+      top: 0;
+      left: 50%;
+      padding-top: 1rem;
+      padding-bottom: 0.5rem;
+      transform: translate(-50%, -100%);
+      background-color: rgba(253, 1, 1, 0.459);
+      transition: 0.3s;
+      z-index: 20;
     }
   }
 }
@@ -42,10 +78,18 @@
   align-items: center;
   border-radius: 15px 15px 0 0;
 
-  &::after {
+  &::before {
     content: '';
     display: block;
     padding-bottom: 100%;
+  }
+
+  &::after {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 -2px 5px 0 rgba(0, 0, 0, 0.103);
   }
 }
 
@@ -85,19 +129,61 @@
 }
 
 .price {
+  position: relative;
   display: flex;
   align-items: center;
   width: 100%;
   gap: 0.5rem;
+
+  &.with-discount {
+    &::before {
+      position: absolute;
+      content: '';
+      width: 200%;
+      height: 50px;
+      left: 0;
+      top: 0;
+      transform: translate(-25%, -10%);
+      background-color: rgb(228, 55, 55);
+      transition: 0.3s;
+    }
+
+    & .price-value {
+      color: rgb(255, 255, 255);
+    }
+
+    & .crossed {
+      color: rgb(148, 148, 148);
+    }
+  }
 }
 
 .price-value {
   font-weight: bold;
   font-family: 'Inter';
-  font-size: 1.3rem;
+  font-size: 1.5rem;
+  z-index: 10;
 
   &.crossed {
-    text-decoration: line-through;
+    position: relative;
+    overflow: hidden;
+    padding: 0 5px;
+
+    &::after {
+      position: absolute;
+      content: '';
+      width: 100%;
+      height: 2px;
+      background-color: rgb(148, 148, 148);
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) rotate(-15deg);
+    }
     color: rgb(88, 88, 88);
+  }
+
+  &.discount {
+    font-size: 1.5rem;
+    color: #ffffff;
   }
 }
