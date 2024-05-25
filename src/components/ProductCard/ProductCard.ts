@@ -10,6 +10,9 @@ export class ProductCard {
       : null;
 
     const card = div({ className: styles.card });
+    if (this.checkForDiscount(product)) {
+      card.classList.add(styles.sale);
+    }
 
     const picContainer = div({ className: styles.picContainer });
 
@@ -48,7 +51,9 @@ export class ProductCard {
       finalPrice.append(basePrice);
       if (discountedData) {
         discountedPrice.innerText = this.countPrice(discountedData).toString();
+        discountedPrice.classList.add(styles.discount);
         basePrice.classList.add(styles.crossed);
+        finalPrice.classList.add(styles.withDiscount);
         finalPrice.append(discountedPrice);
       }
       finalPrice.append(currency);
@@ -59,6 +64,13 @@ export class ProductCard {
 
   private countPrice(price: TypedMoney): number {
     return price.centAmount / 10 ** price.fractionDigits; // Divide by 100 cents
+  }
+
+  private checkForDiscount(product: Product): boolean {
+    if (product.masterData.current.masterVariant.prices) {
+      return !!product.masterData.current.masterVariant.prices[0].discounted;
+    }
+    return false;
   }
 }
 

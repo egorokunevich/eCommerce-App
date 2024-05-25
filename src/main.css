@@ -26,7 +26,7 @@
   font-family: 'Inter';
   src:
     local('Inter'),
-    url('/public/assets/fonts/Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+    url('/assets/fonts/Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
 }
 
 * {
