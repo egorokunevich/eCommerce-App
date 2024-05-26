@@ -1,25 +1,20 @@
-import type { Product, TypedMoney } from '@commercetools/platform-sdk';
+import type { ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
 import { div, img, span } from '@control.ts/min';
-
-import productsService from '@services/ProductsService';
 
 import styles from './ProductCard.module.scss';
 
 export class ProductCard {
-  public async createCard(product: Product): Promise<HTMLDivElement> {
-    const picData = product.masterData.current.masterVariant.images
-      ? product.masterData.current.masterVariant.images[0]
-      : null;
+  public createCard(product: ProductProjection): HTMLDivElement {
+    const picData = product.masterVariant.images ? product.masterVariant.images[0] : null;
 
     const card = div({ className: styles.card });
+    // If a product is on sale, add sale class to a card
     if (this.checkForDiscount(product)) {
       card.classList.add(styles.sale);
-    }
 
-    if (this.checkForDiscount(product)) {
       const salePercentage = div({
         className: styles.salePercentage,
-        txt: await this.countDiscountPercentage(product),
+        txt: this.countDiscountPercentage(product),
       });
       card.append(salePercentage);
     }
@@ -28,12 +23,12 @@ export class ProductCard {
 
     const pic = img({ className: styles.pic, src: picData?.url, alt: picData?.label });
     const infoContainer = div({ className: styles.infoContainer });
-    const name = div({ className: styles.name, txt: product.masterData.current.name['en-US'] });
+    const name = div({ className: styles.name, txt: product.name['en-US'] });
 
     const description = div({ className: styles.description });
 
-    if (product.masterData.current.description) {
-      description.innerText = product.masterData.current.description['en-US'];
+    if (product.description) {
+      description.innerText = product.description['en-US'];
     }
 
     const price = this.getProductPriceElement(product) ?? div({ txt: 'null' });
@@ -45,9 +40,9 @@ export class ProductCard {
     return card;
   }
 
-  private getProductPriceElement(product: Product): HTMLElement | null {
-    if (product.masterData.current.masterVariant.prices) {
-      const priceData = product.masterData.current.masterVariant.prices[0];
+  private getProductPriceElement(product: ProductProjection): HTMLElement | null {
+    if (product.masterVariant.prices) {
+      const priceData = product.masterVariant.prices[0];
 
       const baseData = priceData.value;
 
@@ -77,27 +72,22 @@ export class ProductCard {
     return price.centAmount / 10 ** price.fractionDigits; // Divide by 100 cents
   }
 
-  private checkForDiscount(product: Product): boolean {
-    if (product.masterData.current.masterVariant.prices) {
-      return !!product.masterData.current.masterVariant.prices[0].discounted;
+  private checkForDiscount(product: ProductProjection): boolean {
+    if (product.masterVariant.prices) {
+      return !!product.masterVariant.prices[0].discounted;
     }
     return false;
   }
 
-  private async countDiscountPercentage(product: Product): Promise<string> {
-    let percentage = `null`;
-    if (
-      product.masterData.current.masterVariant.prices &&
-      product.masterData.current.masterVariant.prices[0].discounted
-    ) {
-      const discount = await productsService.getDiscountById(
-        product.masterData.current.masterVariant.prices[0].discounted?.discount.id,
-      );
-      if (discount.body.value.type === 'relative') {
-        percentage = `${discount.body.value.permyriad / 100}% SALE`;
-      }
+  private countDiscountPercentage(product: ProductProjection): string {
+    let sale = '0% SALE';
+    if (product.masterVariant.prices && product.masterVariant.prices[0].discounted) {
+      const newPrice = product.masterVariant.prices[0].discounted.value.centAmount;
+      const oldPrice = product.masterVariant.prices[0].value.centAmount;
+      const percentage = Math.round(100 - (newPrice * 100) / oldPrice);
+      sale = `${percentage}% SALE`;
     }
-    return percentage;
+    return sale;
   }
 }
 
