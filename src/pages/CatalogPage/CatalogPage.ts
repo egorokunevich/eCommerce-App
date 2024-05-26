@@ -1,5 +1,7 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
 import { div, h2, img, section } from '@control.ts/min';
+import noUiSlider, { PipsMode } from 'nouislider';
+import 'nouislider/dist/nouislider.css';
 
 import productCard from '@components/ProductCard/ProductCard';
 import productsService from '@services/ProductsService';
@@ -14,6 +16,7 @@ export class CatalogPage {
   private currentSorting: SortingOptions = null;
   private priceSortIcon: HTMLElement = div({});
   private nameSortIcon: HTMLElement = div({});
+  private priceRange: (string | number)[] | null = null;
 
   public createPage(): HTMLElement {
     const productsContent = div({ className: styles.productsContent });
@@ -58,24 +61,49 @@ export class CatalogPage {
     sortContainer.append(sortTypeIcon, sortIcon);
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting === 'price asc') {
-        const filtered = await productsService.getSortedByPrice('desc');
-        this.updateCards(filtered);
         this.currentSorting = 'price desc';
-        sortIcon.classList.remove(styles.hidden);
-        sortIcon.classList.add(styles.reverse);
+        this.sortByPrice();
+        this.priceSortIcon.classList.remove(styles.hidden);
+        this.priceSortIcon.classList.add(styles.reverse);
       } else {
-        const filtered = await productsService.getSortedByPrice('asc');
-        this.updateCards(filtered);
         this.currentSorting = 'price asc';
-        sortIcon.classList.remove(styles.hidden);
-        sortIcon.classList.remove(styles.reverse);
+        this.sortByPrice();
+        this.priceSortIcon.classList.remove(styles.hidden, styles.reverse);
       }
+      this.priceSortIcon.classList.add(styles.active);
       this.nameSortIcon.classList.add(styles.hidden);
-      sortIcon.classList.add(styles.active);
-      this.nameSortIcon.classList.remove(styles.active);
+      this.nameSortIcon.classList.remove(styles.active, styles.reverse);
     });
 
     return sortContainer;
+  }
+
+  private async sortByPrice(): Promise<void> {
+    if (this.currentSorting === 'price asc') {
+      const filtered = this.priceRange
+        ? await productsService.getSortedByPrice('asc', this.priceRange)
+        : await productsService.getSortedByPrice('asc');
+      this.updateCards(filtered);
+    } else if (this.currentSorting === 'price desc') {
+      const filtered = this.priceRange
+        ? await productsService.getSortedByPrice('desc', this.priceRange)
+        : await productsService.getSortedByPrice('desc');
+      this.updateCards(filtered);
+    }
+  }
+
+  private async sortByName(): Promise<void> {
+    if (this.currentSorting === 'name asc') {
+      const filtered = this.priceRange
+        ? await productsService.getSortedByName('asc', this.priceRange)
+        : await productsService.getSortedByName('asc');
+      this.updateCards(filtered);
+    } else if (this.currentSorting === 'name desc') {
+      const filtered = this.priceRange
+        ? await productsService.getSortedByName('desc', this.priceRange)
+        : await productsService.getSortedByName('desc');
+      this.updateCards(filtered);
+    }
   }
 
   private createNameSortingOption(): HTMLElement {
@@ -87,21 +115,19 @@ export class CatalogPage {
     sortContainer.append(sortTypeIcon, sortIcon);
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting === 'name asc') {
-        const filtered = await productsService.getSortedByName('desc');
-        this.updateCards(filtered);
         this.currentSorting = 'name desc';
-        sortIcon.classList.remove(styles.hidden);
-        sortIcon.classList.add(styles.reverse);
+        this.sortByName();
+        this.nameSortIcon.classList.remove(styles.hidden);
+        this.nameSortIcon.classList.add(styles.reverse);
       } else {
-        const filtered = await productsService.getSortedByName('asc');
-        this.updateCards(filtered);
         this.currentSorting = 'name asc';
-        sortIcon.classList.remove(styles.hidden);
-        sortIcon.classList.remove(styles.reverse);
+        this.sortByName();
+        this.nameSortIcon.classList.remove(styles.hidden);
+        this.nameSortIcon.classList.remove(styles.reverse);
       }
       this.priceSortIcon.classList.add(styles.hidden);
-      sortIcon.classList.add(styles.active);
-      this.priceSortIcon.classList.remove(styles.active);
+      this.nameSortIcon.classList.add(styles.active);
+      this.priceSortIcon.classList.remove(styles.active, styles.reverse);
     });
 
     return sortContainer;
@@ -113,24 +139,85 @@ export class CatalogPage {
     const sortTypeIcon = div({ className: styles.cancelIcon });
     sortContainer.append(sortTypeIcon);
     sortContainer.addEventListener('click', async () => {
-      if (this.currentSorting !== null) {
-        const filtered = await productsService.getProducts();
-        this.updateCards(filtered);
-        this.currentSorting = null;
-        this.priceSortIcon.classList.add(styles.hidden);
-        this.nameSortIcon.classList.add(styles.hidden);
-        this.priceSortIcon.classList.remove(styles.active);
-        this.nameSortIcon.classList.remove(styles.active);
-      }
+      this.cancelSorting();
     });
 
     return sortContainer;
   }
 
-  private createSidebar(): HTMLElement {
-    const sidebar = div({ className: styles.sidebar, txt: 'add categories' });
+  private async cancelSorting(): Promise<void> {
+    if (this.currentSorting !== null) {
+      if (this.priceRange) {
+        this.filterByRange(this.priceRange);
+      } else {
+        const products = await productsService.getProducts();
+        this.updateCards(products);
+      }
 
+      this.currentSorting = null;
+      this.priceSortIcon.classList.add(styles.hidden);
+      this.nameSortIcon.classList.add(styles.hidden);
+      this.priceSortIcon.classList.remove(styles.active, styles.reverse);
+      this.nameSortIcon.classList.remove(styles.active, styles.reverse);
+    }
+  }
+
+  private createSidebar(): HTMLElement {
+    const sidebar = div({ className: styles.sidebar });
+    const filtersContainer = div({ className: styles.filtersContainer });
+    const filtersTitle = div({ className: styles.filtersTitle, txt: 'FILTERS' });
+    filtersContainer.append(filtersTitle, this.createPriceRange());
+    sidebar.append(filtersContainer);
     return sidebar;
+  }
+
+  private createPriceRange(): HTMLElement {
+    const container = div({ className: styles.rangeContainer, id: 'range-container' });
+    const range = div({ className: styles.range });
+
+    noUiSlider.cssClasses.tooltip += ` ${styles.tooltip}`;
+    noUiSlider.cssClasses.markerHorizontal += ` ${styles.marker}`;
+    noUiSlider.cssClasses.pipsHorizontal += ` ${styles.pips}`;
+
+    const slider = noUiSlider.create(range, {
+      range: { min: 0, max: 50 },
+      start: [0, 50],
+      step: 1,
+      connect: true,
+      tooltips: {
+        to(value) {
+          return `${value} €`;
+        },
+      },
+      pips: {
+        mode: PipsMode.Range,
+        density: 5,
+      },
+    });
+
+    slider.on('end', (rangeData) => {
+      this.priceRange = rangeData;
+      if (this.currentSorting === 'price asc' || this.currentSorting === 'price desc') {
+        this.sortByPrice();
+      } else if (this.currentSorting === 'name asc' || this.currentSorting === 'name desc') {
+        this.sortByName();
+      } else {
+        this.filterByRange(rangeData);
+      }
+    });
+
+    container.append(range);
+
+    return container;
+  }
+
+  private async filterByRange(range: (string | number)[]): Promise<void> {
+    const min = Math.floor(+range[0]) * 100; // Lower bound in cents
+    const max = Math.floor(+range[1]) * 100; // Upper bound in cents
+    const productsData = await productsService.getFilteredByPriceRange(min, max);
+    const products = productsData.body.results;
+
+    this.updateCards(products);
   }
 
   private async createCards(productsArray?: ProductProjection[]): Promise<void> {

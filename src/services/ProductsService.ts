@@ -3,6 +3,7 @@ import type {
   ProductDiscount,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
+  ProductProjectionPagedSearchResponse,
 } from '@commercetools/platform-sdk';
 
 import clientService from './ClientService';
@@ -48,30 +49,84 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getSortedByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
-    const response = await this.productsRoot
-      .search()
-      .get({
-        queryArgs: {
-          sort: [`price ${order}`],
-        },
-      })
-      .execute();
+  public async getSortedByPrice(
+    order: 'asc' | 'desc',
+    range?: (string | number)[] | null,
+  ): Promise<ProductProjection[]> {
+    let filter = '';
+    if (range) {
+      const min = Math.floor(+range[0]) * 100; // Lower bound in cents
+      const max = Math.floor(+range[1]) * 100; // Upper bound in cents
+      filter = `variants.price.centAmount:range (${min} to ${max})`;
+    }
+    const response = range
+      ? await this.productsRoot
+          .search()
+          .get({
+            queryArgs: {
+              filter,
+              sort: [`price ${order}`],
+            },
+          })
+          .execute()
+      : await this.productsRoot
+          .search()
+          .get({
+            queryArgs: {
+              sort: [`price ${order}`],
+            },
+          })
+          .execute();
 
     return response.body.results;
   }
 
-  public async getSortedByName(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
+  public async getSortedByName(
+    order: 'asc' | 'desc',
+    range?: (string | number)[] | null,
+  ): Promise<ProductProjection[]> {
+    let filter = '';
+    if (range) {
+      const min = Math.floor(+range[0]) * 100; // Lower bound in cents
+      const max = Math.floor(+range[1]) * 100; // Upper bound in cents
+      filter = `variants.price.centAmount:range (${min} to ${max})`;
+    }
+    const response = range
+      ? await this.productsRoot
+          .search()
+          .get({
+            queryArgs: {
+              filter,
+              sort: [`name.en-US ${order}`],
+            },
+          })
+          .execute()
+      : await this.productsRoot
+          .search()
+          .get({
+            queryArgs: {
+              sort: [`name.en-US ${order}`],
+            },
+          })
+          .execute();
+
+    return response.body.results;
+  }
+
+  public async getFilteredByPriceRange(
+    min: string | number,
+    max: string | number,
+  ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
     const response = await this.productsRoot
       .search()
       .get({
         queryArgs: {
-          sort: [`name.en-US ${order}`],
+          filter: [`variants.prices.value.centAmount:range (${min} to ${max})`],
         },
       })
       .execute();
 
-    return response.body.results;
+    return response;
   }
 }
 
