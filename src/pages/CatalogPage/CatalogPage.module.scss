@@ -114,19 +114,36 @@
   }
 }
 
+.sort-container:has(.active) {
+  background-color: #e0f7e3b7;
+  &:hover {
+    background-color: #e0f7e3;
+  }
+
+  & .price-icon,
+  & .name-icon {
+    transform: translateX(0);
+  }
+}
+
 .price-icon {
   width: 20px;
   height: 20px;
   background-image: url('/assets/icons/price.png');
   background-size: cover;
   background-repeat: no-repeat;
+  transform: translateX(50%);
+  transition: 0.2s;
 }
+
 .name-icon {
   width: 20px;
   height: 20px;
   background-image: url('/assets/icons/name.png');
   background-size: cover;
   background-repeat: no-repeat;
+  transform: translateX(50%);
+  transition: 0.2s;
 }
 .cancel-icon {
   width: 20px;
@@ -141,13 +158,18 @@
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 1;
+  transition: 0.2s;
+
+  .active {
+    display: block;
+  }
 
   &.reverse {
     transform: rotate(180deg);
   }
 
   &.hidden {
-    // opacity: 0;
-    display: none;
+    opacity: 0;
+    // display: none;
   }
 }

@@ -56,17 +56,14 @@ export class CatalogPage {
     this.priceSortIcon = sortIcon;
     sortIcon.classList.add(styles.hidden);
     sortContainer.append(sortTypeIcon, sortIcon);
-    sortContainer.title = 'Show cheap first';
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting === 'price asc') {
-        sortContainer.title = 'Show cheap first';
         const filtered = await productsService.getSortedByPrice('desc');
         this.updateCards(filtered);
         this.currentSorting = 'price desc';
         sortIcon.classList.remove(styles.hidden);
         sortIcon.classList.add(styles.reverse);
       } else {
-        sortContainer.title = 'Show expensive first';
         const filtered = await productsService.getSortedByPrice('asc');
         this.updateCards(filtered);
         this.currentSorting = 'price asc';
@@ -74,6 +71,8 @@ export class CatalogPage {
         sortIcon.classList.remove(styles.reverse);
       }
       this.nameSortIcon.classList.add(styles.hidden);
+      sortIcon.classList.add(styles.active);
+      this.nameSortIcon.classList.remove(styles.active);
     });
 
     return sortContainer;
@@ -86,17 +85,14 @@ export class CatalogPage {
     this.nameSortIcon = sortIcon;
     sortIcon.classList.add(styles.hidden);
     sortContainer.append(sortTypeIcon, sortIcon);
-    sortContainer.title = 'Show A-Z';
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting === 'name asc') {
-        sortContainer.title = 'Show A-Z';
         const filtered = await productsService.getSortedByName('desc');
         this.updateCards(filtered);
         this.currentSorting = 'name desc';
         sortIcon.classList.remove(styles.hidden);
         sortIcon.classList.add(styles.reverse);
       } else {
-        sortContainer.title = 'Show Z-A';
         const filtered = await productsService.getSortedByName('asc');
         this.updateCards(filtered);
         this.currentSorting = 'name asc';
@@ -104,6 +100,8 @@ export class CatalogPage {
         sortIcon.classList.remove(styles.reverse);
       }
       this.priceSortIcon.classList.add(styles.hidden);
+      sortIcon.classList.add(styles.active);
+      this.priceSortIcon.classList.remove(styles.active);
     });
 
     return sortContainer;
@@ -114,7 +112,6 @@ export class CatalogPage {
     sortContainer.classList.add(styles.cancel);
     const sortTypeIcon = div({ className: styles.cancelIcon });
     sortContainer.append(sortTypeIcon);
-    sortContainer.title = 'Cancel sorting';
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting !== null) {
         const filtered = await productsService.getProducts();
@@ -122,6 +119,8 @@ export class CatalogPage {
         this.currentSorting = null;
         this.priceSortIcon.classList.add(styles.hidden);
         this.nameSortIcon.classList.add(styles.hidden);
+        this.priceSortIcon.classList.remove(styles.active);
+        this.nameSortIcon.classList.remove(styles.active);
       }
     });
 
