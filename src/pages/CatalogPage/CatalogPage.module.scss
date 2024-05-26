@@ -62,13 +62,13 @@
 
 .filter-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  width: 100%;
   height: 100%;
   background-color: #ccd4d1;
   border-radius: 15px;
   overflow: hidden;
+  padding: 0 1rem;
 }
 
 .transparent {
@@ -103,6 +103,13 @@
   width: 20px;
   height: 20px;
   background-image: url('/assets/icons/price.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.name-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url('/assets/icons/name.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

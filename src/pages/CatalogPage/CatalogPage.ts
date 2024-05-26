@@ -6,10 +6,12 @@ import productsService from '@services/ProductsService';
 
 import styles from './CatalogPage.module.scss';
 
+type SortingOptions = 'price asc' | 'price desc' | 'name asc' | 'name desc' | null;
+
 export class CatalogPage {
   private pageWrapper: HTMLElement = section({ className: styles.wrapper });
   private cardsContainer: HTMLElement = div({ className: styles.cardsContainer });
-  private currentSorting: 'price asc' | 'price desc' | null = null;
+  private currentSorting: SortingOptions = null;
 
   public createPage(): HTMLElement {
     const productsContent = div({ className: styles.productsContent });
@@ -32,7 +34,7 @@ export class CatalogPage {
 
     const filterControls = div({ className: styles.filterControls });
 
-    filterControls.append(this.createPriceSortingOption());
+    filterControls.append(this.createPriceSortingOption(), this.createNameSortingOption());
 
     barContainer.append(categoryTitle, filterControls);
     return barContainer;
@@ -43,15 +45,41 @@ export class CatalogPage {
     const sortTypeIcon = div({ className: styles.priceIcon });
     const sortIcon = div({ className: styles.sortIcon });
     sortContainer.append(sortTypeIcon, sortIcon);
+    sortContainer.title = 'Show cheap first';
     sortContainer.addEventListener('click', async () => {
       if (this.currentSorting === 'price asc') {
-        const filtered = await productsService.getFilteredByPrice('desc');
+        sortContainer.title = 'Show cheap first';
+        const filtered = await productsService.getSortedByPrice('desc');
         this.updateCards(filtered);
         this.currentSorting = 'price desc';
       } else {
-        const filtered = await productsService.getFilteredByPrice('asc');
+        sortContainer.title = 'Show expensive first';
+        const filtered = await productsService.getSortedByPrice('asc');
         this.updateCards(filtered);
         this.currentSorting = 'price asc';
+      }
+    });
+
+    return sortContainer;
+  }
+
+  private createNameSortingOption(): HTMLElement {
+    const sortContainer = div({ className: styles.sortContainer });
+    const sortTypeIcon = div({ className: styles.nameIcon });
+    const sortIcon = div({ className: styles.sortIcon });
+    sortContainer.append(sortTypeIcon, sortIcon);
+    sortContainer.title = 'Show A-Z';
+    sortContainer.addEventListener('click', async () => {
+      if (this.currentSorting === 'name asc') {
+        sortContainer.title = 'Show A-Z';
+        const filtered = await productsService.getSortedByName('desc');
+        this.updateCards(filtered);
+        this.currentSorting = 'name desc';
+      } else {
+        sortContainer.title = 'Show Z-A';
+        const filtered = await productsService.getSortedByName('asc');
+        this.updateCards(filtered);
+        this.currentSorting = 'name asc';
       }
     });
 

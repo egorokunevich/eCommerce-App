@@ -48,12 +48,25 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getFilteredByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
+  public async getSortedByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
     const response = await this.productsRoot
       .search()
       .get({
         queryArgs: {
           sort: [`price ${order}`],
+        },
+      })
+      .execute();
+
+    return response.body.results;
+  }
+
+  public async getSortedByName(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
+    const response = await this.productsRoot
+      .search()
+      .get({
+        queryArgs: {
+          sort: [`name.en-US ${order}`],
         },
       })
       .execute();
