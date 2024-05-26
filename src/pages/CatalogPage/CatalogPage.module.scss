@@ -60,7 +60,16 @@
   font-family: 'Futura Light';
 }
 
-.filter-controls {
+.sorting-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #ccd4d1;
+  border-radius: 15px;
+}
+
+.sorting-controls {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,7 +77,6 @@
   background-color: #ccd4d1;
   border-radius: 15px;
   overflow: hidden;
-  padding: 0 1rem;
 }
 
 .transparent {
@@ -93,9 +101,16 @@
   align-items: center;
   padding: 1rem;
   cursor: pointer;
+  transition: 0.2s;
 
   &:hover {
     background-color: #e0f7e3;
+    &.cancel {
+      background-color: rgb(209, 122, 122);
+      & .cancel-icon {
+        filter: invert(100%);
+      }
+    }
   }
 }
 
@@ -113,10 +128,26 @@
   background-size: cover;
   background-repeat: no-repeat;
 }
+.cancel-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url('/assets/icons/cancel.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
 .sort-icon {
   width: 20px;
   height: 20px;
-  background-image: url('/assets/icons/sort.png');
   background-size: cover;
   background-repeat: no-repeat;
+  opacity: 1;
+
+  &.reverse {
+    transform: rotate(180deg);
+  }
+
+  &.hidden {
+    // opacity: 0;
+    display: none;
+  }
 }
