@@ -1,5 +1,6 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
 import { div, h2, img, section } from '@control.ts/min';
+import type { API } from 'nouislider';
 import noUiSlider, { PipsMode } from 'nouislider';
 import 'nouislider/dist/nouislider.css';
 
@@ -171,7 +172,7 @@ export class CatalogPage {
     return sidebar;
   }
 
-  private configureNoUiSlider() {
+  private createRangeSlider(container: HTMLElement): API {
     noUiSlider.cssClasses.tooltip += ` ${styles.noUiTooltip}`;
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarker}`;
     noUiSlider.cssClasses.pipsHorizontal += ` ${styles.noUiPips}`;
@@ -181,15 +182,8 @@ export class CatalogPage {
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarkerHorizontal}`;
     noUiSlider.cssClasses.markerLarge += ` ${styles.noUiMarkerLarge}`;
     noUiSlider.cssClasses.valueHorizontal += ` ${styles.noUiValueHorizontal}`;
-  }
 
-  private createPriceRange(): HTMLElement {
-    const container = div({ className: styles.rangeContainer, id: 'range-container' });
-    const range = div({ className: styles.range });
-
-    this.configureNoUiSlider();
-
-    const slider = noUiSlider.create(range, {
+    const slider = noUiSlider.create(container, {
       range: {
         min: [0],
         '20%': [10, 1],
@@ -211,6 +205,15 @@ export class CatalogPage {
         density: 4,
       },
     });
+
+    return slider;
+  }
+
+  private createPriceRange(): HTMLElement {
+    const container = div({ className: styles.rangeContainer, id: 'range-container' });
+    const range = div({ className: styles.range });
+
+    const slider = this.createRangeSlider(range);
 
     slider.on('end', (rangeData) => {
       this.priceRange = rangeData;
