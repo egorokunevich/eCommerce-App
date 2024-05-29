@@ -24,6 +24,15 @@ export class ProductsService {
   public async getDiscountById(ID: string): Promise<ClientResponse<ProductDiscount>> {
     return clientService.apiRoot.productDiscounts().withId({ ID }).get().execute();
   }
+
+  public async getProductById(productId: string): Promise<ClientResponse<Product>> {
+    return this.productsRoot
+      .withId({
+        ID: productId,
+      })
+      .get()
+      .execute();
+  }
 }
 
 const productsService = new ProductsService();

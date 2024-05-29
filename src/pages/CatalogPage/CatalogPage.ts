@@ -1,5 +1,6 @@
 import type { Product } from '@commercetools/platform-sdk';
 import { div, section } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
 import productCard from '@components/ProductCard/ProductCard';
 import productsService from '@services/ProductsService';
@@ -27,6 +28,10 @@ export class CatalogPage {
 
     products.forEach(async (product) => {
       const card = await productCard.createCard(product);
+      const productId = product.id;
+      card.addEventListener('click', () => {
+        Router.go(`/catalog/${productId}`, { addToHistory: true });
+      });
       this.cardsContainer.append(card);
     });
   }
