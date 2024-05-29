@@ -6,6 +6,7 @@ import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import RegistrationPage from '@pages/RegistrationPage';
+import { UserProfile } from '@pages/UserProfile/create-user-pages';
 
 export class PageRouting {
   private createRoute(pathname: string, name: string): Routes {
@@ -52,9 +53,7 @@ export class PageRouting {
           Router.go('/');
           return new HomePage().createPage();
         }
-        const ele = document.createElement('h2');
-        ele.innerText = 'Profile';
-        return ele;
+        return new UserProfile().createUserPage();
       },
     };
     return route;
