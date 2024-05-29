@@ -171,10 +171,7 @@ export class CatalogPage {
     return sidebar;
   }
 
-  private createPriceRange(): HTMLElement {
-    const container = div({ className: styles.rangeContainer, id: 'range-container' });
-    const range = div({ className: styles.range });
-
+  private configureNoUiSlider() {
     noUiSlider.cssClasses.tooltip += ` ${styles.noUiTooltip}`;
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarker}`;
     noUiSlider.cssClasses.pipsHorizontal += ` ${styles.noUiPips}`;
@@ -184,6 +181,13 @@ export class CatalogPage {
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarkerHorizontal}`;
     noUiSlider.cssClasses.markerLarge += ` ${styles.noUiMarkerLarge}`;
     noUiSlider.cssClasses.valueHorizontal += ` ${styles.noUiValueHorizontal}`;
+  }
+
+  private createPriceRange(): HTMLElement {
+    const container = div({ className: styles.rangeContainer, id: 'range-container' });
+    const range = div({ className: styles.range });
+
+    this.configureNoUiSlider();
 
     const slider = noUiSlider.create(range, {
       range: {
