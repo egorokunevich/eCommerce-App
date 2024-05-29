@@ -175,12 +175,25 @@ export class CatalogPage {
     const container = div({ className: styles.rangeContainer, id: 'range-container' });
     const range = div({ className: styles.range });
 
-    noUiSlider.cssClasses.tooltip += ` ${styles.tooltip}`;
-    noUiSlider.cssClasses.markerHorizontal += ` ${styles.marker}`;
-    noUiSlider.cssClasses.pipsHorizontal += ` ${styles.pips}`;
+    noUiSlider.cssClasses.tooltip += ` ${styles.noUiTooltip}`;
+    noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarker}`;
+    noUiSlider.cssClasses.pipsHorizontal += ` ${styles.noUiPips}`;
+    noUiSlider.cssClasses.horizontal += ` ${styles.noUiHorizontal}`;
+    noUiSlider.cssClasses.handle += ` ${styles.noUiHandle}`;
+    noUiSlider.cssClasses.connect += ` ${styles.noUiConnect}`;
+    noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarkerHorizontal}`;
+    noUiSlider.cssClasses.markerLarge += ` ${styles.noUiMarkerLarge}`;
+    noUiSlider.cssClasses.valueHorizontal += ` ${styles.noUiValueHorizontal}`;
 
     const slider = noUiSlider.create(range, {
-      range: { min: 0, max: 50 },
+      range: {
+        min: [0],
+        '20%': [10, 1],
+        '40%': [20, 1],
+        '60%': [30, 1],
+        '80%': [40, 1],
+        max: [50],
+      },
       start: [0, 50],
       step: 1,
       connect: true,
@@ -191,7 +204,7 @@ export class CatalogPage {
       },
       pips: {
         mode: PipsMode.Range,
-        density: 5,
+        density: 4,
       },
     });
 

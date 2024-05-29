@@ -210,17 +210,55 @@
   width: 100%;
 }
 
-.tooltip {
+.noUiTooltip {
   font-size: 1rem;
   background: transparent;
   backdrop-filter: blur(5px) brightness(90%);
   color: white;
 }
 
-.marker {
+.noUiMarker {
   max-height: 10px;
+  background-color: #bcbcbc;
 }
 
-.pips {
+.noUiPips {
   height: 20px;
+}
+
+.noUiHorizontal {
+  height: 8px;
+
+  & .noUiHandle {
+    width: 20px;
+    height: 20px;
+    right: -10px;
+
+    &::before {
+      height: 10px;
+      top: 4px;
+      left: 7px;
+    }
+
+    &::after {
+      height: 10px;
+      top: 4px;
+      left: 10px;
+    }
+  }
+}
+
+.noUiMarkerHorizontal {
+  &.noUiMarkerLarge {
+    height: 7px;
+    background-color: #aaa;
+  }
+}
+
+.noUiValueHorizontal {
+  font-size: 0.8rem;
+}
+
+.noUiConnect {
+  background-color: #e0f7e3;
 }
