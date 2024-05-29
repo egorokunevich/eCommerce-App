@@ -74,7 +74,7 @@ export default class RegistrationPage {
     return regSection;
   }
 
-  private createFormComponents(): HTMLElement {
+  public createFormComponents(): HTMLElement {
     this.userMainInput = [
       this.createFormLabel('email', validationText.email),
       this.createFormLabel('password', validationText.password),
