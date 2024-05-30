@@ -1,4 +1,4 @@
-import type { Product, ProductProjection } from '@commercetools/platform-sdk';
+import type { ProductProjection } from '@commercetools/platform-sdk';
 import { div, h2, img, section } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
@@ -143,9 +143,9 @@ export class CatalogPage {
     }
     products.forEach(async (product) => {
       const card = await productCard.createCard(product);
-      const productId = product.id;
-       card.addEventListener('click', () => {
-        Router.go(`/catalog/${productId}`, { addToHistory: true });
+      const productKey = product.key;
+      card.addEventListener('click', () => {
+        Router.go(`/catalog/${productKey}`, { addToHistory: true });
       });
       this.cardsContainer.append(card);
     });

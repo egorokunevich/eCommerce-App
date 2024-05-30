@@ -35,7 +35,7 @@ export class ProductsService {
     return clientService.apiRoot.productDiscounts().withId({ ID }).get().execute();
   }
 
-  public async getProductById(productId: string): Promise<ClientResponse<Product>> {
+  public async getProductById(productId: string): Promise<ClientResponse<ProductProjection>> {
     return this.productsRoot
       .withId({
         ID: productId,

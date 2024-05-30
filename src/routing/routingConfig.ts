@@ -23,16 +23,16 @@ export class PageRouting {
 
   private createItemRoute(): Routes {
     return {
-      pathname: '/catalog/:productId',
+      pathname: '/catalog/:productKey',
       element: (): Element => {
         const { params } = routeLocation();
-        const { productId } = params;
-        if (!productId) {
+        const { productKey } = params;
+        if (!productKey) {
           const ele = document.createElement('h2');
-          ele.innerText = 'Product ID not found';
+          ele.innerText = 'Product is not found';
           return ele;
         }
-        const productDetailsPage = new ProductDetailsPage().createPage(productId);
+        const productDetailsPage = new ProductDetailsPage().createPage(productKey);
         const btnBack = document.createElement('button');
         btnBack.innerText = 'Go back';
         btnBack.onclick = (): void => {
