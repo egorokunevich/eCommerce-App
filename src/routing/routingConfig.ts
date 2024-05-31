@@ -5,7 +5,9 @@ import { CatalogPage } from '@pages/CatalogPage/CatalogPage';
 import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
+import { ProductDetailsPage } from '@pages/ProductDetailsPage/ProductDetailsPage';
 import RegistrationPage from '@pages/RegistrationPage';
+import { UserProfile } from '@pages/UserProfile/create-user-pages';
 
 export class PageRouting {
   private createRoute(pathname: string, name: string): Routes {
@@ -21,24 +23,31 @@ export class PageRouting {
 
   private createItemRoute(): Routes {
     return {
-      pathname: '/catalog/:id',
+      pathname: '/catalog/:productKey',
       element: (): Element => {
-        const ele = document.createElement('h2');
-        ele.innerText = `CATALOG with details about ${routeLocation().params.id}`;
+        const { params } = routeLocation();
+        const { productKey } = params;
+        if (!productKey) {
+          const ele = document.createElement('h2');
+          ele.innerText = 'Product is not found';
+          return ele;
+        }
+        const productDetailsPage = new ProductDetailsPage().createPage(productKey);
         const btnBack = document.createElement('button');
         btnBack.innerText = 'Go back';
         btnBack.onclick = (): void => {
           Router.back();
         };
         const btnForward = document.createElement('button');
-        btnForward.innerText = 'Go Forward';
+        btnForward.innerText = 'Buy';
         btnForward.onclick = (): void => {
           Router.forward();
         };
 
-        ele.appendChild(btnBack);
-        ele.appendChild(btnForward);
-        return ele;
+        productDetailsPage.appendChild(btnBack);
+        productDetailsPage.appendChild(btnForward);
+
+        return productDetailsPage;
       },
     };
   }
@@ -52,9 +61,7 @@ export class PageRouting {
           Router.go('/');
           return new HomePage().createPage();
         }
-        const ele = document.createElement('h2');
-        ele.innerText = 'Profile';
-        return ele;
+        return new UserProfile().createUserPage();
       },
     };
     return route;
@@ -68,6 +75,23 @@ export class PageRouting {
     };
     return route;
   }
+
+  /* private createDetailsRoute(): Routes {
+    const route = {
+      pathname: '/card/:productId',
+      element: (): Element => {
+        const params = routeLocation().params;
+        const productId = params.productId;
+        if (!productId) {
+          const ele = document.createElement('h2');
+          ele.innerText = 'Product ID not found';
+          return ele;
+        }
+        return new ProductDetailsPage().createPage();
+      },
+    };
+    return route;
+  } */
 
   private createRegistrationRoute(): Routes {
     const route = {
@@ -94,6 +118,7 @@ export class PageRouting {
       },
       this.createCatalogRoute(),
       // this.createRoute('/catalog', 'Catalog'),
+      // this.createDetailsRoute(),
       this.createRoute('/about', 'About'),
       // this.createRoute('/registration', 'Registration'),
       this.createRoute('/basket', 'Basket'),

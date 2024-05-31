@@ -36,6 +36,15 @@ export class ProductsService {
     return clientService.apiRoot.productDiscounts().withId({ ID }).get().execute();
   }
 
+  public async getProductById(productId: string): Promise<ClientResponse<ProductProjection>> {
+    return this.productsRoot
+      .withId({
+        ID: productId,
+      })
+      .get()
+      .execute();
+  }
+
   public async filterDiscounted(upperPrice: number): Promise<ProductProjection[]> {
     const response = await this.productsRoot
       .search()
