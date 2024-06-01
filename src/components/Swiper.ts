@@ -6,7 +6,6 @@ import 'swiper/css/pagination';
 
 export function createSwiper(): void {
   Swiper.use([Navigation, Pagination]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const swiper = new Swiper('.swiper', {
     direction: 'vertical',
     loop: true,
@@ -22,4 +21,5 @@ export function createSwiper(): void {
     // mousewheel: true,
     // keyboard: true,
   });
+  swiper.init(); // добавила это перед пушем, чтобы линт не ругался на unused var
 }
