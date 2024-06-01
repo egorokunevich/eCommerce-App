@@ -7,9 +7,13 @@ import type {
 } from '@commercetools/platform-sdk';
 
 import clientService from './ClientService';
+import Attributes from '@enums/Attributes';
 
 export class ProductsService {
   private productsRoot;
+  private priceRangeFilterQuery: string = '';
+  private temperatureFilterQuery: string = '';
+  private timeFilterQuery: string = '';
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -74,7 +78,9 @@ export class ProductsService {
           .get({
             queryArgs: {
               filter,
+              markMatchingVariants: true,
               sort: [`price ${order}`],
+              // sort: [`price ${order}`],
             },
           })
           .execute()
@@ -82,7 +88,9 @@ export class ProductsService {
           .search()
           .get({
             queryArgs: {
+              markMatchingVariants: true,
               sort: [`price ${order}`],
+              // sort: [`price ${order}`],
             },
           })
           .execute();
@@ -136,6 +144,69 @@ export class ProductsService {
       .execute();
 
     return response;
+  }
+
+  // public async getFilteredByAttribute(
+  //   attribute: string,
+  //   value: number | number[],
+  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
+  //   const filterValue = Array.isArray(value) ? `range (${value[0]} to ${value[1]})` : `"${value}"`;
+  //   const response = await this.productsRoot
+  //     .search()
+  //     .get({
+  //       queryArgs: {
+  //         filter: [`variants.attributes.${attribute}:${filterValue}`],
+  //       },
+  //     })
+  //     .execute();
+
+  //   return response;
+  // }
+  public async getFilteredByAttributes(): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
+    const response = await this.productsRoot
+      .search()
+      .get({
+        queryArgs: {
+          filter: [this.priceRangeFilterQuery, this.temperatureFilterQuery, this.timeFilterQuery],
+        },
+      })
+      .execute();
+
+    return response;
+  }
+
+  public getPriceRangeFilterQuery(min: string | number, max: string | number): string {
+    const filterQuery = `variants.prices.value.centAmount:range (${min} to ${max})`;
+
+    this.priceRangeFilterQuery = filterQuery;
+
+    return filterQuery;
+  }
+
+  public getTemperatureFilterQuery(value: number | number[]): string {
+    const filterValue = Array.isArray(value) ? `range (${value[0]} to ${value[1]})` : `"${value}"`;
+    const filterQuery = `variants.attributes.${Attributes.brewingTemperature}:${filterValue}`;
+
+    this.temperatureFilterQuery = filterQuery;
+
+    return filterQuery;
+  }
+
+  public getTimeFilterQuery(value: number | number[]): string {
+    const filterValue = Array.isArray(value) ? `range (${value[0]} to ${value[1]})` : `"${value}"`;
+    const filterQuery = `variants.attributes.${Attributes.brewingTime}:${filterValue}`;
+
+    this.timeFilterQuery = filterQuery;
+
+    return filterQuery;
+  }
+
+  public clearTemperatureQuery() {
+    this.temperatureFilterQuery = '';
+  }
+
+  public clearTimeQuery() {
+    this.timeFilterQuery = '';
   }
 }
 

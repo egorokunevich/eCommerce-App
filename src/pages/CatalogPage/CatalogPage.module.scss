@@ -187,6 +187,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
 }
 
 .filters-title {
@@ -203,6 +204,7 @@
   width: 100%;
   padding: 1rem 2rem;
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 // Library Slider styles
@@ -261,4 +263,48 @@
 
 .noUiConnect {
   background-color: #e0f7e3;
+}
+
+// Filter styles
+
+.attribute-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+  gap: 0.4rem;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+
+  & .select {
+    width: 85%;
+  }
+}
+
+.select-name {
+  font-family: 'Futura Light';
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+}
+
+.select-cancel {
+  width: 20px;
+  height: 20px;
+  background-image: url('/assets/icons/cancel.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  scale: 100%;
+  transition: 0.1s;
+
+  &:hover {
+    scale: 110%;
+  }
 }
