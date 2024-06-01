@@ -1,3 +1,7 @@
+@import 'swiper/css/bundle';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
 .card {
   position: relative;
   display: flex;
@@ -211,12 +215,7 @@
   background-color: aliceblue;
 
   & .pic-container {
-    margin: 1rem;
-    flex-basis: 100%;
-    align-self: flex-start;
-    max-height: 60%;
-    max-width: 30%;
-    border-radius: 15px;
+    display: none;
   }
 
   & .info-container {
@@ -249,4 +248,46 @@
 .attributes {
   margin-top: 5px;
   font-size: 1rem;
+}
+
+.swiper {
+  width: 600px;
+  height: 300px;
+}
+
+.swiper-wrapper {
+  margin: 0;
+  display: flex;
+}
+
+.swiper-slide {
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiper-button-next {
+  margin: 0;
+}
+
+.swiper-button-prev {
+  margin: 0;
+}
+
+.swiper-pagination {
+  margin: 0;
+}
+
+.swiper-button-next,
+.swiper-button-prev,
+.swiper-pagination {
+  color: #777676;
 }
