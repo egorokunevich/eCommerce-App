@@ -54,29 +54,30 @@ export class ProductDetails extends ProductCard {
 
   private createAttributesContainer(product: ProductProjection): HTMLDivElement {
     const attributesContainer = div({ className: styles.attributesContainer });
-    const attributesLength = product.masterVariant.attributes?.length;
-    if (attributesLength) {
-      for (let i = 1; i <= attributesLength; i++) {
+    const { attributes } = product.masterVariant;
+    if (attributes && attributes.length > 0) {
+      for (let i = 0; i < attributes.length; i++) {
         let attributeField;
-        if (i === 1) {
+        if (attributes[i].name === 'full_description') {
           attributeField = p({
             className: styles.attributes,
-            txt: `${this.getAttributeValue(product, i)}`,
+            txt: `${this.getAttributeValue(product, i + 1)}`,
           });
+          attributesContainer.insertBefore(attributeField, attributesContainer.firstChild);
         } else {
           attributeField = p({
             className: styles.attributes,
-            txt: `${this.getAttributeName(product, i)}: ${this.getAttributeValue(product, i)}`,
+            txt: `${this.getAttributeName(product, i + 1)}: ${this.getAttributeValue(product, i + 1)}`,
           });
+          attributesContainer.append(attributeField);
         }
-        attributesContainer.append(attributeField);
       }
     }
     return attributesContainer;
   }
 
   private getAttributeValue(product: ProductProjection, index: number): string {
-    const customFields = product.variants[0].attributes;
+    const customFields = product.masterVariant.attributes;
     if (customFields && customFields.length >= index) {
       const attribute = customFields[index - 1];
       return attribute.value.toString();
@@ -85,7 +86,7 @@ export class ProductDetails extends ProductCard {
   }
 
   private getAttributeName(product: ProductProjection, index: number): string {
-    const customFields = product.variants[0].attributes;
+    const customFields = product.masterVariant.attributes;
     if (customFields && customFields.length >= index) {
       const attribute = customFields[index - 1];
       return attribute.name.toString();
