@@ -3,7 +3,6 @@ import type {
   ProductDiscount,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
-  ProductProjectionPagedSearchResponse,
 } from '@commercetools/platform-sdk';
 
 import Attributes from '@enums/Attributes';
@@ -17,6 +16,7 @@ export class ProductsService {
   private temperatureFilterQuery = '';
   private timeFilterQuery = '';
   private weightFilterQuery = '';
+  private searchQuery = '';
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -66,118 +66,42 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getSortedByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
-    const filter = [
-      this.priceRangeFilterQuery,
-      this.temperatureFilterQuery,
-      this.timeFilterQuery,
-      this.weightFilterQuery,
-    ];
+  private getFuzzyLevel(): number {
+    // When the search string consists of 1 or 2 characters, the only allowed value is: 0
+    // When the search string consists of 3 to 5 characters, the only allowed values are: 0, 1
+    // When the search string consists of more than 5 characters, the only allowed values are: 0, 1, 2"
+    const { length } = this.searchQuery;
+    let fuzzyLevel = 0;
+    switch (true) {
+      case length <= 2:
+        fuzzyLevel = 0;
+        break;
 
-    this.sortQuery = `price ${order}`;
+      case length >= 3 && length < 5:
+        fuzzyLevel = 1;
+        break;
 
-    const response = this.isFilterQueryEmpty(filter)
-      ? await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              sort: [`price ${order}`],
-              // sort: [`price ${order}`],
-            },
-          })
-          .execute()
-      : await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              filter,
-              markMatchingVariants: true,
-              sort: [`price ${order}`],
-              // sort: [`price ${order}`],
-            },
-          })
-          .execute();
+      case length >= 5:
+        fuzzyLevel = 2;
+        break;
 
-    return response.body.results;
+      default:
+        fuzzyLevel = 0;
+        break;
+    }
+    return fuzzyLevel;
   }
 
-  private isFilterQueryEmpty(filter: string[]): boolean {
-    return filter.every((item) => item === '');
-  }
-
-  public async getSortedByName(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
-    const filter = [
-      this.priceRangeFilterQuery,
-      this.temperatureFilterQuery,
-      this.timeFilterQuery,
-      this.weightFilterQuery,
-    ];
-
-    this.sortQuery = `name.en-US ${order}`;
-
-    const response = this.isFilterQueryEmpty(filter)
-      ? await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              sort: [`name.en-US ${order}`],
-            },
-          })
-          .execute()
-      : await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              filter,
-              sort: [`name.en-US ${order}`],
-            },
-          })
-          .execute();
-
-    return response.body.results;
-  }
-
-  // public async getFilteredByPriceRange(
-  //   min: string | number,
-  //   max: string | number,
-  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
-  //   const response = await this.productsRoot
-  //     .search()
-  //     .get({
-  //       queryArgs: {
-  //         filter: [`variants.prices.value.centAmount:range (${min} to ${max})`],
-  //       },
-  //     })
-  //     .execute();
-
-  //   return response;
-  // }
-
-  // public async getFilteredByAttribute(
-  //   attribute: string,
-  //   value: number | number[],
-  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
-  //   const filterValue = Array.isArray(value) ? `range (${value[0]} to ${value[1]})` : `"${value}"`;
-  //   const response = await this.productsRoot
-  //     .search()
-  //     .get({
-  //       queryArgs: {
-  //         filter: [`variants.attributes.${attribute}:${filterValue}`],
-  //       },
-  //     })
-  //     .execute();
-
-  //   return response;
-  // }
-  public async getFilteredByAttributes(): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
+  public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
+    const fuzzyLevel = this.getFuzzyLevel();
     const response = await this.productsRoot
       .search()
       .get({
         queryArgs: {
           markMatchingVariants: true,
+          'text.en-US': this.searchQuery,
+          fuzzy: true,
+          fuzzyLevel,
           filter: [
             this.priceRangeFilterQuery,
             this.temperatureFilterQuery,
@@ -185,11 +109,20 @@ export class ProductsService {
             this.weightFilterQuery,
           ],
           sort: [this.sortQuery],
+          expand: ['categories[*]'],
         },
       })
       .execute();
 
-    return response;
+    return response.body.results;
+  }
+
+  public getSearchQuery(searchText: string): void {
+    this.searchQuery = searchText;
+  }
+
+  public getSortingQuery(sortBy: 'price' | 'name.en-US', order: 'asc' | 'desc'): void {
+    this.sortQuery = `${sortBy} ${order}`;
   }
 
   public getPriceRangeFilterQuery(min: string | number, max: string | number): string {
@@ -225,6 +158,10 @@ export class ProductsService {
     this.weightFilterQuery = filterQuery;
 
     return filterQuery;
+  }
+
+  public clearSearchQuery(): void {
+    this.searchQuery = '';
   }
 
   public clearTemperatureQuery(): void {
