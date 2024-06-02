@@ -73,6 +73,8 @@ export class ProductsService {
         queryArgs: {
           markMatchingVariants: true,
           'text.en-US': this.searchQuery,
+          fuzzy: true,
+          fuzzyLevel: 2,
           filter: [
             this.priceRangeFilterQuery,
             this.temperatureFilterQuery,
