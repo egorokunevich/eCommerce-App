@@ -90,7 +90,7 @@ export class ProductsService {
 
   public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
     const fuzzyLevel = this.getFuzzyLevel();
-    const fuzzy = this.searchQuery ? true : false;
+    const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
     const response = await this.productsRoot
       .search()
       .get({
