@@ -41,12 +41,9 @@ export class ProductCard {
   private getProductPriceElement(product: ProductProjection): HTMLElement | null {
     if (product.masterVariant.prices) {
       const priceData = product.masterVariant.prices[0];
-
       const baseData = priceData.value;
 
-      const basePrice = span({ className: styles.priceValue, txt: this.countPrice(baseData).toString() });
-
-      const currency = span({ className: styles.priceValue, txt: priceData.value.currencyCode });
+      const basePrice = span({ className: styles.priceValue, txt: this.formatPrice(baseData) });
 
       const finalPrice = div({ className: styles.price });
 
@@ -54,20 +51,24 @@ export class ProductCard {
       if (this.checkForDiscount(product) && priceData.discounted) {
         const discountedPrice = span({ className: styles.priceValue });
         const discountedData = priceData.discounted?.value;
-        discountedPrice.innerText = this.countPrice(discountedData).toString();
+        discountedPrice.innerText = this.formatPrice(discountedData);
         discountedPrice.classList.add(styles.discount);
         basePrice.classList.add(styles.crossed);
         finalPrice.classList.add(styles.withDiscount);
         finalPrice.append(discountedPrice);
       }
-      finalPrice.append(currency);
       return finalPrice;
     }
     return null;
   }
 
-  private countPrice(price: TypedMoney): number {
-    return price.centAmount / 10 ** price.fractionDigits; // Divide by 100 cents
+  private formatPrice(price: TypedMoney): string {
+    const value = price.centAmount / 10 ** price.fractionDigits;
+    return value.toLocaleString(undefined, {
+      style: 'currency',
+      currency: price.currencyCode,
+      minimumFractionDigits: 2,
+    });
   }
 
   private checkForDiscount(product: ProductProjection): boolean {
