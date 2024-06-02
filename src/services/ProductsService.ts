@@ -66,7 +66,34 @@ export class ProductsService {
     return response.body.results;
   }
 
+  private getFuzzyLevel(): number {
+    // When the search string consists of 1 or 2 characters, the only allowed value is: 0
+    // When the search string consists of 3 to 5 characters, the only allowed values are: 0, 1
+    // When the search string consists of more than 5 characters, the only allowed values are: 0, 1, 2"
+    const { length } = this.searchQuery;
+    let fuzzyLevel = 0;
+    switch (true) {
+      case length <= 2:
+        fuzzyLevel = 0;
+        break;
+
+      case length >= 3 && length < 5:
+        fuzzyLevel = 1;
+        break;
+
+      case length >= 5:
+        fuzzyLevel = 2;
+        break;
+
+      default:
+        fuzzyLevel = 0;
+        break;
+    }
+    return fuzzyLevel;
+  }
+
   public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
+    const fuzzyLevel = this.getFuzzyLevel();
     const response = await this.productsRoot
       .search()
       .get({
@@ -74,7 +101,7 @@ export class ProductsService {
           markMatchingVariants: true,
           'text.en-US': this.searchQuery,
           fuzzy: true,
-          fuzzyLevel: 2,
+          fuzzyLevel,
           filter: [
             this.priceRangeFilterQuery,
             this.temperatureFilterQuery,
