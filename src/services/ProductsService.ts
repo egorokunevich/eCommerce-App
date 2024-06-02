@@ -80,6 +80,7 @@ export class ProductsService {
             this.weightFilterQuery,
           ],
           sort: [this.sortQuery],
+          expand: ['categories[*]'],
         },
       })
       .execute();
@@ -128,6 +129,10 @@ export class ProductsService {
     this.weightFilterQuery = filterQuery;
 
     return filterQuery;
+  }
+
+  public clearSearchQuery(): void {
+    this.searchQuery = '';
   }
 
   public clearTemperatureQuery(): void {

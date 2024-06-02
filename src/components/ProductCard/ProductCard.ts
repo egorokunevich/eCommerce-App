@@ -4,22 +4,6 @@ import { div, img, span } from '@control.ts/min';
 import styles from './ProductCard.module.scss';
 
 export class ProductCard {
-  private imgLoadCounter = 0;
-
-  private handleImageLoadError(product: ProductProjection, image: HTMLImageElement): void {
-    if (product.masterVariant.images) {
-      // console.log(
-      //   `Failed to load an image for ${product.name[`en-US`]}. URL:(${product.masterVariant.images[0].url}). \nTrying to load another one...`,
-      // );
-      this.imgLoadCounter++;
-      if (this.imgLoadCounter > product.masterVariant.images.length - 1) {
-        return;
-      }
-      image.src = product.masterVariant.images[this.imgLoadCounter].url;
-      // img.onload = () => console.log(`Successfully loaded new image for ${product.name[`en-US`]}.`);
-    }
-  }
-
   public createCard(product: ProductProjection): HTMLDivElement {
     const picData = product.masterVariant.images ? product.masterVariant.images[0] : null;
     const card = div({ className: styles.card });
@@ -38,10 +22,6 @@ export class ProductCard {
       className: styles.pic,
       src: picData?.url,
       alt: picData?.label,
-      // onerror: () => {
-      //   this.imgLoadCounter = 0;
-      //   this.handleImageLoadError(product, pic);
-      // },
     });
     const infoContainer = div({ className: styles.infoContainer });
     const name = div({ className: styles.name, txt: product.name['en-US'] });

@@ -211,8 +211,11 @@ export class CatalogPage {
     searchBtn.addEventListener('click', () => {
       this.searchProducts(searchBar.value);
     });
-    cancelBtn.addEventListener('click', () => {
+    cancelBtn.addEventListener('click', async () => {
       searchBar.value = '';
+      productsService.clearSearchQuery();
+      const products = await productsService.getFilteredAndSortedProducts();
+      this.updateCards(products);
     });
     barContainer.append(searchBar, searchBtn, cancelBtn);
     searchContainer.append(searchTitle, barContainer);
