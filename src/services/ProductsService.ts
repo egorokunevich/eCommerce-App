@@ -77,12 +77,8 @@ export class ProductsService {
         fuzzyLevel = 0;
         break;
 
-      case length >= 3 && length < 5:
+      case length >= 3:
         fuzzyLevel = 1;
-        break;
-
-      case length >= 5:
-        fuzzyLevel = 2;
         break;
 
       default:
@@ -94,13 +90,14 @@ export class ProductsService {
 
   public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
     const fuzzyLevel = this.getFuzzyLevel();
+    const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
     const response = await this.productsRoot
       .search()
       .get({
         queryArgs: {
           markMatchingVariants: true,
           'text.en-US': this.searchQuery,
-          fuzzy: true,
+          fuzzy,
           fuzzyLevel,
           filter: [
             this.priceRangeFilterQuery,
