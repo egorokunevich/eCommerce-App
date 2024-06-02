@@ -2,6 +2,7 @@ import type { ClientResponse, ProductProjection } from '@commercetools/platform-
 import { div, section } from '@control.ts/min';
 
 import productDetails from '@components/DetailsCard/DetailsCard';
+import { createSwiper } from '@components/Swiper';
 import productsService from '@services/ProductsService';
 
 import styles from './ProductDetailsPage.module.scss';
@@ -22,6 +23,7 @@ export class ProductDetailsPage {
       const product = response.body;
       const card = await productDetails.createDetails(product);
       this.detailsContainer.append(card);
+      createSwiper();
     } catch (error) {
       console.error(`Error creating details for product ${key}:`, error);
     }

@@ -1,6 +1,10 @@
 .wrapper {
   height: 100vh;
   background-color: rgb(180, 190, 161);
+
+  @media screen and (max-width: 455px) {
+    height: auto;
+  }
 }
 
 .cards-container {
@@ -12,9 +16,14 @@
   height: 70vh;
   flex-wrap: wrap;
   gap: 2rem;
+
+  @media screen and (max-width: 650px) {
+    height: auto;
+  }
 }
 
-.button {
+.btn-back,
+.btn-buy {
   width: 15%;
   height: 5%;
   margin: 5px;

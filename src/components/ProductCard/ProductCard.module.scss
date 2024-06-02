@@ -1,3 +1,7 @@
+@import 'swiper/css/bundle';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
 .card {
   position: relative;
   display: flex;
@@ -76,6 +80,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -194,6 +199,7 @@
       top: 50%;
       transform: translateY(-50%) rotate(-15deg);
     }
+
     color: rgb(88, 88, 88);
   }
 
@@ -208,31 +214,41 @@
   height: 100%;
   flex-direction: row;
   flex-wrap: wrap;
+  border-radius: 0;
+  overflow: hidden;
   background-color: aliceblue;
+  cursor: auto;
 
   & .pic-container {
-    margin: 1rem;
-    flex-basis: 100%;
-    align-self: flex-start;
-    max-height: 60%;
-    max-width: 30%;
-    border-radius: 15px;
+    display: none;
   }
 
   & .info-container {
     flex-basis: 50%;
   }
+
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+    gap: 5px;
+    height: auto;
+  }
 }
 
 .card.sale.details {
   & .sale-percentage {
-    left: 10%;
-    width: 20%;
+    left: 75%;
+    width: 30%;
+
+    @media screen and (max-width: 650px) {
+      display: none;
+    }
   }
+
   & .price {
     &::before {
-      width: 40%;
-      left: 10%;
+      width: 15rem;
+      left: 5%;
+      height: 40px;
     }
   }
 }
@@ -244,6 +260,11 @@
   padding: 5px;
   gap: 1rem;
   background-color: #ffffff;
+
+  @media screen and (max-width: 450px) {
+    flex-direction: column;
+    gap: 5px;
+  }
 }
 
 .attributes {
