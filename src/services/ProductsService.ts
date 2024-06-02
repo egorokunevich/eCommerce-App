@@ -3,7 +3,6 @@ import type {
   ProductDiscount,
   ProductProjection,
   ProductProjectionPagedQueryResponse,
-  ProductProjectionPagedSearchResponse,
 } from '@commercetools/platform-sdk';
 
 import Attributes from '@enums/Attributes';
@@ -17,6 +16,7 @@ export class ProductsService {
   private temperatureFilterQuery = '';
   private timeFilterQuery = '';
   private weightFilterQuery = '';
+  private searchQuery = '';
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -66,118 +66,13 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getSortedByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
-    const filter = [
-      this.priceRangeFilterQuery,
-      this.temperatureFilterQuery,
-      this.timeFilterQuery,
-      this.weightFilterQuery,
-    ];
-
-    this.sortQuery = `price ${order}`;
-
-    const response = this.isFilterQueryEmpty(filter)
-      ? await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              sort: [`price ${order}`],
-              // sort: [`price ${order}`],
-            },
-          })
-          .execute()
-      : await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              filter,
-              markMatchingVariants: true,
-              sort: [`price ${order}`],
-              // sort: [`price ${order}`],
-            },
-          })
-          .execute();
-
-    return response.body.results;
-  }
-
-  private isFilterQueryEmpty(filter: string[]): boolean {
-    return filter.every((item) => item === '');
-  }
-
-  public async getSortedByName(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
-    const filter = [
-      this.priceRangeFilterQuery,
-      this.temperatureFilterQuery,
-      this.timeFilterQuery,
-      this.weightFilterQuery,
-    ];
-
-    this.sortQuery = `name.en-US ${order}`;
-
-    const response = this.isFilterQueryEmpty(filter)
-      ? await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              sort: [`name.en-US ${order}`],
-            },
-          })
-          .execute()
-      : await this.productsRoot
-          .search()
-          .get({
-            queryArgs: {
-              markMatchingVariants: true,
-              filter,
-              sort: [`name.en-US ${order}`],
-            },
-          })
-          .execute();
-
-    return response.body.results;
-  }
-
-  // public async getFilteredByPriceRange(
-  //   min: string | number,
-  //   max: string | number,
-  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
-  //   const response = await this.productsRoot
-  //     .search()
-  //     .get({
-  //       queryArgs: {
-  //         filter: [`variants.prices.value.centAmount:range (${min} to ${max})`],
-  //       },
-  //     })
-  //     .execute();
-
-  //   return response;
-  // }
-
-  // public async getFilteredByAttribute(
-  //   attribute: string,
-  //   value: number | number[],
-  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
-  //   const filterValue = Array.isArray(value) ? `range (${value[0]} to ${value[1]})` : `"${value}"`;
-  //   const response = await this.productsRoot
-  //     .search()
-  //     .get({
-  //       queryArgs: {
-  //         filter: [`variants.attributes.${attribute}:${filterValue}`],
-  //       },
-  //     })
-  //     .execute();
-
-  //   return response;
-  // }
-  public async getFilteredByAttributes(): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
+  public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
     const response = await this.productsRoot
       .search()
       .get({
         queryArgs: {
           markMatchingVariants: true,
+          'text.en-US': this.searchQuery,
           filter: [
             this.priceRangeFilterQuery,
             this.temperatureFilterQuery,
@@ -189,7 +84,15 @@ export class ProductsService {
       })
       .execute();
 
-    return response;
+    return response.body.results;
+  }
+
+  public getSearchQuery(searchText: string): void {
+    this.searchQuery = searchText;
+  }
+
+  public getSortingQuery(sortBy: 'price' | 'name.en-US', order: 'asc' | 'desc'): void {
+    this.sortQuery = `${sortBy} ${order}`;
   }
 
   public getPriceRangeFilterQuery(min: string | number, max: string | number): string {

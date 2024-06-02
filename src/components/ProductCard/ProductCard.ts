@@ -38,10 +38,10 @@ export class ProductCard {
       className: styles.pic,
       src: picData?.url,
       alt: picData?.label,
-      onerror: () => {
-        this.imgLoadCounter = 0;
-        this.handleImageLoadError(product, pic);
-      },
+      // onerror: () => {
+      //   this.imgLoadCounter = 0;
+      //   this.handleImageLoadError(product, pic);
+      // },
     });
     const infoContainer = div({ className: styles.infoContainer });
     const name = div({ className: styles.name, txt: product.name['en-US'] });
