@@ -6,14 +6,17 @@ import type {
   ProductProjectionPagedSearchResponse,
 } from '@commercetools/platform-sdk';
 
-import clientService from './ClientService';
 import Attributes from '@enums/Attributes';
+
+import clientService from './ClientService';
 
 export class ProductsService {
   private productsRoot;
-  private priceRangeFilterQuery: string = '';
-  private temperatureFilterQuery: string = '';
-  private timeFilterQuery: string = '';
+  private sortQuery = '';
+  private priceRangeFilterQuery = '';
+  private temperatureFilterQuery = '';
+  private timeFilterQuery = '';
+  private weightFilterQuery = '';
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -54,6 +57,7 @@ export class ProductsService {
       .search()
       .get({
         queryArgs: {
+          markMatchingVariants: true,
           filter: `variants.price.centAmount:range (* to ${upperPrice * 100})`,
         },
       })
@@ -62,22 +66,21 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getSortedByPrice(
-    order: 'asc' | 'desc',
-    range?: (string | number)[] | null,
-  ): Promise<ProductProjection[]> {
-    let filter = '';
-    if (range) {
-      const min = Math.floor(+range[0]) * 100; // Lower bound in cents
-      const max = Math.floor(+range[1]) * 100; // Upper bound in cents
-      filter = `variants.price.centAmount:range (${min} to ${max})`;
-    }
-    const response = range
+  public async getSortedByPrice(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
+    const filter = [
+      this.priceRangeFilterQuery,
+      this.temperatureFilterQuery,
+      this.timeFilterQuery,
+      this.weightFilterQuery,
+    ];
+
+    this.sortQuery = `price ${order}`;
+
+    const response = this.isFilterQueryEmpty(filter)
       ? await this.productsRoot
           .search()
           .get({
             queryArgs: {
-              filter,
               markMatchingVariants: true,
               sort: [`price ${order}`],
               // sort: [`price ${order}`],
@@ -88,6 +91,7 @@ export class ProductsService {
           .search()
           .get({
             queryArgs: {
+              filter,
               markMatchingVariants: true,
               sort: [`price ${order}`],
               // sort: [`price ${order}`],
@@ -98,22 +102,26 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getSortedByName(
-    order: 'asc' | 'desc',
-    range?: (string | number)[] | null,
-  ): Promise<ProductProjection[]> {
-    let filter = '';
-    if (range) {
-      const min = Math.floor(+range[0]) * 100; // Lower bound in cents
-      const max = Math.floor(+range[1]) * 100; // Upper bound in cents
-      filter = `variants.price.centAmount:range (${min} to ${max})`;
-    }
-    const response = range
+  private isFilterQueryEmpty(filter: string[]): boolean {
+    return filter.every((item) => item === '');
+  }
+
+  public async getSortedByName(order: 'asc' | 'desc'): Promise<ProductProjection[]> {
+    const filter = [
+      this.priceRangeFilterQuery,
+      this.temperatureFilterQuery,
+      this.timeFilterQuery,
+      this.weightFilterQuery,
+    ];
+
+    this.sortQuery = `name.en-US ${order}`;
+
+    const response = this.isFilterQueryEmpty(filter)
       ? await this.productsRoot
           .search()
           .get({
             queryArgs: {
-              filter,
+              markMatchingVariants: true,
               sort: [`name.en-US ${order}`],
             },
           })
@@ -122,6 +130,8 @@ export class ProductsService {
           .search()
           .get({
             queryArgs: {
+              markMatchingVariants: true,
+              filter,
               sort: [`name.en-US ${order}`],
             },
           })
@@ -130,21 +140,21 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getFilteredByPriceRange(
-    min: string | number,
-    max: string | number,
-  ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
-    const response = await this.productsRoot
-      .search()
-      .get({
-        queryArgs: {
-          filter: [`variants.prices.value.centAmount:range (${min} to ${max})`],
-        },
-      })
-      .execute();
+  // public async getFilteredByPriceRange(
+  //   min: string | number,
+  //   max: string | number,
+  // ): Promise<ClientResponse<ProductProjectionPagedSearchResponse>> {
+  //   const response = await this.productsRoot
+  //     .search()
+  //     .get({
+  //       queryArgs: {
+  //         filter: [`variants.prices.value.centAmount:range (${min} to ${max})`],
+  //       },
+  //     })
+  //     .execute();
 
-    return response;
-  }
+  //   return response;
+  // }
 
   // public async getFilteredByAttribute(
   //   attribute: string,
@@ -167,7 +177,14 @@ export class ProductsService {
       .search()
       .get({
         queryArgs: {
-          filter: [this.priceRangeFilterQuery, this.temperatureFilterQuery, this.timeFilterQuery],
+          markMatchingVariants: true,
+          filter: [
+            this.priceRangeFilterQuery,
+            this.temperatureFilterQuery,
+            this.timeFilterQuery,
+            this.weightFilterQuery,
+          ],
+          sort: [this.sortQuery],
         },
       })
       .execute();
@@ -201,12 +218,29 @@ export class ProductsService {
     return filterQuery;
   }
 
-  public clearTemperatureQuery() {
+  public getWeightFilterQuery(value: string): string {
+    const filterValue = `"${value}"`;
+    const filterQuery = `variants.attributes.${Attributes.weight}:${filterValue}`;
+
+    this.weightFilterQuery = filterQuery;
+
+    return filterQuery;
+  }
+
+  public clearTemperatureQuery(): void {
     this.temperatureFilterQuery = '';
   }
 
-  public clearTimeQuery() {
+  public clearTimeQuery(): void {
     this.timeFilterQuery = '';
+  }
+
+  public clearWeightQuery(): void {
+    this.weightFilterQuery = '';
+  }
+
+  public clearSortQuery(): void {
+    this.sortQuery = '';
   }
 }
 

@@ -6,10 +6,10 @@ import { Router } from 'vanilla-routing';
 import 'nouislider/dist/nouislider.css';
 
 import productCard from '@components/ProductCard/ProductCard';
+import clientService from '@services/ClientService';
 import productsService from '@services/ProductsService';
 
 import styles from './CatalogPage.module.scss';
-import clientService from '@services/ClientService';
 
 type SortingOptions = 'price asc' | 'price desc' | 'name asc' | 'name desc' | null;
 
@@ -19,7 +19,6 @@ export class CatalogPage {
   private currentSorting: SortingOptions = null;
   private priceSortIcon: HTMLElement = div({});
   private nameSortIcon: HTMLElement = div({});
-  private priceRange: (string | number)[] | null = null;
 
   public createPage(): HTMLElement {
     const productsContent = div({ className: styles.productsContent });
@@ -57,7 +56,6 @@ export class CatalogPage {
   private createPriceSortingOption(): HTMLElement {
     const sortContainer = div({ className: styles.sortContainer });
     const sortTypeIcon = div({ className: styles.priceIcon });
-    // const sortIcon = div({ className: styles.sortIcon });
     const sortIcon = img({ className: styles.sortIcon, src: '/assets/icons/up-arrow.png' });
     this.priceSortIcon = sortIcon;
     sortIcon.classList.add(styles.hidden);
@@ -84,32 +82,48 @@ export class CatalogPage {
   private async sortByPrice(): Promise<void> {
     try {
       if (this.currentSorting === 'price asc') {
-        const filtered = this.priceRange
-          ? await productsService.getSortedByPrice('asc', this.priceRange)
-          : await productsService.getSortedByPrice('asc');
-        this.updateCards(filtered);
+        const filtered = await productsService.getSortedByPrice('asc');
+        this.updateCards(this.sortWithDiscounted(filtered, 'asc'));
       } else if (this.currentSorting === 'price desc') {
-        const filtered = this.priceRange
-          ? await productsService.getSortedByPrice('desc', this.priceRange)
-          : await productsService.getSortedByPrice('desc');
-        this.updateCards(filtered);
+        const filtered = await productsService.getSortedByPrice('desc');
+        this.updateCards(this.sortWithDiscounted(filtered, 'desc'));
       }
     } catch (e) {
       clientService.handleAuthError(e);
     }
   }
 
+  private sortWithDiscounted(products: ProductProjection[], order: 'asc' | 'desc'): ProductProjection[] {
+    const sorted = [...products];
+    return sorted.sort((a, b) => {
+      let priceA = 0;
+      if (a.masterVariant.prices) {
+        if (a.masterVariant.prices[0].discounted) {
+          priceA = a.masterVariant.prices[0].discounted.value.centAmount;
+        } else {
+          priceA = a.masterVariant.prices[0].value.centAmount;
+        }
+      }
+      let priceB = 0;
+      if (b.masterVariant.prices) {
+        if (b.masterVariant.prices[0].discounted) {
+          priceB = b.masterVariant.prices[0].discounted.value.centAmount;
+        } else {
+          priceB = b.masterVariant.prices[0].value.centAmount;
+        }
+      }
+
+      return order === 'asc' ? priceA - priceB : priceB - priceA;
+    });
+  }
+
   private async sortByName(): Promise<void> {
     try {
       if (this.currentSorting === 'name asc') {
-        const filtered = this.priceRange
-          ? await productsService.getSortedByName('asc', this.priceRange)
-          : await productsService.getSortedByName('asc');
+        const filtered = await productsService.getSortedByName('asc');
         this.updateCards(filtered);
       } else if (this.currentSorting === 'name desc') {
-        const filtered = this.priceRange
-          ? await productsService.getSortedByName('desc', this.priceRange)
-          : await productsService.getSortedByName('desc');
+        const filtered = await productsService.getSortedByName('desc');
         this.updateCards(filtered);
       }
     } catch (e) {
@@ -158,12 +172,10 @@ export class CatalogPage {
 
   private async cancelSorting(): Promise<void> {
     if (this.currentSorting !== null) {
-      if (this.priceRange) {
-        this.filterByRange(this.priceRange);
-      } else {
-        const products = await productsService.getProducts();
-        this.updateCards(products);
-      }
+      productsService.clearSortQuery();
+      const productsData = await productsService.getFilteredByAttributes();
+      const products = productsData.body.results;
+      this.updateCards(products);
 
       this.currentSorting = null;
       this.priceSortIcon.classList.add(styles.hidden);
@@ -178,13 +190,15 @@ export class CatalogPage {
     const filtersContainer = div({ className: styles.filtersContainer });
     const filtersTitle = div({ className: styles.filtersTitle, txt: 'FILTERS' });
     const temperatureFilter = this.createTemperatureAttributeFilter();
-    const timeFilter = this.createTimeAttributeFilter();
-    filtersContainer.append(filtersTitle, this.createPriceRange(), temperatureFilter, timeFilter);
+    // const timeFilter = this.createTimeAttributeFilter();
+    const weightFilter = this.createWeightAttributeFilter();
+    filtersContainer.append(filtersTitle, this.createPriceRange(), weightFilter, temperatureFilter);
     sidebar.append(filtersContainer);
     return sidebar;
   }
 
   private createRangeSlider(container: HTMLElement): API {
+    // Applying custom styles for a range slider
     noUiSlider.cssClasses.tooltip += ` ${styles.noUiTooltip}`;
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarker}`;
     noUiSlider.cssClasses.pipsHorizontal += ` ${styles.noUiPips}`;
@@ -222,35 +236,38 @@ export class CatalogPage {
   }
 
   private createPriceRange(): HTMLElement {
+    const filterWrapper = div({ className: styles.rangeWrapper, id: 'range-container' });
+    const title = div({ className: styles.selectName, txt: `Price Range` });
     const container = div({ className: styles.rangeContainer, id: 'range-container' });
     const range = div({ className: styles.range });
 
     const slider = this.createRangeSlider(range);
 
     slider.on('end', (rangeData) => {
-      this.priceRange = rangeData;
-      if (this.currentSorting === 'price asc' || this.currentSorting === 'price desc') {
-        this.sortByPrice();
-      } else if (this.currentSorting === 'name asc' || this.currentSorting === 'name desc') {
-        this.sortByName();
-      } else {
-        this.filterByRange(rangeData);
-      }
+      // this.priceRange = rangeData;
+      this.filterByRange(rangeData);
     });
 
     container.append(range);
+    filterWrapper.append(title, container);
 
-    return container;
+    return filterWrapper;
   }
 
   private async filterByRange(range: (string | number)[]): Promise<void> {
     const min = Math.floor(+range[0]) * 100; // Lower bound in cents
     const max = Math.floor(+range[1]) * 100; // Upper bound in cents
-    productsService.getPriceRangeFilterQuery(min, max);
-    const productsData = await productsService.getFilteredByAttributes();
+    productsService.getPriceRangeFilterQuery(min, max); // Create request query
+    const productsData = await productsService.getFilteredByAttributes(); // Get matching products
     const products = productsData.body.results;
 
-    this.updateCards(products);
+    if (this.currentSorting === 'price asc') {
+      this.updateCards(this.sortWithDiscounted(products, 'asc'));
+    } else if (this.currentSorting === 'price desc') {
+      this.updateCards(this.sortWithDiscounted(products, 'desc'));
+    } else {
+      this.updateCards(products);
+    }
   }
 
   private createTemperatureAttributeFilter(): HTMLElement {
@@ -260,13 +277,6 @@ export class CatalogPage {
     const selection = select({ className: styles.select, value: undefined });
     const cancelBtn = div({ className: styles.selectCancel });
     selectContainer.append(selection, cancelBtn);
-    cancelBtn.addEventListener('click', async () => {
-      optionInit.selected = true;
-      productsService.clearTemperatureQuery();
-      const productsData = await productsService.getFilteredByAttributes();
-      const products = productsData.body.results;
-      this.updateCards(products);
-    });
     const optionInit = option({
       className: styles.option,
       value: undefined,
@@ -275,11 +285,17 @@ export class CatalogPage {
       selected: true,
       hidden: true,
     });
-    const option1 = option({ className: styles.option, value: `0-25`, txt: `0 to 25 deg` });
+    cancelBtn.addEventListener('click', async () => {
+      optionInit.selected = true;
+      productsService.clearTemperatureQuery();
+      const productsData = await productsService.getFilteredByAttributes();
+      const products = productsData.body.results;
+      this.updateCards(products);
+    });
     const option2 = option({ className: styles.option, value: `25-50`, txt: `25 to 50 deg` });
     const option3 = option({ className: styles.option, value: `50-75`, txt: `50 to 75 deg` });
     const option4 = option({ className: styles.option, value: `75-100`, txt: `75 to 100 deg` });
-    selection.append(optionInit, option1, option2, option3, option4);
+    selection.append(optionInit, option2, option3, option4);
 
     selection.addEventListener('change', async () => {
       const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
@@ -293,20 +309,52 @@ export class CatalogPage {
     return container;
   }
 
-  private createTimeAttributeFilter(): HTMLElement {
+  // private createTimeAttributeFilter(): HTMLElement {
+  //   const container = div({ className: styles.attributeContainer });
+  //   const title = div({ className: styles.selectName, txt: `Brewing time` });
+  //   const selectContainer = div({ className: styles.selectContainer });
+  //   const selection = select({ className: styles.select, value: undefined });
+  //   const cancelBtn = div({ className: styles.selectCancel });
+  //   selectContainer.append(selection, cancelBtn);
+  //   cancelBtn.addEventListener('click', async () => {
+  //     optionInit.selected = true;
+  //     productsService.clearTimeQuery();
+  //     const productsData = await productsService.getFilteredByAttributes();
+  //     const products = productsData.body.results;
+  //     this.updateCards(products);
+  //   });
+  //   const optionInit = option({
+  //     className: styles.option,
+  //     value: undefined,
+  //     txt: `Select an option`,
+  //     disabled: true,
+  //     selected: true,
+  //     hidden: true,
+  //   });
+  //   const option1 = option({ className: styles.option, value: `0-5`, txt: `less than 5 min` });
+  //   const option2 = option({ className: styles.option, value: `5-10`, txt: `5 to 10 min` });
+  //   const option3 = option({ className: styles.option, value: `10-100`, txt: `more than 10 min` });
+  //   selection.append(optionInit, option1, option2, option3);
+
+  //   selection.addEventListener('change', async () => {
+  //     const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
+  //     productsService.getTimeFilterQuery(value);
+  //     const productsData = await productsService.getFilteredByAttributes();
+  //     const products = productsData.body.results;
+  //     this.updateCards(products);
+  //   });
+
+  //   container.append(title, selectContainer);
+  //   return container;
+  // }
+
+  private createWeightAttributeFilter(): HTMLElement {
     const container = div({ className: styles.attributeContainer });
-    const title = div({ className: styles.selectName, txt: `Brewing time` });
+    const title = div({ className: styles.selectName, txt: `Weight` });
     const selectContainer = div({ className: styles.selectContainer });
     const selection = select({ className: styles.select, value: undefined });
     const cancelBtn = div({ className: styles.selectCancel });
     selectContainer.append(selection, cancelBtn);
-    cancelBtn.addEventListener('click', async () => {
-      optionInit.selected = true;
-      productsService.clearTimeQuery();
-      const productsData = await productsService.getFilteredByAttributes();
-      const products = productsData.body.results;
-      this.updateCards(products);
-    });
     const optionInit = option({
       className: styles.option,
       value: undefined,
@@ -315,14 +363,21 @@ export class CatalogPage {
       selected: true,
       hidden: true,
     });
-    const option1 = option({ className: styles.option, value: `0-5`, txt: `less than 5 min` });
-    const option2 = option({ className: styles.option, value: `5-10`, txt: `5 to 10 min` });
-    const option3 = option({ className: styles.option, value: `10-100`, txt: `more than 10 min` });
-    selection.append(optionInit, option1, option2, option3);
+    cancelBtn.addEventListener('click', async () => {
+      optionInit.selected = true;
+      productsService.clearWeightQuery();
+      const productsData = await productsService.getFilteredByAttributes();
+      const products = productsData.body.results;
+      this.updateCards(products);
+    });
+    const option50 = option({ className: styles.option, value: `50g`, txt: `50g` });
+    const option100 = option({ className: styles.option, value: `100g`, txt: `100g` });
+    const option500 = option({ className: styles.option, value: `500g`, txt: `500g` });
+    const option1000 = option({ className: styles.option, value: `1000g`, txt: `1000g` });
+    selection.append(optionInit, option50, option100, option500, option1000);
 
     selection.addEventListener('change', async () => {
-      const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
-      productsService.getTimeFilterQuery(value);
+      productsService.getWeightFilterQuery(selection.value);
       const productsData = await productsService.getFilteredByAttributes();
       const products = productsData.body.results;
       this.updateCards(products);
@@ -338,6 +393,13 @@ export class CatalogPage {
       products = productsArray;
     } else {
       products = await productsService.getProducts();
+    }
+    if (productsArray?.length === 0) {
+      const message = div({
+        className: styles.noMatchingMessage,
+        txt: `Sorry! There are no matching products for this filter.`,
+      });
+      this.cardsContainer.append(message);
     }
     products.forEach(async (product) => {
       const card = await productCard.createCard(product);

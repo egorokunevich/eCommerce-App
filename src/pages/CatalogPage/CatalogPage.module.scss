@@ -13,7 +13,7 @@
 
     & .sidebar {
       max-width: 100%;
-      min-height: 10rem;
+      // min-height: 10rem;
     }
   }
 }
@@ -31,9 +31,10 @@
   background-color: #ccd4d1;
   max-width: 300px;
   width: 100%;
-  min-height: 500px;
+  // min-height: 500px;
   border-radius: 15px;
   padding: 0.5rem;
+  padding-bottom: 2rem;
 }
 
 .products-content {
@@ -200,6 +201,12 @@
 
 // Price range styles
 
+.range-wrapper {
+  width: 100%;
+  & .select-name {
+    padding: 0 1rem;
+  }
+}
 .range-container {
   width: 100%;
   padding: 1rem 2rem;
@@ -235,6 +242,12 @@
     width: 20px;
     height: 20px;
     right: -10px;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover,
+    &:active {
+      box-shadow: none;
+    }
 
     &::before {
       height: 10px;
@@ -284,6 +297,7 @@
 
   & .select {
     width: 85%;
+    cursor: pointer;
   }
 }
 
@@ -291,6 +305,10 @@
   font-family: 'Futura Light';
   text-transform: uppercase;
   letter-spacing: 0.2rem;
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .select-cancel {
@@ -307,4 +325,14 @@
   &:hover {
     scale: 110%;
   }
+}
+
+.no-matching-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  padding: 3rem 0;
+  color: #383838;
+  font-family: 'Futura Light';
 }
