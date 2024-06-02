@@ -43,3 +43,41 @@ body {
   scroll-behavior: smooth;
   position: relative;
 }
+
+.swiper-style {
+  width: 400px;
+  height: 300px;
+
+  @media screen and (max-width: 850px) {
+    width: 300px;
+    height: 250px;
+  }
+}
+
+.swiper-wrapper-style {
+  margin: 0;
+  display: flex;
+}
+
+.swiper-slide {
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-next-style::after,
+.btn-prev-style::after {
+  color: #ccd4d1;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ccd4d1;
+}

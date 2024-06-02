@@ -7,7 +7,7 @@ import 'swiper/css/pagination';
 export function createSwiper(): void {
   Swiper.use([Navigation, Pagination]);
   const swiper = new Swiper('.swiper', {
-    direction: 'vertical',
+    direction: 'horizontal',
     loop: true,
     cssMode: true,
     navigation: {
@@ -18,8 +18,6 @@ export function createSwiper(): void {
       el: '.swiper-pagination',
       clickable: true,
     },
-    // mousewheel: true,
-    // keyboard: true,
   });
-  swiper.init(); // добавила это перед пушем, чтобы линт не ругался на unused var
+  swiper.init();
 }

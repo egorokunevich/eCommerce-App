@@ -22,15 +22,20 @@ export class ProductDetails extends ProductCard {
   }
 
   private createSlider(product: ProductProjection): HTMLDivElement {
-    const sliderContainer = div({ className: styles.swiper });
-    const sliderWrapper = div({ className: styles.swiperWrapper });
-    const btnNext = div({ className: styles.swiperButtonNext });
-    const btnPrev = div({ className: styles.swiperButtonPrev });
-    const pagination = div({ className: styles.swiperPagination });
+    const sliderContainer = div({ className: 'swiper' });
+    sliderContainer.classList.add('swiper-style');
+    const sliderWrapper = div({ className: 'swiper-wrapper' });
+    sliderWrapper.classList.add('swiper-wrapper-style');
+    const btnNext = div({ className: 'swiper-button-next' });
+    btnNext.classList.add('btn-next-style');
+    const btnPrev = div({ className: 'swiper-button-prev' });
+    btnPrev.classList.add('btn-prev-style');
+    const pagination = div({ className: 'swiper-pagination' });
+    pagination.classList.add('pagination-style');
 
     const images = product.variants.map((variant) => variant.images).flat();
     images.forEach((image) => {
-      const slide = div({ className: styles.swiperSlide });
+      const slide = div({ className: 'swiper-slide' });
       const img = document.createElement('img');
       if (img && image) {
         img.src = image.url;
@@ -49,21 +54,23 @@ export class ProductDetails extends ProductCard {
 
   private createAttributesContainer(product: ProductProjection): HTMLDivElement {
     const attributesContainer = div({ className: styles.attributesContainer });
-
-    for (let i = 1; i <= 7; i++) {
-      let attributeField;
-      if (i === 1) {
-        attributeField = p({
-          className: styles.attributes,
-          txt: `${this.getAttributeValue(product, i)}`,
-        });
-      } else {
-        attributeField = p({
-          className: styles.attributes,
-          txt: `${this.getAttributeName(product, i)}: ${this.getAttributeValue(product, i)}`,
-        });
+    const attributesLength = product.masterVariant.attributes?.length;
+    if (attributesLength) {
+      for (let i = 1; i <= attributesLength; i++) {
+        let attributeField;
+        if (i === 1) {
+          attributeField = p({
+            className: styles.attributes,
+            txt: `${this.getAttributeValue(product, i)}`,
+          });
+        } else {
+          attributeField = p({
+            className: styles.attributes,
+            txt: `${this.getAttributeName(product, i)}: ${this.getAttributeValue(product, i)}`,
+          });
+        }
+        attributesContainer.append(attributeField);
       }
-      attributesContainer.append(attributeField);
     }
     return attributesContainer;
   }

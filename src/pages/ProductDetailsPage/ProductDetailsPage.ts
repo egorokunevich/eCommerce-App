@@ -13,7 +13,6 @@ export class ProductDetailsPage {
 
   public createPage(productKey: string): HTMLElement {
     this.pageWrapper.append(this.detailsContainer);
-    createSwiper();
     this.createDetails(productKey).catch((error) => console.error('Error creating product details:', error));
     return this.pageWrapper;
   }
@@ -24,6 +23,7 @@ export class ProductDetailsPage {
       const product = response.body;
       const card = await productDetails.createDetails(product);
       this.detailsContainer.append(card);
+      createSwiper();
     } catch (error) {
       console.error(`Error creating details for product ${key}:`, error);
     }
