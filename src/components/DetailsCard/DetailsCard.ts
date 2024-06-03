@@ -36,7 +36,7 @@ export class ProductDetails extends ProductCard {
     const pagination = div({ className: 'swiper-pagination' });
     pagination.classList.add('pagination-style');
 
-    const images = product.variants.map((variant) => variant.images).flat();
+    const images = product.masterVariant.images || [];
     images.forEach((image) => {
       const slide = div({ className: 'swiper-slide' });
       const img = document.createElement('img');
@@ -73,7 +73,7 @@ export class ProductDetails extends ProductCard {
     const pagination = div({ className: 'swiper-pagination' });
     pagination.classList.add(styles.paginationStyle);
 
-    const images = product.variants.map((variant) => variant.images).flat();
+    const images = product.masterVariant.images || [];
     images.forEach((image) => {
       const slide = div({ className: 'swiper-slide' });
       slide.classList.add(styles.swiperSlideStyle);
