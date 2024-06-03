@@ -1,10 +1,11 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
-import { div, h2, img, input, option, section, select } from '@control.ts/min';
+import { div, h2, img, input, option, section, select, ul } from '@control.ts/min';
 import type { API } from 'nouislider';
 import noUiSlider, { PipsMode } from 'nouislider';
 import { Router } from 'vanilla-routing';
 import 'nouislider/dist/nouislider.css';
 
+import CategoryItem from '@components/Category/Category';
 import productCard from '@components/ProductCard/ProductCard';
 import clientService from '@services/ClientService';
 import productsService from '@services/ProductsService';
@@ -192,7 +193,8 @@ export class CatalogPage {
     const sidebar = div({ className: styles.sidebar });
     const filters = this.createFilters();
     const search = this.createSearchBar();
-    sidebar.append(search, filters);
+    const categoriesList = this.createCategoriesList();
+    sidebar.append(search, filters, categoriesList);
     return sidebar;
   }
 
@@ -227,6 +229,31 @@ export class CatalogPage {
     productsService.getSearchQuery(searchText);
     const products = await productsService.getFilteredAndSortedProducts();
     this.updateCards(products);
+  }
+
+  private createCategoriesList(): HTMLElement {
+    const container = div({ className: styles.categoriesContainer });
+    const title = div({ className: styles.filtersTitle, txt: 'CATEGORIES' });
+
+    this.createCategories(container);
+
+    container.append(title);
+
+    return container;
+  }
+
+  private async createCategories(container: HTMLElement): Promise<void> {
+    const mainList = ul({ className: styles.mainList });
+    const data = await productsService.getRootCategories();
+    data.forEach(async (item) => {
+      const category = new CategoryItem(item, (productsArray?: ProductProjection[]) => {
+        this.updateCards(productsArray);
+      });
+      await category.create(mainList);
+      // console.log(`SUBTREE FOR ${item.name[`en-US`]}`, await category.getSubtrees());
+    });
+
+    container.append(mainList);
   }
 
   private createFilters(): HTMLElement {

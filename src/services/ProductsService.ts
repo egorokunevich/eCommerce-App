@@ -1,4 +1,5 @@
 import type {
+  Category,
   ClientResponse,
   ProductDiscount,
   ProductProjection,
@@ -17,6 +18,7 @@ export class ProductsService {
   private timeFilterQuery = '';
   private weightFilterQuery = '';
   private searchQuery = '';
+  private categoryQuery = '';
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -52,6 +54,25 @@ export class ProductsService {
       .execute();
   }
 
+  public async getRootCategories(): Promise<Category[]> {
+    const categories = await clientService.apiRoot
+      .categories()
+      .get({
+        queryArgs: {
+          where: 'parent is not defined',
+        },
+      })
+      .execute();
+
+    return categories.body.results;
+  }
+
+  public async getCategories(): Promise<Category[]> {
+    const categories = await clientService.apiRoot.categories().get().execute();
+
+    return categories.body.results;
+  }
+
   public async filterDiscounted(upperPrice: number): Promise<ProductProjection[]> {
     const response = await this.productsRoot
       .search()
@@ -66,28 +87,6 @@ export class ProductsService {
     return response.body.results;
   }
 
-  private getFuzzyLevel(): number {
-    // When the search string consists of 1 or 2 characters, the only allowed value is: 0
-    // When the search string consists of 3 to 5 characters, the only allowed values are: 0, 1
-    // When the search string consists of more than 5 characters, the only allowed values are: 0, 1, 2"
-    const { length } = this.searchQuery;
-    let fuzzyLevel = 0;
-    switch (true) {
-      case length <= 2:
-        fuzzyLevel = 0;
-        break;
-
-      case length >= 3:
-        fuzzyLevel = 1;
-        break;
-
-      default:
-        fuzzyLevel = 0;
-        break;
-    }
-    return fuzzyLevel;
-  }
-
   public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
     const fuzzyLevel = this.getFuzzyLevel();
     const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
@@ -100,6 +99,7 @@ export class ProductsService {
           fuzzy,
           fuzzyLevel,
           filter: [
+            this.categoryQuery,
             this.priceRangeFilterQuery,
             this.temperatureFilterQuery,
             this.timeFilterQuery,
@@ -112,6 +112,11 @@ export class ProductsService {
       .execute();
 
     return response.body.results;
+  }
+
+  public getCategoryQuery(categoryId: string): void {
+    this.categoryQuery = `categories.id:subtree("${categoryId}")`;
+    // this.categoryQuery = `categories.id:"${categoryId}"`;
   }
 
   public getSearchQuery(searchText: string): void {
@@ -175,6 +180,28 @@ export class ProductsService {
 
   public clearSortQuery(): void {
     this.sortQuery = '';
+  }
+
+  private getFuzzyLevel(): number {
+    // When the search string consists of 1 or 2 characters, the only allowed value is: 0
+    // When the search string consists of 3 to 5 characters, the only allowed values are: 0, 1
+    // When the search string consists of more than 5 characters, the only allowed values are: 0, 1, 2"
+    const { length } = this.searchQuery;
+    let fuzzyLevel = 0;
+    switch (true) {
+      case length <= 2:
+        fuzzyLevel = 0;
+        break;
+
+      case length >= 3:
+        fuzzyLevel = 1;
+        break;
+
+      default:
+        fuzzyLevel = 0;
+        break;
+    }
+    return fuzzyLevel;
   }
 }
 
