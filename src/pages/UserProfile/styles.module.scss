@@ -27,7 +27,7 @@
   width: 100vw;
   height: 100vh;
   border-left: 1px solid;
-  padding: 130px 20px 0;
+  padding: 135px 20px 0;
 }
 
 .user-info-btn {
@@ -129,3 +129,12 @@
 // .addresses-info {
 //   border: 1px solid green;
 // }
+
+.profile-change-password {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.save-btn-password {
+}

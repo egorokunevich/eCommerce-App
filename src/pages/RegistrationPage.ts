@@ -17,10 +17,10 @@ type ErrorMsgType = { nameMsg: string; text: string; func: ValidationFunction }[
 type ValidationErrors = { [key: string]: boolean } & { billingAddress?: { [key: string]: boolean } };
 
 export default class RegistrationPage {
-  private validationMessages: ValidationErrors = {};
+  public validationMessages: ValidationErrors = {};
   private registrationBtN: HTMLElement | null = null;
   private nodeLabel: HTMLElement | null = null;
-  private inputTag: HTMLInputElement | HTMLElement | null = null;
+  public inputTag: HTMLInputElement | HTMLElement | null = null;
   private billingIsShipping = false;
   private billingForm: HTMLElement | null = null;
   private billingAddressInput: HTMLElement[] | null = null;
@@ -136,7 +136,7 @@ export default class RegistrationPage {
     return node;
   }
 
-  private createFormLabel(text: string, textMessageError: ErrorMsgType, isAddressType?: string): HTMLElement {
+  public createFormLabel(text: string, textMessageError: ErrorMsgType, isAddressType?: string): HTMLElement {
     this.inputTag = setAttributes(
       input({ className: [styles.inputField, isAddressType].join(' '), id: `user-${text}` }),
       [

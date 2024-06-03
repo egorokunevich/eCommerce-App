@@ -4,6 +4,7 @@ import { button, div, h2 } from '@control.ts/min';
 
 import RegistrationPage from '@pages/RegistrationPage';
 
+import { ChangePassword } from './change-password';
 import { CreateInformationUsers } from './create-data-users';
 import styles from './styles.module.scss';
 
@@ -73,11 +74,12 @@ export class UserProfile {
 
   private createBtnPasswordLayout(): HTMLButtonElement {
     const btn = button({ className: styles.userInfoBtn, txt: 'Change Password' });
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (this.profileInformationContainer) {
         this.profileInformationContainer.innerHTML = '';
         // add inform
-        this.profileInformationContainer.textContent = 'dff';
+        const node = await new ChangePassword().creteNodePassword();
+        this.profileInformationContainer.append(node);
       }
     });
     return btn;
