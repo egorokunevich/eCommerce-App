@@ -123,7 +123,7 @@ export class ClientService {
       projectKey,
     });
 
-    this.apiRoot.get().execute(); // Initial request to get the access token
+    await this.apiRoot.get().execute(); // Initial request to get the access token
 
     localStorage.setItem('isLoggedIn', JSON.stringify(false));
 

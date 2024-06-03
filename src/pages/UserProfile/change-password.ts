@@ -60,18 +60,25 @@ export class ChangePassword {
       { type: 'button', text: true },
     );
     node.addEventListener('click', async () => {
+      const { email } = await this.getDataFromServer();
       const newPassword = this.isValueInputs();
       if (
         isRegistrationActive(validationMessages) &&
         newPassword !== '' &&
         this.oldInputTagPassword instanceof HTMLInputElement
       ) {
-        this.changePassword(this.oldInputTagPassword.value, newPassword)
-          .then(() => {
-            showToastMessage('Password changed successfully', ToastColors.Green);
-            // func logout
-          })
-          .catch(() => showToastMessage('Your old password is wrong', ToastColors.Red));
+        try {
+          await this.changePassword(this.oldInputTagPassword.value, newPassword);
+
+          showToastMessage('Password changed successfully', ToastColors.Green);
+          await clientService.logout();
+
+          await clientService.login(email, newPassword);
+        } catch {
+          showToastMessage('Your old password is wrong', ToastColors.Red);
+        }
+      } else {
+        showToastMessage('Your password is not the same', ToastColors.Red);
       }
     });
 

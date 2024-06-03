@@ -72,6 +72,27 @@
   }
 }
 
+.change-information {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid;
+  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(4, 164, 241, 1) 98%, rgba(17, 172, 236, 1) 100%);
+  border-image-slice: 1;
+  padding: 20px;
+  align-self: flex-start;
+
+  &::after {
+    content: 'Change Users Information';
+    position: absolute;
+    top: -80px;
+    left: 0;
+    font-size: 56px;
+    white-space: nowrap;
+  }
+}
+
 .addresses-information_container {
   display: inline-flex;
   flex-direction: row;

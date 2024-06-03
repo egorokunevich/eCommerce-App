@@ -1,19 +1,14 @@
-// import type { Customer } from '@commercetools/platform-sdk';
-// import clientService from '@services/ClientService';
 import { button, div, h2 } from '@control.ts/min';
 
-import RegistrationPage from '@pages/RegistrationPage';
-
 import { ChangePassword } from './change-password';
+import { ChangeUserData } from './change-user-data';
 import { CreateInformationUsers } from './create-data-users';
 import styles from './styles.module.scss';
 
 export class UserProfile {
   private profileInformationContainer: null | HTMLDivElement = null;
   private btnUserStatus = false;
-  // private btnAddressesStatus = false;
-  // private btnPasswordStatus = false;
-  // private btnChangeStatus = false;
+
   public createUserPage(): HTMLDivElement {
     const node = div(
       { className: styles.profileContainer },
@@ -87,11 +82,11 @@ export class UserProfile {
 
   private createBtnChangeInformationLayout(): HTMLButtonElement {
     const btn = button({ className: styles.userInfoBtn, txt: 'Change Information' });
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (this.profileInformationContainer) {
         this.profileInformationContainer.innerHTML = '';
         // add inform
-        const registrationPage = new RegistrationPage().createFormComponents();
+        const registrationPage = await new ChangeUserData().createChangeLayout();
         this.profileInformationContainer.append(registrationPage);
       }
     });

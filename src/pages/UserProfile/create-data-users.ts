@@ -1,14 +1,11 @@
-// import { Customer, CustomerUpdateAction } from '@commercetools/platform-sdk';
 import type { Customer } from '@commercetools/platform-sdk';
 import { article, button, div, h3, p, span } from '@control.ts/min';
 
-import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
 
 import styles from './styles.module.scss';
 
 export class CreateInformationUsers {
-  private registrationPageClass: RegistrationPage = new RegistrationPage();
   private showAllAddressesStatus = false;
   private allAddressesContainer: null | HTMLDivElement = null;
   private defaultBillingAddressId: string | undefined = undefined;
@@ -31,8 +28,7 @@ export class CreateInformationUsers {
     ];
 
     const node = article({ className: styles.profileInformation }, ...contentInfo);
-    console.log((await this.getDataFromServer()));
-    console.log(await this.getDataFromServer());
+
     return node;
   }
 
