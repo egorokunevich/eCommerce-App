@@ -102,6 +102,14 @@ export class ProductDetails extends ProductCard {
     if (modal && modalImage && modalImage instanceof HTMLImageElement) {
       modal.style.display = 'block';
       modalImage.src = imgElement.src;
+      const salePercentage = document.querySelector(`.${styles.salePercentage}`);
+      const price = document.querySelector(`.${styles.price}`);
+      if (salePercentage && salePercentage instanceof HTMLElement) {
+        salePercentage.style.display = 'none';
+      }
+      if (price && price instanceof HTMLElement) {
+        price.style.display = 'none';
+      }
     }
   }
 
@@ -109,6 +117,14 @@ export class ProductDetails extends ProductCard {
     const modal = document.getElementById('modal');
     if (modal) {
       modal.style.display = 'none';
+      const salePercentage = document.querySelector(`.${styles.salePercentage}`);
+      const price = document.querySelector(`.${styles.price}`);
+      if (salePercentage && salePercentage instanceof HTMLElement) {
+        salePercentage.style.display = '';
+      }
+      if (price && price instanceof HTMLElement) {
+        price.style.display = '';
+      }
     }
   }
 
