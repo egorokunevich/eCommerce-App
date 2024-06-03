@@ -81,3 +81,7 @@ body {
 .swiper-pagination-bullet-active {
   background: #ccd4d1;
 }
+
+.modal-content .swiper-wrapper-style .swiper-slide {
+  height: auto;
+}
