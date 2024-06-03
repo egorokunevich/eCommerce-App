@@ -1,5 +1,5 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
-import { div, p } from '@control.ts/min';
+import { div, p, span } from '@control.ts/min';
 
 import 'swiper/css/bundle';
 import 'swiper/css/navigation';
@@ -14,6 +14,9 @@ export class ProductDetails extends ProductCard {
 
     const sliderContainer = this.createSlider(product);
     card.appendChild(sliderContainer);
+
+    const modalContainer = this.createModal(product);
+    card.appendChild(modalContainer);
 
     const attributesContainer = this.createAttributesContainer(product);
     card.append(attributesContainer);
@@ -39,6 +42,8 @@ export class ProductDetails extends ProductCard {
       const img = document.createElement('img');
       if (img && image) {
         img.src = image.url;
+        img.alt = image.label || 'Image';
+        img.onclick = (): void => this.displayModal(img);
         slide.appendChild(img);
       }
       sliderWrapper.appendChild(slide);
@@ -50,6 +55,77 @@ export class ProductDetails extends ProductCard {
     sliderContainer.appendChild(pagination);
 
     return sliderContainer;
+  }
+
+  private createModal(product: ProductProjection): HTMLDivElement {
+    const modal = div({ id: 'modal', className: styles.modal });
+
+    const closeButton = span({ className: styles.close, txt: '×' });
+    closeButton.onclick = (): void => this.hideModal();
+    const modalContent = div({ className: styles.modalContent });
+    modalContent.classList.add('swiper-zoom');
+    const sliderWrapper = div({ className: 'swiper-wrapper' });
+    sliderWrapper.classList.add(styles.swiperWrapperStyle);
+    const btnNext = div({ className: 'swiper-button-next' });
+    btnNext.classList.add(styles.btnNextStyle);
+    const btnPrev = div({ className: 'swiper-button-prev' });
+    btnPrev.classList.add(styles.btnPrevStyle);
+    const pagination = div({ className: 'swiper-pagination' });
+    pagination.classList.add(styles.paginationStyle);
+
+    const images = product.variants.map((variant) => variant.images).flat();
+    images.forEach((image) => {
+      const slide = div({ className: 'swiper-slide' });
+      slide.classList.add(styles.swiperSlideStyle);
+      const img = document.createElement('img');
+      if (img && image) {
+        img.src = image.url;
+        img.alt = image.label || 'Image';
+        img.id = 'modal-image';
+        slide.appendChild(img);
+      }
+      sliderWrapper.appendChild(slide);
+    });
+
+    modalContent.appendChild(sliderWrapper);
+    modalContent.appendChild(btnNext);
+    modalContent.appendChild(btnPrev);
+    modalContent.appendChild(pagination);
+    modal.appendChild(closeButton);
+    modal.appendChild(modalContent);
+    return modal;
+  }
+
+  private displayModal(imgElement: HTMLImageElement): void {
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modal-image');
+    if (modal && modalImage && modalImage instanceof HTMLImageElement) {
+      modal.style.display = 'block';
+      modalImage.src = imgElement.src;
+      const salePercentage = document.querySelector(`.${styles.salePercentage}`);
+      const price = document.querySelector(`.${styles.price}`);
+      if (salePercentage && salePercentage instanceof HTMLElement) {
+        salePercentage.style.display = 'none';
+      }
+      if (price && price instanceof HTMLElement) {
+        price.style.display = 'none';
+      }
+    }
+  }
+
+  private hideModal(): void {
+    const modal = document.getElementById('modal');
+    if (modal) {
+      modal.style.display = 'none';
+      const salePercentage = document.querySelector(`.${styles.salePercentage}`);
+      const price = document.querySelector(`.${styles.price}`);
+      if (salePercentage && salePercentage instanceof HTMLElement) {
+        salePercentage.style.display = '';
+      }
+      if (price && price instanceof HTMLElement) {
+        price.style.display = '';
+      }
+    }
   }
 
   private createAttributesContainer(product: ProductProjection): HTMLDivElement {
