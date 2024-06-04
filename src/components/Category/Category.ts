@@ -21,8 +21,7 @@ export default class CategoryItem {
     listItem.addEventListener('click', async (event) => {
       event.stopPropagation();
       productsService.getCategoryQuery(this.category);
-      const products = await productsService.getFilteredAndSortedProducts();
-      this.onClick(products);
+      this.onClick(await productsService.getFilteredAndSortedProducts());
       const currentCategory = productsService.getCurrentCategory();
       baseCrumb = this.initializeBreadcrumbs();
       let category = div({ className: styles.crumb });
@@ -64,7 +63,7 @@ export default class CategoryItem {
     return baseCrumb;
   }
 
-  private async restoreBreadcrumbs() {
+  private restoreBreadcrumbs(): void {
     if (Breadcrumbs.category) {
       const category = div({ className: styles.crumb, txt: Breadcrumbs.category.name['en-US'].toUpperCase() });
       this.breadcrumbsContainer.append(category);
