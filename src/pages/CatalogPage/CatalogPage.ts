@@ -24,6 +24,7 @@ export class CatalogPage {
   private breadcrumbs: HTMLElement = div({});
 
   public createPage(): HTMLElement {
+    productsService.clearSearchQuery();
     const productsContent = div({ className: styles.productsContent });
 
     productsContent.append(this.createSortingControls(), this.cardsContainer);

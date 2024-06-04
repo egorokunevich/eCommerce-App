@@ -24,8 +24,10 @@ export class ProductCard {
       alt: picData?.label,
     });
     const infoContainer = div({ className: styles.infoContainer });
+    const detailsContainer = div({ className: styles.detailsContainer });
     const name = div({ className: styles.name, txt: product.name['en-US'] });
     const description = div({ className: styles.description });
+    detailsContainer.append(name, description);
 
     if (product.description) {
       description.innerText = product.description['en-US'];
@@ -33,7 +35,7 @@ export class ProductCard {
     const price = this.getProductPriceElement(product) ?? div({ txt: 'null' });
     card.append(picContainer, infoContainer);
     picContainer.append(pic);
-    infoContainer.append(name, description, price);
+    infoContainer.append(detailsContainer, price);
 
     return card;
   }

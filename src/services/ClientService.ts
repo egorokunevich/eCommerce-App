@@ -127,6 +127,8 @@ export class ClientService {
 
     localStorage.setItem('isLoggedIn', JSON.stringify(false));
 
+    Router.go('/login', { addToHistory: true });
+
     showToastMessage('Logged out', ToastColors.Blue); // Show notification
   }
 
