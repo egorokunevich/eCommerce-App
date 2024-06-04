@@ -8,7 +8,10 @@ export function createSwiper(): void {
   Swiper.use([Navigation, Pagination]);
   const swiper = new Swiper('.swiper', {
     direction: 'horizontal',
-    loop: true,
+    // loop: true,
+    allowSlideNext: true,
+    allowSlidePrev: true,
+    slidesPerView: 1,
     cssMode: true,
     navigation: {
       nextEl: '.swiper-button-next',
@@ -26,7 +29,10 @@ export function createSwiperZoom(): void {
   Swiper.use([Navigation, Pagination]);
   const swiper = new Swiper('.swiper-zoom', {
     direction: 'horizontal',
-    loop: true,
+    //  loop: true,
+    allowSlideNext: true,
+    allowSlidePrev: true,
+    slidesPerView: 1,
     cssMode: true,
     navigation: {
       nextEl: '.swiper-button-next',
