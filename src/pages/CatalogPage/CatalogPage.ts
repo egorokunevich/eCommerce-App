@@ -1,11 +1,12 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
-import { div, h2, img, input, option, section, select, ul } from '@control.ts/min';
+import { div, img, input, option, section, select, ul } from '@control.ts/min';
 import type { API } from 'nouislider';
 import noUiSlider, { PipsMode } from 'nouislider';
 import { Router } from 'vanilla-routing';
 import 'nouislider/dist/nouislider.css';
 
 import CategoryItem from '@components/Category/Category';
+import savedFilters from '@components/Category/SavedFilters';
 import productCard from '@components/ProductCard/ProductCard';
 import clientService from '@services/ClientService';
 import productsService from '@services/ProductsService';
@@ -20,6 +21,7 @@ export class CatalogPage {
   private currentSorting: SortingOptions = null;
   private priceSortIcon: HTMLElement = div({});
   private nameSortIcon: HTMLElement = div({});
+  private breadcrumbs: HTMLElement = div({});
 
   public createPage(): HTMLElement {
     const productsContent = div({ className: styles.productsContent });
@@ -38,7 +40,8 @@ export class CatalogPage {
 
   private createSortingControls(): HTMLElement {
     const barContainer = div({ className: styles.barContainer });
-    const categoryTitle = h2({ className: styles.categoryTitle, txt: 'Category title' });
+    const breadcrumbs = div({ className: styles.breadcrumbs });
+    this.breadcrumbs = breadcrumbs;
 
     const sortingWrapper = div({ className: styles.sortingWrapper });
     const sortingControls = div({ className: styles.sortingControls });
@@ -50,7 +53,7 @@ export class CatalogPage {
       this.createCancelSortingOption(),
     );
 
-    barContainer.append(categoryTitle, sortingWrapper);
+    barContainer.append(breadcrumbs, sortingWrapper);
     return barContainer;
   }
 
@@ -246,7 +249,7 @@ export class CatalogPage {
     const mainList = ul({ className: styles.mainList });
     const data = await productsService.getRootCategories();
     data.forEach(async (item) => {
-      const category = new CategoryItem(item, (productsArray?: ProductProjection[]) => {
+      const category = new CategoryItem(item, this.breadcrumbs, (productsArray?: ProductProjection[]) => {
         this.updateCards(productsArray);
       });
       await category.create(mainList);
@@ -268,7 +271,6 @@ export class CatalogPage {
   }
 
   private createRangeSlider(container: HTMLElement): API {
-    // Applying custom styles for a range slider
     noUiSlider.cssClasses.tooltip += ` ${styles.noUiTooltip}`;
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarker}`;
     noUiSlider.cssClasses.pipsHorizontal += ` ${styles.noUiPips}`;
@@ -278,7 +280,6 @@ export class CatalogPage {
     noUiSlider.cssClasses.markerHorizontal += ` ${styles.noUiMarkerHorizontal}`;
     noUiSlider.cssClasses.markerLarge += ` ${styles.noUiMarkerLarge}`;
     noUiSlider.cssClasses.valueHorizontal += ` ${styles.noUiValueHorizontal}`;
-
     const slider = noUiSlider.create(container, {
       range: {
         min: [0],
@@ -301,7 +302,11 @@ export class CatalogPage {
         density: 4,
       },
     });
-
+    if (savedFilters.priceRange) {
+      const min = Math.floor(+savedFilters.priceRange[0]); // Lower bound in cents
+      const max = Math.floor(+savedFilters.priceRange[1]); // Upper bound in cents
+      slider.updateOptions({ start: [min, max] }, false);
+    }
     return slider;
   }
 
@@ -313,8 +318,8 @@ export class CatalogPage {
 
     const slider = this.createRangeSlider(range);
 
-    slider.on('end', (rangeData) => {
-      // this.priceRange = rangeData;
+    slider.on('set', (rangeData) => {
+      savedFilters.priceRange = rangeData;
       this.filterByRange(rangeData);
     });
 
@@ -356,6 +361,7 @@ export class CatalogPage {
     });
     cancelBtn.addEventListener('click', async () => {
       optionInit.selected = true;
+      savedFilters.brewingTemperature = '';
       productsService.clearTemperatureQuery();
       const products = await productsService.getFilteredAndSortedProducts();
       this.updateCards(products);
@@ -364,14 +370,16 @@ export class CatalogPage {
     const option3 = option({ className: styles.option, value: `50-75`, txt: `50 to 75 deg` });
     const option4 = option({ className: styles.option, value: `75-100`, txt: `75 to 100 deg` });
     selection.append(optionInit, option2, option3, option4);
-
+    if (savedFilters.brewingTemperature) {
+      selection.value = savedFilters.brewingTemperature;
+    }
     selection.addEventListener('change', async () => {
+      savedFilters.brewingTemperature = selection.value;
       const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
       productsService.getTemperatureFilterQuery(value);
       const products = await productsService.getFilteredAndSortedProducts();
       this.updateCards(products);
     });
-
     container.append(title, selectContainer);
     return container;
   }
@@ -432,6 +440,7 @@ export class CatalogPage {
     });
     cancelBtn.addEventListener('click', async () => {
       optionInit.selected = true;
+      savedFilters.weight = '';
       productsService.clearWeightQuery();
       const products = await productsService.getFilteredAndSortedProducts();
       this.updateCards(products);
@@ -441,13 +450,15 @@ export class CatalogPage {
     const option500 = option({ className: styles.option, value: `500g`, txt: `500g` });
     const option1000 = option({ className: styles.option, value: `1000g`, txt: `1000g` });
     selection.append(optionInit, option50, option100, option500, option1000);
-
+    if (savedFilters.weight) {
+      selection.value = savedFilters.weight;
+    }
     selection.addEventListener('change', async () => {
       productsService.getWeightFilterQuery(selection.value);
+      savedFilters.weight = selection.value;
       const products = await productsService.getFilteredAndSortedProducts();
       this.updateCards(products);
     });
-
     container.append(title, selectContainer);
     return container;
   }
@@ -457,7 +468,8 @@ export class CatalogPage {
     if (productsArray) {
       products = productsArray;
     } else {
-      products = await productsService.getProducts();
+      // products = await productsService.getProducts();
+      products = await productsService.getFilteredAndSortedProducts();
     }
     if (productsArray?.length === 0) {
       const message = div({

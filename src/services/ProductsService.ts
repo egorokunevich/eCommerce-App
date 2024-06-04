@@ -19,6 +19,16 @@ export class ProductsService {
   private weightFilterQuery = '';
   private searchQuery = '';
   private categoryQuery = '';
+  private currentCategory: Category = {
+    id: '',
+    version: 0,
+    createdAt: '',
+    lastModifiedAt: '',
+    name: {},
+    slug: {},
+    ancestors: [],
+    orderHint: '',
+  };
   constructor() {
     this.productsRoot = clientService.apiRoot.productProjections();
   }
@@ -73,6 +83,12 @@ export class ProductsService {
     return categories.body.results;
   }
 
+  public async getCategoryById(ID: string): Promise<Category> {
+    const category = await clientService.apiRoot.categories().withId({ ID }).get().execute();
+
+    return category.body;
+  }
+
   public async filterDiscounted(upperPrice: number): Promise<ProductProjection[]> {
     const response = await this.productsRoot
       .search()
@@ -114,9 +130,14 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public getCategoryQuery(categoryId: string): void {
-    this.categoryQuery = `categories.id:subtree("${categoryId}")`;
+  public getCategoryQuery(category: Category): void {
+    this.categoryQuery = `categories.id:subtree("${category.id}")`;
+    this.currentCategory = category;
     // this.categoryQuery = `categories.id:"${categoryId}"`;
+  }
+
+  public getCurrentCategory(): Category {
+    return this.currentCategory;
   }
 
   public getSearchQuery(searchText: string): void {
@@ -160,6 +181,10 @@ export class ProductsService {
     this.weightFilterQuery = filterQuery;
 
     return filterQuery;
+  }
+
+  public clearCategoryQuery(): void {
+    this.categoryQuery = '';
   }
 
   public clearSearchQuery(): void {

@@ -64,13 +64,47 @@
   }
 }
 
-.category-title {
-  font-size: 2rem;
-  display: block;
+.breadcrumbs {
+  position: relative;
+  font-size: 1rem;
+  display: flex;
+  gap: 1.4rem;
   width: 100%;
   font-family: 'Futura Light';
+
+  & :not(:last-child):after {
+    content: '>';
+    position: absolute;
+    right: -1.2rem;
+    top: 0;
+    transform: translateY(-10%);
+    cursor: default;
+    pointer-events: none;
+  }
+
   @media screen and (max-width: 560px) {
     text-align: center;
+  }
+}
+
+.crumb {
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: 'Futura Light';
+  letter-spacing: 0.2rem;
+  transition: 0.2s;
+
+  &::after {
+    color: black;
+  }
+
+  &:hover {
+    color: white;
+
+    &::after {
+      color: black;
+    }
   }
 }
 
