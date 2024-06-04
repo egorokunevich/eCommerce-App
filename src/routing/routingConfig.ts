@@ -59,7 +59,7 @@ export class PageRouting {
       element: (): Element => {
         const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
         if (!isLoggedIn) {
-          Router.go('/');
+          Router.go('/login');
           return new HomePage().createPage();
         }
         return new UserProfile().createUserPage();

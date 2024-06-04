@@ -16,14 +16,14 @@ export default class CategoryItem {
 
   public async create(mainList: HTMLElement): Promise<HTMLElement> {
     const listItem = li({ className: styles.listItem, txt: this.category.name[`en-US`] });
-
+    let baseCrumb = this.initializeBreadcrumbs();
+    this.restoreBreadcrumbs();
     listItem.addEventListener('click', async (event) => {
       event.stopPropagation();
       productsService.getCategoryQuery(this.category);
-      const products = await productsService.getFilteredAndSortedProducts();
-      this.onClick(products);
+      this.onClick(await productsService.getFilteredAndSortedProducts());
       const currentCategory = productsService.getCurrentCategory();
-      const baseCrumb = this.initializeBreadcrumbs();
+      baseCrumb = this.initializeBreadcrumbs();
       let category = div({ className: styles.crumb });
       let subcategory = div({ className: styles.crumb });
       if (this.category.ancestors.length === 0) {
@@ -61,6 +61,17 @@ export default class CategoryItem {
     this.breadcrumbsContainer.append(baseCrumb);
 
     return baseCrumb;
+  }
+
+  private restoreBreadcrumbs(): void {
+    if (Breadcrumbs.category) {
+      const category = div({ className: styles.crumb, txt: Breadcrumbs.category.name['en-US'].toUpperCase() });
+      this.breadcrumbsContainer.append(category);
+    }
+    if (Breadcrumbs.subcategory) {
+      const subcategory = div({ className: styles.crumb, txt: Breadcrumbs.subcategory.name['en-US'].toUpperCase() });
+      this.breadcrumbsContainer.append(subcategory);
+    }
   }
 
   private createListeners(baseCrumb: HTMLElement, category: HTMLElement, subcategory: HTMLElement): void {

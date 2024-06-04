@@ -23,6 +23,7 @@ interface FetchError extends Error {
 }
 
 export class ClientService {
+  private loggedStatusEvent = new CustomEvent('loggedStatusChange');
   public apiRoot!: ByProjectKeyRequestBuilder;
 
   // Change current flow/client
@@ -66,6 +67,7 @@ export class ClientService {
         this.apiRoot.me().get().execute();
 
         document.dispatchEvent(pendingEnd);
+        document.dispatchEvent(this.loggedStatusEvent);
 
         showToastMessage('Logged in successfully', ToastColors.Green); // Show notification
       }
@@ -126,6 +128,10 @@ export class ClientService {
     await this.apiRoot.get().execute(); // Initial request to get the access token
 
     localStorage.setItem('isLoggedIn', JSON.stringify(false));
+
+    Router.go('/login', { addToHistory: true });
+
+    document.dispatchEvent(this.loggedStatusEvent);
 
     showToastMessage('Logged out', ToastColors.Blue); // Show notification
   }
