@@ -7,6 +7,20 @@ import 'swiper/css/pagination';
 import { ProductCard } from '@components/ProductCard/ProductCard';
 import styles from '@components/ProductCard/ProductCard.module.scss';
 
+const attributeLabels: { [key: string]: string } = {
+  full_description: 'Full Description',
+  region: 'Region of origin',
+  origin: 'Region of origin',
+  roastLevel: 'Level of roast',
+  beanType: 'Type of bean',
+  intensity: 'Intensity',
+  weight: 'Weight',
+  expirationDate: 'Expiry date',
+  flavorProfile: 'Flavor profile',
+  brewingTemperature: 'Brewing temperature',
+  certifications: 'Certifications',
+};
+
 export class ProductDetails extends ProductCard {
   public async createDetails(product: ProductProjection): Promise<HTMLDivElement> {
     const card = await super.createCard(product);
@@ -143,7 +157,7 @@ export class ProductDetails extends ProductCard {
         } else {
           attributeField = p({
             className: styles.attributes,
-            txt: `${this.getAttributeName(product, i + 1)}: ${this.getAttributeValue(product, i + 1)}`,
+            txt: `${this.getAttributeLabel(attributes[i].name)}: ${this.getAttributeValue(product, i + 1)}`,
           });
           attributesContainer.append(attributeField);
         }
@@ -161,13 +175,8 @@ export class ProductDetails extends ProductCard {
     return 'No attributes';
   }
 
-  private getAttributeName(product: ProductProjection, index: number): string {
-    const customFields = product.masterVariant.attributes;
-    if (customFields && customFields.length >= index) {
-      const attribute = customFields[index - 1];
-      return attribute.name.toString();
-    }
-    return 'No attributes';
+  private getAttributeLabel(attributeName: string): string {
+    return attributeLabels[attributeName] || attributeName;
   }
 }
 

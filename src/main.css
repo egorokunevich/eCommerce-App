@@ -48,6 +48,14 @@ body {
   width: 400px;
   height: 300px;
 
+  &:hover {
+    background-color: #e0f7e3;
+    box-shadow:
+      2px 2px 15px 0px rgba(0, 0, 0, 0.5),
+      -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
   @media screen and (max-width: 850px) {
     width: 300px;
     height: 250px;
@@ -78,10 +86,23 @@ body {
   color: #ccd4d1;
 }
 
+.btn-next-style:hover,
+.btn-prev-style:hover {
+  scale: 120%;
+}
+
+.pagination-style span:hover {
+  scale: 130%;
+}
+
 .swiper-pagination-bullet-active {
   background: #ccd4d1;
 }
 
 .modal-content .swiper-wrapper-style .swiper-slide {
   height: auto;
+  box-shadow:
+    2px 2px 15px 0px rgba(0, 0, 0, 0.5),
+    -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
