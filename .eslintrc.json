@@ -1,6 +1,6 @@
 {
   "root": true,
-  "noInlineConfig": true,
+ // "noInlineConfig": true,
   "parser": "@typescript-eslint/parser",
   "env": {
     "browser": true,

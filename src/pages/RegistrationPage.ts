@@ -92,7 +92,7 @@ export default class RegistrationPage {
     return node;
   }
 
-  private createFormAddress(): HTMLElement {
+  public createFormAddress(): HTMLElement {
     this.shippingAddressInput = [
       this.createFormLabel('streetName', validationText.streetName),
       this.createFormLabel('streetNumber', validationText.streetNumber),
@@ -241,6 +241,7 @@ export default class RegistrationPage {
       button({ className: ['register-btn', 'btn', styles.submitBtn].join(' '), txt: 'Register' }),
       [{ text: true, type: 'disabled' }],
     );
+    this.registrationBtN.id = 'btnregister';
     this.registrationBtN.addEventListener('click', (ev) => {
       ev.preventDefault();
       const inputsArray = document.querySelectorAll(`.${styles.inputField}`);
