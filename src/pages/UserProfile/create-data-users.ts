@@ -147,44 +147,68 @@ export class CreateInformationUsers {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private editAddressForm(address: any, container: HTMLElement): void {
+    const addressType = container.querySelector('h3')?.textContent?.includes('Billing') ? 'Billing' : 'Shipping';
     container.innerHTML = '';
+
     Object.entries(address).forEach(([key, value]) => {
       if (key !== 'id') {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const inputField = input({ className: styles.editInput, value: value as string });
-        inputField.dataset.key = key;
-
-        const nodeInfoAddresses = div(
-          { className: styles.accountProfileInfoContent },
-          p({ txt: `${key}:` }),
-          inputField,
-        );
+        const inputField = this.createInputField(key, value as string);
+        const nodeInfoAddresses = this.createAddressNodeInfo(key, inputField);
 
         if (validationText[key]) {
-          const validationMessagesContainer = div({ className: styles.inputContainer });
-
-          validationText[key].forEach((validation) => {
-            const validationMessage = p({ className: styles.errorMsg, txt: validation.text });
-            validationMessage.style.display = 'none';
-            validationMessagesContainer.append(validationMessage);
-
-            inputField.addEventListener('input', () => {
-              const isValid = validation.func(inputField.value);
-              validationMessage.style.display = isValid ? 'none' : 'block';
-            });
-          });
-
-          nodeInfoAddresses.append(validationMessagesContainer);
+          this.addValidationMessages(key, inputField, nodeInfoAddresses);
         }
 
         container.append(nodeInfoAddresses);
       }
     });
 
+    this.addSaveButton(address.id, addressType, container);
+  }
+
+  private createInputField(key: string, value: string): HTMLInputElement {
+    const inputField = input({ className: styles.editInput, value });
+    inputField.dataset.key = key;
+    return inputField;
+  }
+
+  private createAddressNodeInfo(key: string, inputField: HTMLInputElement): HTMLDivElement {
+    return div({ className: styles.accountProfileInfoContent }, p({ txt: `${key}:` }), inputField);
+  }
+
+  private addValidationMessages(key: string, inputField: HTMLInputElement, nodeInfoAddresses: HTMLDivElement): void {
+    const validationMessagesContainer = div({ className: styles.inputContainer });
+
+    validationText[key].forEach((validation) => {
+      const validationMessage = p({ className: styles.errorMsg, txt: validation.text });
+      validationMessage.style.display = 'none';
+      validationMessagesContainer.append(validationMessage);
+
+      inputField.addEventListener('input', () => {
+        const isValid = validation.func(inputField.value);
+        validationMessage.style.display = isValid ? 'none' : 'block';
+      });
+    });
+
+    nodeInfoAddresses.append(validationMessagesContainer);
+  }
+
+  private addSaveButton(addressId: string, addressType: string, container: HTMLElement): void {
     const saveButton = button({ className: styles.userInfoBtn, txt: 'Save' });
-    saveButton.addEventListener('click', () => this.saveAddress(address.id, container));
+    saveButton.addEventListener('click', async () => {
+      await this.saveAddress(addressId, container);
+      container.innerHTML = '';
+
+      if (addressType === 'Billing' && this.defaultBillingAddressId) {
+        const defaultAddressNode = await this.showDefaultAddresses(this.defaultBillingAddressId, 'Billing');
+        container.append(defaultAddressNode);
+      } else if (addressType === 'Shipping' && this.defaultShippingAddressId) {
+        const shippingAddressNode = await this.showDefaultAddresses(this.defaultShippingAddressId, 'Shipping');
+        container.append(shippingAddressNode);
+      }
+    });
     container.append(saveButton);
-    // this.createProfileAddresses();
   }
 
   private async saveAddress(addressId: string, container: HTMLElement): Promise<void> {
