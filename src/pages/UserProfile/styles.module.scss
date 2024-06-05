@@ -171,6 +171,18 @@
 //
 // }
 
+///////// Edit adresses
+
+.error-msg {
+  height: 1.2rem;
+  max-height: 2.4rem;
+  opacity: 100%;
+  margin-bottom: 3px;
+  font-size: 1rem;
+  font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
+  color: red;
+}
+
 .address-buttons-container {
   display: flex;
   flex-direction: column;

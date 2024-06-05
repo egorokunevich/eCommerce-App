@@ -4,6 +4,7 @@ import { article, button, div, h3, input, p, span } from '@control.ts/min';
 import { ToastColors, showToastMessage } from '@components/Toast';
 import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
+import { validationText } from '@utils/RegistrationValidationsData';
 
 import styles from './styles.module.scss';
 
@@ -147,17 +148,35 @@ export class CreateInformationUsers {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private editAddressForm(address: any, container: HTMLElement): void {
     container.innerHTML = '';
-    Object.entries(address).forEach((addressData) => {
-      if (addressData[0] !== 'id') {
+    Object.entries(address).forEach(([key, value]) => {
+      if (key !== 'id') {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const inputField = input({ className: styles.editInput, value: addressData[1] as string });
-        // eslint-disable-next-line prefer-destructuring
-        inputField.dataset.key = addressData[0]; // Use dataset for custom data attributes
+        const inputField = input({ className: styles.editInput, value: value as string });
+        inputField.dataset.key = key;
+
         const nodeInfoAddresses = div(
           { className: styles.accountProfileInfoContent },
-          p({ txt: `${addressData[0]}:` }),
+          p({ txt: `${key}:` }),
           inputField,
         );
+
+        if (validationText[key]) {
+          const validationMessagesContainer = div({ className: styles.inputContainer });
+
+          validationText[key].forEach((validation) => {
+            const validationMessage = p({ className: styles.errorMsg, txt: validation.text });
+            validationMessage.style.display = 'none';
+            validationMessagesContainer.append(validationMessage);
+
+            inputField.addEventListener('input', () => {
+              const isValid = validation.func(inputField.value);
+              validationMessage.style.display = isValid ? 'none' : 'block';
+            });
+          });
+
+          nodeInfoAddresses.append(validationMessagesContainer);
+        }
+
         container.append(nodeInfoAddresses);
       }
     });
@@ -170,7 +189,7 @@ export class CreateInformationUsers {
 
   private async saveAddress(addressId: string, container: HTMLElement): Promise<void> {
     const data = await this.getDataFromServer();
-    const currentVersion = data.version; // Get the current version of the customer
+    const currentVersion = data.version;
 
     const editInputs = container.querySelectorAll('input');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,6 +221,7 @@ export class CreateInformationUsers {
       showToastMessage('Address updated successfully!', ToastColors.Green);
     } catch (error) {
       console.error('Error updating address:', error);
+      showToastMessage('Error updating address.');
     }
   }
   private async deleteAddress(addressId: string, container: HTMLElement): Promise<void> {
