@@ -11,7 +11,6 @@ import Attributes from '@enums/Attributes';
 import clientService from './ClientService';
 
 export class ProductsService {
-  private productsRoot;
   private sortQuery = '';
   private priceRangeFilterQuery = '';
   private temperatureFilterQuery = '';
@@ -29,12 +28,9 @@ export class ProductsService {
     ancestors: [],
     orderHint: '',
   };
-  constructor() {
-    this.productsRoot = clientService.apiRoot.productProjections();
-  }
 
   public async getProducts(): Promise<ProductProjection[]> {
-    const response = await this.productsRoot.get().execute();
+    const response = await clientService.apiRoot.productProjections().get().execute();
     return response.body.results;
   }
 
@@ -43,7 +39,8 @@ export class ProductsService {
   }
 
   public async getProductByKey(key: string): Promise<ClientResponse<ProductProjection>> {
-    return this.productsRoot
+    return clientService.apiRoot
+      .productProjections()
       .withKey({
         key,
       })
@@ -56,7 +53,8 @@ export class ProductsService {
   }
 
   public async getProductById(productId: string): Promise<ClientResponse<ProductProjection>> {
-    return this.productsRoot
+    return clientService.apiRoot
+      .productProjections()
       .withId({
         ID: productId,
       })
@@ -90,7 +88,8 @@ export class ProductsService {
   }
 
   public async filterDiscounted(upperPrice: number): Promise<ProductProjection[]> {
-    const response = await this.productsRoot
+    const response = await clientService.apiRoot
+      .productProjections()
       .search()
       .get({
         queryArgs: {
@@ -106,7 +105,8 @@ export class ProductsService {
   public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
     const fuzzyLevel = this.getFuzzyLevel();
     const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
-    const response = await this.productsRoot
+    const response = await clientService.apiRoot
+      .productProjections()
       .search()
       .get({
         queryArgs: {
