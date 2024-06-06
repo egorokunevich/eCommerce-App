@@ -2,14 +2,18 @@ import type { Customer } from '@commercetools/platform-sdk';
 import { article, button, div, h3, input, p, span } from '@control.ts/min';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
-import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
 import { validationText } from '@utils/RegistrationValidationsData';
 
+/* eslint-disable import/no-cycle */
+import { AddNewAddress } from './add-new-address';
 import styles from './styles.module.scss';
 
 export class CreateInformationUsers {
   private showAllAddressesStatus = false;
+  private showNewAddressesStatus = false;
+
+  private addNewAddress: AddNewAddress = new AddNewAddress();
   private allAddressesContainer: null | HTMLDivElement = null;
   private defaultBillingAddressId: string | undefined = undefined;
   private defaultShippingAddressId: string | undefined = undefined;
@@ -35,14 +39,18 @@ export class CreateInformationUsers {
     return node;
   }
 
-  private createAddressButtonsContainer(showAllButton: HTMLButtonElement): HTMLDivElement {
+  private async createAddressButtonsContainer(showAllButton: HTMLButtonElement): Promise<HTMLDivElement> {
     const container = div({ className: styles.addressButtonsContainer });
     const addAddressButton = button({ className: styles.userInfoBtn, txt: 'Add Address' });
-
+    const newAddress = await this.addNewAddress.addNewAddressContainer();
     addAddressButton.addEventListener('click', () => {
-      const registrationPage = new RegistrationPage();
-      const addressForm = registrationPage.createFormAddress();
-      container.append(addressForm);
+      // her change info for add address
+      if (this.showNewAddressesStatus) {
+        newAddress.remove();
+      } else {
+        container.append(newAddress);
+      }
+      this.showNewAddressesStatus = !this.showNewAddressesStatus;
     });
 
     container.append(showAllButton, addAddressButton);
@@ -65,7 +73,7 @@ export class CreateInformationUsers {
     }
     this.allAddressesContainer = div({ className: styles.allAddressesContainer });
     const buttonShowAllAddresses = this.buttonShowAllAddresses(this.allAddressesContainer);
-    const addressButtonsContainer = this.createAddressButtonsContainer(buttonShowAllAddresses);
+    const addressButtonsContainer = await this.createAddressButtonsContainer(buttonShowAllAddresses);
     node.append(addressButtonsContainer, this.allAddressesContainer);
     return node;
   }
@@ -274,3 +282,5 @@ export class CreateInformationUsers {
     }
   }
 }
+
+export const createInformationUsers = new CreateInformationUsers();

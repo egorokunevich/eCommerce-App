@@ -210,7 +210,7 @@ export default class RegistrationPage {
     return nodeInput;
   }
 
-  private createDefaultSwitchBtn(name: string): HTMLElement {
+  public createDefaultSwitchBtn(name: string): HTMLElement {
     const nodeInput = setAttributes(input({ className: styleSwitch.switchInput }), { type: 'type', text: 'checkbox' });
     const node = div(
       {},

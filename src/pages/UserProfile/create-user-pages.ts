@@ -6,7 +6,7 @@ import { CreateInformationUsers } from './create-data-users';
 import styles from './styles.module.scss';
 
 export class UserProfile {
-  private profileInformationContainer: null | HTMLDivElement = null;
+  public profileInformationContainer: null | HTMLDivElement = null;
   private btnUserStatus = false;
 
   public createUserPage(): HTMLDivElement {
@@ -93,3 +93,5 @@ export class UserProfile {
     return btn;
   }
 }
+
+export const userProfile = new UserProfile();
