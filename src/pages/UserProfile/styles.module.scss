@@ -1,5 +1,5 @@
 .profile-container {
-  height: 100%;
+  //height: 100%;
   display: flex;
   padding: 10px 0;
   justify-content: center;
@@ -157,6 +157,10 @@
   margin-right: 10px;
 }
 
+.edit-input {
+  border: 1px solid green;
+}
+
 .addresses {
   display: flex;
   flex-direction: column;
@@ -166,6 +170,24 @@
 // .addresses-content {
 //
 // }
+
+///////// Edit adresses
+
+.error-msg {
+  height: 1.2rem;
+  max-height: 2.4rem;
+  opacity: 100%;
+  margin-bottom: 3px;
+  font-size: 1rem;
+  font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
+  color: red;
+}
+
+.address-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 
 .all-addresses-btn {
   cursor: pointer;

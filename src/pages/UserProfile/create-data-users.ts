@@ -1,7 +1,10 @@
 import type { Customer } from '@commercetools/platform-sdk';
-import { article, button, div, h3, p, span } from '@control.ts/min';
+import { article, button, div, h3, input, p, span } from '@control.ts/min';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
+import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
+import { validationText } from '@utils/RegistrationValidationsData';
 
 import styles from './styles.module.scss';
 
@@ -32,6 +35,20 @@ export class CreateInformationUsers {
     return node;
   }
 
+  private createAddressButtonsContainer(showAllButton: HTMLButtonElement): HTMLDivElement {
+    const container = div({ className: styles.addressButtonsContainer });
+    const addAddressButton = button({ className: styles.userInfoBtn, txt: 'Add Address' });
+
+    addAddressButton.addEventListener('click', () => {
+      const registrationPage = new RegistrationPage();
+      const addressForm = registrationPage.createFormAddress();
+      container.append(addressForm);
+    });
+
+    container.append(showAllButton, addAddressButton);
+    return container;
+  }
+
   public async createProfileAddresses(): Promise<HTMLElement> {
     const data = await this.getDataFromServer();
     const node = article({ className: [styles.addressesInformationContainer].join(' ') });
@@ -48,7 +65,8 @@ export class CreateInformationUsers {
     }
     this.allAddressesContainer = div({ className: styles.allAddressesContainer });
     const buttonShowAllAddresses = this.buttonShowAllAddresses(this.allAddressesContainer);
-    node.append(buttonShowAllAddresses, this.allAddressesContainer);
+    const addressButtonsContainer = this.createAddressButtonsContainer(buttonShowAllAddresses);
+    node.append(addressButtonsContainer, this.allAddressesContainer);
     return node;
   }
 
@@ -66,11 +84,20 @@ export class CreateInformationUsers {
             const nodeInfoAddresses = div(
               { className: styles.accountProfileInfoContent },
               p({ txt: `${addressData[0]}:` }),
-              span({ txt: addressData[1] }),
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              span({ txt: addressData[1] as string }),
             );
             node.append(nodeInfoAddresses);
           }
         });
+        const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
+        editButton.addEventListener('click', () => this.editAddressForm(address, node));
+        node.append(editButton);
+
+        const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        deleteButton.addEventListener('click', () => this.deleteAddress(address.id!, node));
+        node.append(deleteButton);
       }
     });
     return node;
@@ -86,11 +113,21 @@ export class CreateInformationUsers {
           const nodeInfoAddresses = div(
             { className: styles.accountProfileInfoContent },
             p({ txt: `${addressData[0]}:` }),
-            span({ txt: addressData[1] }),
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            span({ txt: addressData[1] as string }),
           );
           nodeInfoAddressesContainer.append(nodeInfoAddresses);
         }
       });
+      const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
+      editButton.addEventListener('click', () => this.editAddressForm(address, nodeInfoAddressesContainer));
+      nodeInfoAddressesContainer.append(editButton);
+
+      const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      deleteButton.addEventListener('click', () => this.deleteAddress(address.id!, nodeInfoAddressesContainer));
+      nodeInfoAddressesContainer.append(deleteButton);
+
       node.append(nodeInfoAddressesContainer);
     });
     return node;
@@ -107,5 +144,133 @@ export class CreateInformationUsers {
       this.showAllAddressesStatus = !this.showAllAddressesStatus;
     });
     return buttonShowAllAddresses;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private editAddressForm(address: any, container: HTMLElement): void {
+    const addressType = container.querySelector('h3')?.textContent?.includes('Billing') ? 'Billing' : 'Shipping';
+    container.innerHTML = '';
+
+    Object.entries(address).forEach(([key, value]) => {
+      if (key !== 'id') {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const inputField = this.createInputField(key, value as string);
+        const nodeInfoAddresses = this.createAddressNodeInfo(key, inputField);
+
+        if (validationText[key]) {
+          this.addValidationMessages(key, inputField, nodeInfoAddresses);
+        }
+
+        container.append(nodeInfoAddresses);
+      }
+    });
+
+    this.addSaveButton(address.id, addressType, container);
+  }
+
+  private createInputField(key: string, value: string): HTMLInputElement {
+    const inputField = input({ className: styles.editInput, value });
+    inputField.dataset.key = key;
+    return inputField;
+  }
+
+  private createAddressNodeInfo(key: string, inputField: HTMLInputElement): HTMLDivElement {
+    return div({ className: styles.accountProfileInfoContent }, p({ txt: `${key}:` }), inputField);
+  }
+
+  private addValidationMessages(key: string, inputField: HTMLInputElement, nodeInfoAddresses: HTMLDivElement): void {
+    const validationMessagesContainer = div({ className: styles.inputContainer });
+
+    validationText[key].forEach((validation) => {
+      const validationMessage = p({ className: styles.errorMsg, txt: validation.text });
+      validationMessage.style.display = 'none';
+      validationMessagesContainer.append(validationMessage);
+
+      inputField.addEventListener('input', () => {
+        const isValid = validation.func(inputField.value);
+        validationMessage.style.display = isValid ? 'none' : 'block';
+      });
+    });
+
+    nodeInfoAddresses.append(validationMessagesContainer);
+  }
+
+  private addSaveButton(addressId: string, addressType: string, container: HTMLElement): void {
+    const saveButton = button({ className: styles.userInfoBtn, txt: 'Save' });
+    saveButton.addEventListener('click', async () => {
+      await this.saveAddress(addressId, container);
+      container.innerHTML = '';
+
+      if (addressType === 'Billing' && this.defaultBillingAddressId) {
+        const defaultAddressNode = await this.showDefaultAddresses(this.defaultBillingAddressId, 'Billing');
+        container.append(defaultAddressNode);
+      } else if (addressType === 'Shipping' && this.defaultShippingAddressId) {
+        const shippingAddressNode = await this.showDefaultAddresses(this.defaultShippingAddressId, 'Shipping');
+        container.append(shippingAddressNode);
+      }
+    });
+    container.append(saveButton);
+  }
+
+  private async saveAddress(addressId: string, container: HTMLElement): Promise<void> {
+    const data = await this.getDataFromServer();
+    const currentVersion = data.version;
+
+    const editInputs = container.querySelectorAll('input');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedAddress: any = { id: addressId };
+
+    editInputs.forEach((editInput) => {
+      const { key } = editInput.dataset;
+      if (key) {
+        updatedAddress[key] = editInput.value;
+      }
+    });
+
+    try {
+      await clientService.apiRoot
+        .me()
+        .post({
+          body: {
+            version: currentVersion,
+            actions: [
+              {
+                action: 'changeAddress',
+                addressId,
+                address: updatedAddress,
+              },
+            ],
+          },
+        })
+        .execute();
+      showToastMessage('Address updated successfully!', ToastColors.Green);
+    } catch (error) {
+      console.error('Error updating address:', error);
+      showToastMessage('Error updating address.');
+    }
+  }
+  private async deleteAddress(addressId: string, container: HTMLElement): Promise<void> {
+    const data = await this.getDataFromServer();
+    const currentVersion = data.version;
+
+    try {
+      await clientService.apiRoot
+        .me()
+        .post({
+          body: {
+            version: currentVersion,
+            actions: [
+              {
+                action: 'removeAddress',
+                addressId,
+              },
+            ],
+          },
+        })
+        .execute();
+      showToastMessage('Address deleted successfully!', ToastColors.Green);
+      container.style.display = 'none';
+    } catch (error) {
+      console.error('Error deleting address:', error);
+    }
   }
 }
