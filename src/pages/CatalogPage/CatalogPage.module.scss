@@ -76,20 +76,27 @@
     content: '>';
     position: absolute;
     right: -1.2rem;
-    top: 0;
-    transform: translateY(-10%);
+    top: 50%;
+    transform: translateY(-60%);
+
     cursor: default;
     pointer-events: none;
   }
 
   @media screen and (max-width: 560px) {
-    text-align: center;
+    // text-align: center;
+
+    & :not(:last-child):after {
+      transform: translateY(-50%);
+    }
   }
 }
 
 .crumb {
   position: relative;
   text-decoration: none;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   font-family: 'Futura Light';
   letter-spacing: 0.2rem;
@@ -105,6 +112,12 @@
     &::after {
       color: black;
     }
+  }
+
+  @media screen and (max-width: 560px) {
+    text-align: center;
+    font-size: 0.8rem;
+    vertical-align: middle;
   }
 }
 
