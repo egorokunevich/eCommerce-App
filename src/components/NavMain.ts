@@ -81,7 +81,7 @@ export default class NavMain {
   public renderNavButtons(): void {
     this.navBtnsContainer.innerHTML = '';
 
-    const loggedData = localStorage.getItem('isLoggedIn') ?? '';
+    const loggedData = localStorage.getItem('isLoggedIn') ?? 'null';
     const loggedIn = JSON.parse(loggedData);
 
     if (loggedIn) {
