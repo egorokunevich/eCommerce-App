@@ -7,13 +7,8 @@ import styles from './Layout.module.scss';
 
 export class Layout {
   private layoutElement: HTMLElement | null = null;
-  private header: Header;
-  public navMain: NavMain;
-
-  constructor() {
-    this.header = new Header();
-    this.navMain = new NavMain();
-  }
+  private header = new Header();
+  public navMain = new NavMain();
 
   private createLayout(): void {
     const layout = div({ className: styles.headerWrapper });
@@ -48,3 +43,6 @@ export class Layout {
 //   const layout = new Layout();
 //   layout.renderLayout();
 // };
+
+const layoutInstance = new Layout();
+export default layoutInstance;

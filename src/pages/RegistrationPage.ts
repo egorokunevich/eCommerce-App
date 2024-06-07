@@ -17,10 +17,10 @@ type ErrorMsgType = { nameMsg: string; text: string; func: ValidationFunction }[
 type ValidationErrors = { [key: string]: boolean } & { billingAddress?: { [key: string]: boolean } };
 
 export default class RegistrationPage {
-  private validationMessages: ValidationErrors = {};
+  public validationMessages: ValidationErrors = {};
   private registrationBtN: HTMLElement | null = null;
   private nodeLabel: HTMLElement | null = null;
-  private inputTag: HTMLInputElement | HTMLElement | null = null;
+  public inputTag: HTMLInputElement | HTMLElement | null = null;
   private billingIsShipping = false;
   private billingForm: HTMLElement | null = null;
   private billingAddressInput: HTMLElement[] | null = null;
@@ -74,7 +74,7 @@ export default class RegistrationPage {
     return regSection;
   }
 
-  private createFormComponents(): HTMLElement {
+  public createFormComponents(): HTMLElement {
     this.userMainInput = [
       this.createFormLabel('email', validationText.email),
       this.createFormLabel('password', validationText.password),
@@ -92,7 +92,7 @@ export default class RegistrationPage {
     return node;
   }
 
-  private createFormAddress(): HTMLElement {
+  public createFormAddress(): HTMLElement {
     this.shippingAddressInput = [
       this.createFormLabel('streetName', validationText.streetName),
       this.createFormLabel('streetNumber', validationText.streetNumber),
@@ -136,7 +136,7 @@ export default class RegistrationPage {
     return node;
   }
 
-  private createFormLabel(text: string, textMessageError: ErrorMsgType, isAddressType?: string): HTMLElement {
+  public createFormLabel(text: string, textMessageError: ErrorMsgType, isAddressType?: string): HTMLElement {
     this.inputTag = setAttributes(
       input({ className: [styles.inputField, isAddressType].join(' '), id: `user-${text}` }),
       [
@@ -210,7 +210,7 @@ export default class RegistrationPage {
     return nodeInput;
   }
 
-  private createDefaultSwitchBtn(name: string): HTMLElement {
+  public createDefaultSwitchBtn(name: string): HTMLElement {
     const nodeInput = setAttributes(input({ className: styleSwitch.switchInput }), { type: 'type', text: 'checkbox' });
     const node = div(
       {},
@@ -241,6 +241,7 @@ export default class RegistrationPage {
       button({ className: ['register-btn', 'btn', styles.submitBtn].join(' '), txt: 'Register' }),
       [{ text: true, type: 'disabled' }],
     );
+    this.registrationBtN.id = 'btnregister';
     this.registrationBtN.addEventListener('click', (ev) => {
       ev.preventDefault();
       const inputsArray = document.querySelectorAll(`.${styles.inputField}`);

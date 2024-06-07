@@ -14,13 +14,19 @@
   font-family: 'FuturaMediumC';
   src:
     local('Futura Medium C'),
-    url('/fonts/FuturaMediumC.ttf') format('truetype');
+    url('/assets/fonts/FuturaMediumC.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Futura Light';
   src:
     local('Futura Light'),
-    url('/fonts/Futura Light.otf') format('opentype');
+    url('/assets/fonts/Futura Light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Inter';
+  src:
+    local('Inter'),
+    url('/assets/fonts/Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
 }
 
 * {
@@ -35,4 +41,68 @@ body {
   height: 100%;
   background-color: rgb(97, 97, 97);
   scroll-behavior: smooth;
+  position: relative;
+}
+
+.swiper-style {
+  width: 400px;
+  height: 300px;
+
+  &:hover {
+    background-color: #e0f7e3;
+    box-shadow:
+      2px 2px 15px 0px rgba(0, 0, 0, 0.5),
+      -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 850px) {
+    width: 300px;
+    height: 250px;
+  }
+}
+
+.swiper-wrapper-style {
+  margin: 0;
+  display: flex;
+}
+
+.swiper-slide {
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-next-style::after,
+.btn-prev-style::after {
+  color: #ccd4d1;
+}
+
+.btn-next-style:hover,
+.btn-prev-style:hover {
+  scale: 120%;
+}
+
+.pagination-style span:hover {
+  scale: 130%;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ccd4d1;
+}
+
+.modal-content .swiper-wrapper-style .swiper-slide {
+  height: auto;
+  box-shadow:
+    2px 2px 15px 0px rgba(0, 0, 0, 0.5),
+    -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }

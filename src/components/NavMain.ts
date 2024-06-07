@@ -36,6 +36,9 @@ export default class NavMain {
     });
 
     const navBtnsContainer = div({ className: styles.navBtnsContainer });
+    document.addEventListener('loggedStatusChange', () => {
+      this.renderNavButtons();
+    });
     this.navBtnsContainer = navBtnsContainer;
     this.renderNavButtons();
 
@@ -78,14 +81,37 @@ export default class NavMain {
   public renderNavButtons(): void {
     this.navBtnsContainer.innerHTML = '';
 
-    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
-    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
+    const loggedData = localStorage.getItem('isLoggedIn') ?? 'null';
+    const loggedIn = JSON.parse(loggedData);
+
+    if (loggedIn) {
+      this.renderLoggedInInterface();
+    } else {
+      this.renderLoggedOutInterface();
+    }
+  }
+
+  private renderLoggedInInterface(): void {
     const profileBtn = this.createNavBtn('My Profile', styles.userIcon);
     const logoutBtn = this.createNavBtn('Log Out', styles.logoutIcon);
 
     profileBtn.addEventListener('click', () => {
       Router.go('/profile', { addToHistory: true });
     });
+
+    logoutBtn.addEventListener('click', () => {
+      const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+      if (isLoggedIn) {
+        clientService.logout();
+      }
+    });
+
+    this.navBtnsContainer.append(profileBtn, logoutBtn);
+  }
+
+  private renderLoggedOutInterface(): void {
+    const loginBtn = this.createNavBtn('Log In', styles.userIcon);
+    const signUpBtn = this.createNavBtn('Sign Up', styles.signUpIcon);
 
     loginBtn.addEventListener('click', () => {
       Router.go('/login', { addToHistory: true });
@@ -94,13 +120,7 @@ export default class NavMain {
     signUpBtn.addEventListener('click', () => {
       Router.go('/registration', { addToHistory: true });
     });
-    logoutBtn.addEventListener('click', () => {
-      const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
-      if (isLoggedIn) {
-        clientService.logout();
-      }
-    });
 
-    this.navBtnsContainer.append(loginBtn, signUpBtn, profileBtn, logoutBtn);
+    this.navBtnsContainer.append(loginBtn, signUpBtn);
   }
 }
