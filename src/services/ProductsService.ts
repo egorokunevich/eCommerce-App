@@ -48,6 +48,40 @@ export class ProductsService {
       .execute();
   }
 
+  public async addTaxForProducts(): Promise<void> {
+    const response = await clientService.apiRoot
+      .productProjections()
+      .get({
+        queryArgs: {
+          limit: 50,
+        },
+      })
+      .execute();
+    const products = response.body.results;
+    products.forEach(async (item) => {
+      const ID = item.id;
+      const { version } = item;
+      await clientService.apiRoot
+        .products()
+        .withId({ ID })
+        .post({
+          body: {
+            version,
+            actions: [
+              {
+                action: 'setTaxCategory',
+                taxCategory: {
+                  typeId: 'tax-category',
+                  key: 'basic-tax',
+                },
+              },
+            ],
+          },
+        })
+        .execute();
+    });
+  }
+
   public async getDiscountById(ID: string): Promise<ClientResponse<ProductDiscount>> {
     return clientService.apiRoot.productDiscounts().withId({ ID }).get().execute();
   }

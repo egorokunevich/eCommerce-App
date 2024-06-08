@@ -1,10 +1,12 @@
 import type { ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
-import { div, img, span } from '@control.ts/min';
+import { button, div, img, span } from '@control.ts/min';
+
+import cartService from '@services/CartService';
 
 import styles from './ProductCard.module.scss';
 
 export class ProductCard {
-  public createCard(product: ProductProjection): HTMLDivElement {
+  public async createCard(product: ProductProjection): Promise<HTMLDivElement> {
     const picData = product.masterVariant.images ? product.masterVariant.images[0] : null;
     const card = div({ className: styles.card });
     // If a product is on sale, add sale class to a card
@@ -32,7 +34,7 @@ export class ProductCard {
     if (product.description) {
       description.innerText = product.description['en-US'];
     }
-    const price = this.getProductPriceElement(product) ?? div({ txt: 'null' });
+    const price = (await this.getProductPriceElement(product)) ?? div({ txt: 'null' });
     card.append(picContainer, infoContainer);
     picContainer.append(pic);
     infoContainer.append(detailsContainer, price);
@@ -40,7 +42,7 @@ export class ProductCard {
     return card;
   }
 
-  private getProductPriceElement(product: ProductProjection): HTMLElement | null {
+  private async getProductPriceElement(product: ProductProjection): Promise<HTMLElement | null> {
     if (product.masterVariant.prices) {
       const priceData = product.masterVariant.prices[0];
       const baseData = priceData.value;
@@ -50,6 +52,7 @@ export class ProductCard {
       const finalPrice = div({ className: styles.price });
 
       finalPrice.append(basePrice);
+
       if (this.checkForDiscount(product) && priceData.discounted) {
         const discountedPrice = span({ className: styles.priceValue });
         const discountedData = priceData.discounted?.value;
@@ -59,9 +62,42 @@ export class ProductCard {
         finalPrice.classList.add(styles.withDiscount);
         finalPrice.append(discountedPrice);
       }
+      const addToCartBtn = await this.createAddToCartBtn(product);
+      finalPrice.append(addToCartBtn);
       return finalPrice;
     }
     return null;
+  }
+
+  private async createAddToCartBtn(product: ProductProjection): Promise<HTMLButtonElement> {
+    const addToCartBtn = button({ className: styles.addToCartBtn });
+
+    const isProductInCart = await cartService.checkIfProductIsInCart(product);
+
+    if (isProductInCart) {
+      addToCartBtn.disabled = true;
+    }
+    const addToCartStart = new CustomEvent('addToCartStart');
+    const loader = div({ className: styles.loader });
+    addToCartBtn.addEventListener('addToCartStart', () => {
+      addToCartBtn.classList.add(styles.loading);
+      addToCartBtn.append(loader);
+    });
+    addToCartBtn.addEventListener('addToCartEnd', () => {
+      addToCartBtn.classList.remove(styles.loading);
+      addToCartBtn.removeChild(loader);
+    });
+    addToCartBtn.addEventListener('click', async (e) => {
+      addToCartBtn.dispatchEvent(addToCartStart);
+      // const pendingEnd = new CustomEvent('pendingEnd');
+      e.stopPropagation();
+      await cartService.addProductToCart(product);
+      addToCartBtn.disabled = true;
+      const addToCartEnd = new CustomEvent('addToCartEnd');
+      addToCartBtn.dispatchEvent(addToCartEnd);
+    });
+
+    return addToCartBtn;
   }
 
   private formatPrice(price: TypedMoney): string {

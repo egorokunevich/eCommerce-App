@@ -51,6 +51,14 @@
         transform: translate(-50%, -15%);
       }
     }
+
+    .add-to-cart-btn {
+      border: 1px solid black;
+
+      &:disabled {
+        border: 1px solid transparent;
+      }
+    }
   }
 
   &.sale {
@@ -161,6 +169,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   gap: 0.5rem;
 
@@ -359,4 +368,76 @@ img:hover {
 
 .modal-content .swiper-wrapper-style .swiper-slide-style {
   height: auto;
+}
+
+.add-to-cart-btn {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  transition: 0.2s;
+  background-color: rgb(233, 233, 233);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    scale: 120%;
+  }
+
+  &.loading {
+    &::after {
+      opacity: 0;
+    }
+  }
+
+  &:disabled {
+    background-color: rgb(148, 148, 148);
+    cursor: default;
+
+    &::after {
+      filter: invert(90%);
+    }
+
+    &:hover {
+      scale: 100%;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('/assets/icons/add-to-cart.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform-origin: top left;
+    transition: 0.1s;
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 80%;
+  left: -5%;
+  top: -5%;
+  padding: 2px;
+  margin: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000000;
+  --_m: conic-gradient(#0000 10%, #575757), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
 }
