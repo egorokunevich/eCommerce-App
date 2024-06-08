@@ -54,6 +54,10 @@
 
     .add-to-cart-btn {
       border: 1px solid black;
+
+      &:disabled {
+        border: 1px solid transparent;
+      }
     }
   }
 
@@ -380,6 +384,25 @@ img:hover {
     scale: 120%;
   }
 
+  &.loading {
+    &::after {
+      opacity: 0;
+    }
+  }
+
+  &:disabled {
+    background-color: rgb(148, 148, 148);
+    cursor: default;
+
+    &::after {
+      filter: invert(90%);
+    }
+
+    &:hover {
+      scale: 100%;
+    }
+  }
+
   &::after {
     content: '';
     position: absolute;
@@ -393,5 +416,28 @@ img:hover {
     background-repeat: no-repeat;
     transform-origin: top left;
     transition: 0.1s;
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 80%;
+  left: -5%;
+  top: -5%;
+  padding: 2px;
+  margin: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000000;
+  --_m: conic-gradient(#0000 10%, #575757), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
   }
 }

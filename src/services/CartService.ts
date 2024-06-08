@@ -1,7 +1,6 @@
 import type { Cart, CartDraft, ProductProjection } from '@commercetools/platform-sdk';
 
-import type { FetchError } from './ClientService';
-import clientService from './ClientService';
+import clientService, { isFetchError } from './ClientService';
 
 export class CartService {
   public async getActiveCart(): Promise<Cart | null> {
@@ -12,7 +11,7 @@ export class CartService {
         return response.body;
       }
     } catch (error) {
-      if (this.isFetchError(error)) {
+      if (isFetchError(error)) {
         if (error.statusCode === 404) {
           // If there is no cart, create one
           return await this.createCart();
@@ -30,6 +29,18 @@ export class CartService {
   //     await clientService.apiRoot.carts().withId({ ID }).delete({ queryArgs: { version } }).execute();
   //   });
   // }
+
+  public async checkIfProductIsInCart(product: ProductProjection): Promise<boolean> {
+    const activeCart = await this.getActiveCart();
+    const response = await clientService.apiRoot
+      .carts()
+      .get({ queryArgs: { where: `id="${activeCart?.id}" and lineItems(productId="${product.id}")` } })
+      .execute();
+    if (response.body.results.length > 0) {
+      return true;
+    }
+    return false;
+  }
 
   public async addProductToCart(product: ProductProjection): Promise<Cart | null> {
     const cart = await this.getActiveCart();
@@ -56,17 +67,12 @@ export class CartService {
     return null;
   }
 
-  public async createCart(): Promise<Cart> {
+  private async createCart(): Promise<Cart> {
     const cartDraft: CartDraft = {
       currency: 'EUR',
     };
     const newCart = (await clientService.apiRoot.me().carts().post({ body: cartDraft }).execute()).body;
-
     return newCart;
-  }
-
-  private isFetchError(error: unknown): error is FetchError {
-    return typeof error === 'object' && error !== null && 'statusCode' in error;
   }
 }
 

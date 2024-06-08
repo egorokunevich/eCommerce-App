@@ -22,6 +22,11 @@ export interface FetchError extends Error {
   statusCode?: number;
 }
 
+// Is used to handle unknown error as an object with statusCode property.
+export function isFetchError(error: unknown): error is FetchError {
+  return typeof error === 'object' && error !== null && 'statusCode' in error;
+}
+
 export class ClientService {
   private loggedStatusEvent = new CustomEvent('loggedStatusChange');
   public apiRoot!: ByProjectKeyRequestBuilder;
@@ -36,7 +41,7 @@ export class ClientService {
 
   // On failed login / signup show a notification with error message
   public handleAuthError(error: unknown): void {
-    if (this.isFetchError(error)) {
+    if (isFetchError(error)) {
       showToastMessage(error.message); // Show notification
     }
   }
@@ -123,11 +128,6 @@ export class ClientService {
     document.dispatchEvent(this.loggedStatusEvent);
 
     showToastMessage('Logged out', ToastColors.Blue); // Show notification
-  }
-
-  // Is used to handle unknown error as an object with statusCode property.
-  private isFetchError(error: unknown): error is FetchError {
-    return typeof error === 'object' && error !== null && 'statusCode' in error;
   }
 
   //   public async getAllCustomers(
