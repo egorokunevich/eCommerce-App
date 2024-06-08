@@ -51,6 +51,10 @@
         transform: translate(-50%, -15%);
       }
     }
+
+    .add-to-cart-btn {
+      border: 1px solid black;
+    }
   }
 
   &.sale {
@@ -161,6 +165,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   gap: 0.5rem;
 
@@ -359,4 +364,34 @@ img:hover {
 
 .modal-content .swiper-wrapper-style .swiper-slide-style {
   height: auto;
+}
+
+.add-to-cart-btn {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  transition: 0.2s;
+  background-color: rgb(233, 233, 233);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    scale: 120%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('/assets/icons/add-to-cart.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform-origin: top left;
+    transition: 0.1s;
+  }
 }

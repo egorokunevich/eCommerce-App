@@ -1,6 +1,8 @@
 import type { ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
 import { div, img, span } from '@control.ts/min';
 
+import cartService from '@services/CartService';
+
 import styles from './ProductCard.module.scss';
 
 export class ProductCard {
@@ -49,7 +51,14 @@ export class ProductCard {
 
       const finalPrice = div({ className: styles.price });
 
+      const addToCartBtn = div({ className: styles.addToCartBtn });
+      addToCartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cartService.addProductToCart(product);
+      });
+
       finalPrice.append(basePrice);
+
       if (this.checkForDiscount(product) && priceData.discounted) {
         const discountedPrice = span({ className: styles.priceValue });
         const discountedData = priceData.discounted?.value;
@@ -59,6 +68,7 @@ export class ProductCard {
         finalPrice.classList.add(styles.withDiscount);
         finalPrice.append(discountedPrice);
       }
+      finalPrice.append(addToCartBtn);
       return finalPrice;
     }
     return null;
