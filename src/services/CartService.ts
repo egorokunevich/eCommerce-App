@@ -74,6 +74,14 @@ export class CartService {
     const newCart = (await clientService.apiRoot.me().carts().post({ body: cartDraft }).execute()).body;
     return newCart;
   }
+
+  public async getCartItemCount(): Promise<number> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      return cart.lineItems.reduce((total, item) => total + item.quantity, 0);
+    }
+    return 0;
+  }
 }
 
 const cartService = new CartService();
