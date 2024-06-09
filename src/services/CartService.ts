@@ -1,4 +1,4 @@
-import type { Cart, CartDraft, ProductProjection } from '@commercetools/platform-sdk';
+import type { Cart, CartDraft } from '@commercetools/platform-sdk';
 
 import clientService, { isFetchError } from './ClientService';
 
@@ -31,11 +31,11 @@ export class CartService {
   //   });
   // }
 
-  public async checkIfProductIsInCart(product: ProductProjection): Promise<boolean> {
+  public async checkIfProductIsInCart(productId: string): Promise<boolean> {
     const activeCart = await this.getActiveCart();
     const response = await clientService.apiRoot
       .carts()
-      .get({ queryArgs: { where: `id="${activeCart?.id}" and lineItems(productId="${product.id}")` } })
+      .get({ queryArgs: { where: `id="${activeCart?.id}" and lineItems(productId="${productId}")` } })
       .execute();
     if (response.body.results.length > 0) {
       return true;
@@ -43,7 +43,7 @@ export class CartService {
     return false;
   }
 
-  public async addProductToCart(product: ProductProjection): Promise<Cart | null> {
+  public async addProductToCart(productId: string): Promise<Cart | null> {
     const cart = await this.getActiveCart();
     if (cart) {
       const ID = cart.id;
@@ -55,8 +55,34 @@ export class CartService {
             actions: [
               {
                 action: 'addLineItem',
-                productId: product.id,
+                productId,
                 quantity: 1,
+              },
+            ],
+            version,
+          },
+        })
+        .execute();
+      document.dispatchEvent(updateBasketEvent);
+      return response.body;
+    }
+    return null;
+  }
+
+  public async updateItemQuantityInCart(lineItemId: string, quantity: number): Promise<Cart | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const ID = cart.id;
+      const { version } = cart;
+      const cartEndpoint = clientService.apiRoot.carts().withId({ ID });
+      const response = await cartEndpoint
+        .post({
+          body: {
+            actions: [
+              {
+                action: 'changeLineItemQuantity',
+                lineItemId,
+                quantity,
               },
             ],
             version,
