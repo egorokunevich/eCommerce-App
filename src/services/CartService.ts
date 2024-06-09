@@ -69,6 +69,32 @@ export class CartService {
     return null;
   }
 
+  public async updateItemQuantityInCart(lineItemId: string, quantity: number): Promise<Cart | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const ID = cart.id;
+      const { version } = cart;
+      const cartEndpoint = clientService.apiRoot.carts().withId({ ID });
+      const response = await cartEndpoint
+        .post({
+          body: {
+            actions: [
+              {
+                action: 'changeLineItemQuantity',
+                lineItemId,
+                quantity,
+              },
+            ],
+            version,
+          },
+        })
+        .execute();
+      document.dispatchEvent(updateBasketEvent);
+      return response.body;
+    }
+    return null;
+  }
+
   private async createCart(): Promise<Cart> {
     const cartDraft: CartDraft = {
       currency: 'EUR',

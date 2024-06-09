@@ -48,7 +48,6 @@ export default class NavMain {
     });
     this.navBtnsContainer = navBtnsContainer;
     this.renderNavButtons();
-    this.renderBasket();
 
     menu.append(list, navBtnsContainer);
     this.menuElement = menu;
@@ -90,7 +89,10 @@ export default class NavMain {
     const count = await cartService.getCartItemCount();
     if (this.basketCountElement) {
       this.basketCountElement.textContent = `${count}`;
-      this.basketCountElement.style.display = count > 0 ? 'block' : 'none';
+      this.basketCountElement.style.display = count > 0 ? 'flex' : 'none';
+      if (count > 99) {
+        this.basketCountElement.textContent = `99+`;
+      }
     }
   }
 
@@ -119,6 +121,8 @@ export default class NavMain {
     } else {
       this.renderLoggedOutInterface();
     }
+
+    this.renderBasket();
   }
 
   private renderLoggedInInterface(): void {

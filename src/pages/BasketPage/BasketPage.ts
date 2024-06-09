@@ -1,21 +1,27 @@
-import type { LineItem } from '@commercetools/platform-sdk';
-import { button, div, img, input, section, style } from '@control.ts/min';
+import { div, section } from '@control.ts/min';
 
-import productCard from '@components/ProductCard/ProductCard';
+import BasketItem from '@components/BasketItem/BasketItem';
 import cartService from '@services/CartService';
 
 import styles from './BasketPage.module.scss';
 
 export class BasketPage {
   private pageWrapper: HTMLElement = section({ className: styles.wrapper });
+  private scrollbarElement: HTMLElement = div({});
 
   public createPage(): HTMLElement {
-    const container = div({ className: styles.pageContainer });
+    const pageContainer = div({ className: styles.pageContainer });
+
+    const header = this.createItemsHeader();
+
+    const itemsWrapper = div({ className: styles.itemsWrapper });
 
     const itemsContainer = div({ className: styles.itemsContainer });
 
     // Implement custom scrollbar indication
     const scrollbar = div({ className: styles.scrollbar });
+    scrollbar.classList.add(styles.hidden);
+    this.scrollbarElement = scrollbar;
     itemsContainer.addEventListener('scroll', () => {
       const max = itemsContainer.scrollHeight - itemsContainer.clientHeight;
       const scrolledValue = Math.abs(
@@ -25,15 +31,34 @@ export class BasketPage {
         itemsContainer.clientHeight -
         scrollbar.clientHeight -
         Math.round(((itemsContainer.clientHeight - scrollbar.clientHeight) * scrolledValue) / max);
-      console.log(step);
       scrollbar.style.top = `${step}px`;
     });
-    container.append(scrollbar);
+    this.handleScrollbarOpacity();
 
-    container.append(itemsContainer);
-    this.pageWrapper.append(container);
+    itemsWrapper.append(scrollbar, itemsContainer);
+    pageContainer.append(header, itemsWrapper);
+    this.pageWrapper.append(pageContainer);
     this.renderItems(itemsContainer);
     return this.pageWrapper;
+  }
+
+  private createItemsHeader(): HTMLElement {
+    const header = div({ className: styles.itemsHeader });
+    const pic = div({ className: styles.headerPic });
+    const name = div({ className: styles.headerName, txt: `Name` });
+    const price = div({ className: styles.headerPrice, txt: `Price` });
+    const amount = div({ className: styles.headerAmount, txt: `Amount` });
+    const total = div({ className: styles.headerTotal, txt: `Total` });
+
+    header.append(pic, name, price, amount, total);
+    return header;
+  }
+
+  private async handleScrollbarOpacity(): Promise<void> {
+    const cart = await cartService.getActiveCart();
+    if (cart?.lineItems.length && cart?.lineItems.length > 5) {
+      this.scrollbarElement.classList.remove(styles.hidden);
+    }
   }
 
   private async renderItems(container: HTMLElement): Promise<void> {
@@ -41,58 +66,13 @@ export class BasketPage {
     const items = cart?.lineItems;
 
     items?.forEach(async (item) => {
-      const basketItem = await this.createBasketItem(item);
+      const basketItemEntity = new BasketItem(item);
+      const basketItem = await basketItemEntity.createBasketItem();
       container.append(basketItem);
     });
-    console.log(cart);
-  }
 
-  private async createBasketItem(lineItem: LineItem): Promise<HTMLElement> {
-    const picData = lineItem.variant.images ? lineItem.variant.images[0] : null;
-    const container = div({ className: styles.basketItem });
-
-    const picContainer = div({ className: styles.picContainer });
-    const pic = img({
-      className: styles.pic,
-      src: picData?.url,
-      alt: picData?.label,
+    document.addEventListener('updateBasket', () => {
+      // const cart =
     });
-    const name = div({ className: styles.name, txt: lineItem.name['en-US'] });
-    const price = this.getPriceElement(lineItem);
-    if (productCard.checkForDiscount(lineItem.variant)) {
-      price.classList.add(styles.sale);
-    }
-
-    const controls = this.createQuantityControls(lineItem);
-
-    container.append(picContainer, name, price, controls);
-    picContainer.append(pic);
-
-    return container;
-  }
-
-  private createQuantityControls(lineItem: LineItem) {
-    const container = div({ className: styles.quantityContainer });
-    const quantity = input({ className: styles.quantityInput, value: lineItem.quantity.toString() });
-    const decreaseBtn = button({ className: styles.quantityBtn, txt: '-' });
-    const increaseBtn = button({ className: styles.quantityBtn, txt: '+' });
-    container.append(decreaseBtn, quantity, increaseBtn);
-
-    return container;
-  }
-
-  private getPriceElement(lineItem: LineItem): HTMLElement {
-    const priceContainer = div({ className: styles.priceContainer });
-    const basePrice = div({ className: styles.basePrice, txt: productCard.formatPrice(lineItem.price.value) });
-    priceContainer.append(basePrice);
-    if (lineItem.price.discounted) {
-      const discountedPrice = div({
-        className: styles.discountedPrice,
-        txt: productCard.formatPrice(lineItem.price.discounted.value),
-      });
-      priceContainer.append(discountedPrice);
-    }
-
-    return priceContainer;
   }
 }
