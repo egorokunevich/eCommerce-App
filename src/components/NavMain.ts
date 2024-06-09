@@ -20,6 +20,12 @@ export default class NavMain {
   public nav: HTMLElement = div({});
   private basketCountElement: HTMLElement | null = null;
 
+  constructor() {
+    document.addEventListener('updateBasket', () => {
+      this.updateBasketCount();
+    });
+  }
+
   private createMenu(): void {
     const menu = nav({ className: styles.navMenu });
     this.nav = menu;
@@ -100,8 +106,6 @@ export default class NavMain {
 
     this.navBtnsContainer.append(basketBtn);
     this.updateBasketCount();
-
-    setInterval(() => this.updateBasketCount(), 3000);
   }
 
   public renderNavButtons(): void {
