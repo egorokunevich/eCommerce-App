@@ -14,17 +14,55 @@
 }
 
 .page-container {
+  position: relative;
   display: flex;
   width: 100%;
+
+  & .scrollbar {
+    position: absolute;
+    right: 0.2rem;
+    top: 0;
+    border-radius: 5px;
+    width: 10px;
+    height: 100px;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 5px;
+      width: 10px;
+      height: 80px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.25);
+    }
+  }
 }
 
 .items-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 1px solid black;
+  border-radius: 15px;
   max-height: 500px;
+  // overflow: hidden;
   overflow: auto;
+
+  // Hide scrollbar for Chrome
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  // Hide scrollbar for IE and Edge
+  -ms-overflow-style: none;
+  // Hide scrollbar for Firefox
+  scrollbar-width: none;
+
   & > *:nth-last-child(n + 2) {
     &::after {
       content: '';
@@ -43,7 +81,7 @@
 .basket-item {
   position: relative;
   display: grid;
-  grid-template-columns: 100px 200px 100px;
+  grid-template-columns: 100px 200px 120px 100px;
   justify-content: stretch;
   align-items: center;
   width: 100%;
@@ -60,6 +98,8 @@
 .pic-container {
   width: 80px;
   height: 80px;
+  border-radius: 5px;
+  overflow: hidden;
 
   & img {
     width: 80px;
@@ -93,5 +133,44 @@
 
       color: rgb(88, 88, 88);
     }
+  }
+}
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-input {
+  width: 2rem;
+  height: 2.4rem;
+  border: none;
+  border-top: 2px solid rgb(109, 109, 109);
+  border-bottom: 2px solid rgb(109, 109, 109);
+  text-align: center;
+  outline: none;
+  font-size: 1.2rem;
+}
+
+.quantity-btn {
+  width: 1.8rem;
+  height: 2.4rem;
+  border: 2px solid rgb(109, 109, 109);
+  background-color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.1s;
+
+  &:first-child {
+    border-right: none;
+  }
+
+  &:last-child {
+    border-left: none;
+  }
+
+  &:hover {
+    background-color: #dadada;
   }
 }

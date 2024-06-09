@@ -1,5 +1,5 @@
 import type { LineItem } from '@commercetools/platform-sdk';
-import { div, img, section } from '@control.ts/min';
+import { button, div, img, input, section, style } from '@control.ts/min';
 
 import productCard from '@components/ProductCard/ProductCard';
 import cartService from '@services/CartService';
@@ -13,6 +13,23 @@ export class BasketPage {
     const container = div({ className: styles.pageContainer });
 
     const itemsContainer = div({ className: styles.itemsContainer });
+
+    // Implement custom scrollbar indication
+    const scrollbar = div({ className: styles.scrollbar });
+    itemsContainer.addEventListener('scroll', () => {
+      const max = itemsContainer.scrollHeight - itemsContainer.clientHeight;
+      const scrolledValue = Math.abs(
+        itemsContainer.scrollHeight - itemsContainer.clientHeight - itemsContainer.scrollTop,
+      );
+      const step =
+        itemsContainer.clientHeight -
+        scrollbar.clientHeight -
+        Math.round(((itemsContainer.clientHeight - scrollbar.clientHeight) * scrolledValue) / max);
+      console.log(step);
+      scrollbar.style.top = `${step}px`;
+    });
+    container.append(scrollbar);
+
     container.append(itemsContainer);
     this.pageWrapper.append(container);
     this.renderItems(itemsContainer);
@@ -27,7 +44,7 @@ export class BasketPage {
       const basketItem = await this.createBasketItem(item);
       container.append(basketItem);
     });
-    // console.log(cart);
+    console.log(cart);
   }
 
   private async createBasketItem(lineItem: LineItem): Promise<HTMLElement> {
@@ -44,16 +61,22 @@ export class BasketPage {
     const price = this.getPriceElement(lineItem);
     if (productCard.checkForDiscount(lineItem.variant)) {
       price.classList.add(styles.sale);
-
-      //   const salePercentage = div({
-      //     className: styles.salePercentage,
-      //     txt: productCard.countDiscountPercentage(product.variant),
-      //   });
-      //   container.append(salePercentage);
     }
 
-    container.append(picContainer, name, price);
+    const controls = this.createQuantityControls(lineItem);
+
+    container.append(picContainer, name, price, controls);
     picContainer.append(pic);
+
+    return container;
+  }
+
+  private createQuantityControls(lineItem: LineItem) {
+    const container = div({ className: styles.quantityContainer });
+    const quantity = input({ className: styles.quantityInput, value: lineItem.quantity.toString() });
+    const decreaseBtn = button({ className: styles.quantityBtn, txt: '-' });
+    const increaseBtn = button({ className: styles.quantityBtn, txt: '+' });
+    container.append(decreaseBtn, quantity, increaseBtn);
 
     return container;
   }
