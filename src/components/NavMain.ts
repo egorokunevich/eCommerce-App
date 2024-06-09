@@ -1,6 +1,7 @@
 import { a, div, li, nav, ul } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
+import cartService from '@services/CartService';
 import clientService from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 
@@ -12,12 +13,18 @@ export default class NavMain {
     { href: '/', txt: 'Home' },
     { href: '/catalog', txt: 'Catalog' },
     { href: '/about', txt: 'About us' },
-    { href: '/basket', txt: 'Basket' },
   ];
 
   public logoutBtn: HTMLElement = div({});
   private menuElement: HTMLElement | null = null;
   public nav: HTMLElement = div({});
+  private basketCountElement: HTMLElement | null = null;
+
+  constructor() {
+    document.addEventListener('updateBasket', () => {
+      this.updateBasketCount();
+    });
+  }
 
   private createMenu(): void {
     const menu = nav({ className: styles.navMenu });
@@ -41,6 +48,7 @@ export default class NavMain {
     });
     this.navBtnsContainer = navBtnsContainer;
     this.renderNavButtons();
+    this.renderBasket();
 
     menu.append(list, navBtnsContainer);
     this.menuElement = menu;
@@ -53,12 +61,12 @@ export default class NavMain {
     return this.menuElement;
   }
 
-  public renderNav(): void {
+  /* public renderNav(): void {
     const menu = this.getMenuElement();
     if (menu) {
       document.body.appendChild(menu);
     }
-  }
+  } */
 
   private createNavBtn(buttonName: string, iconClassName: string): HTMLElement {
     const btn = div({ className: styles.authBtn });
@@ -76,6 +84,28 @@ export default class NavMain {
     link.append(icon, name);
 
     return btn;
+  }
+
+  private async updateBasketCount(): Promise<void> {
+    const count = await cartService.getCartItemCount();
+    if (this.basketCountElement) {
+      this.basketCountElement.textContent = `${count}`;
+      this.basketCountElement.style.display = count > 0 ? 'block' : 'none';
+    }
+  }
+
+  private renderBasket(): void {
+    const basketBtn = this.createNavBtn('Basket', styles.basketIcon);
+
+    this.basketCountElement = div({ className: styles.basketCount });
+    basketBtn.appendChild(this.basketCountElement);
+
+    basketBtn.addEventListener('click', () => {
+      Router.go('/basket', { addToHistory: true });
+    });
+
+    this.navBtnsContainer.append(basketBtn);
+    this.updateBasketCount();
   }
 
   public renderNavButtons(): void {
