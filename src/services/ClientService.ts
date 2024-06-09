@@ -14,6 +14,7 @@ import { getAnonymousClient } from './BuildAnonymousFlowClient';
 import { getExistingTokenClient } from './BuildExistingTokenClient';
 import { getPasswordClient } from './BuildPasswordFlowClient';
 // import { getRefreshTokenClient } from './BuildRefreshTokenClient';
+import { getRefreshTokenClient } from './BuildRefreshTokenClient';
 import tokenCache from './TokenCache';
 
 const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
@@ -90,9 +91,20 @@ export class ClientService {
         projectKey,
       });
     } else {
-      this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
-        projectKey,
-      });
+      // If there is a token
+      const expirationDate = new Date(existingToken.expirationTime);
+      const diff = expirationDate.getTime() - new Date().getTime();
+      // If token is not about to expire, use existingTokenFlow
+      if (diff > 60000) {
+        this.apiRoot = createApiBuilderFromCtpClient(getExistingTokenClient()).withProjectKey({
+          projectKey,
+        });
+        // If token is about to expire in one minute, use refreshTokenFlow
+      } else {
+        this.apiRoot = createApiBuilderFromCtpClient(getRefreshTokenClient()).withProjectKey({
+          projectKey,
+        });
+      }
     }
     this.apiRoot.get().execute(); // Initial request to get the access token
   }

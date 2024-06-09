@@ -28,6 +28,8 @@ export class ProductsService {
     ancestors: [],
     orderHint: '',
   };
+  private limit = 10; // Show 5 products by default
+  private offset = 0; // Products offset
 
   public async getProducts(): Promise<ProductProjection[]> {
     const response = await clientService.apiRoot.productProjections().get().execute();
@@ -136,7 +138,12 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
+  public async getFilteredAndSortedProducts(
+    requestLimit?: number,
+    requestOffset?: number,
+  ): Promise<ProductProjection[]> {
+    const limit = requestLimit || this.limit;
+    const offset = requestOffset || this.offset;
     const fuzzyLevel = this.getFuzzyLevel();
     const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
     const response = await clientService.apiRoot
@@ -144,6 +151,8 @@ export class ProductsService {
       .search()
       .get({
         queryArgs: {
+          limit,
+          offset,
           markMatchingVariants: true,
           'text.en-US': this.searchQuery,
           fuzzy,
@@ -215,6 +224,22 @@ export class ProductsService {
     this.weightFilterQuery = filterQuery;
 
     return filterQuery;
+  }
+
+  public set Limit(value: number) {
+    this.limit = value;
+  }
+
+  public get Limit(): number {
+    return this.limit;
+  }
+
+  public set Offset(value: number) {
+    this.offset = value;
+  }
+
+  public get Offset(): number {
+    return this.offset;
   }
 
   public clearCategoryQuery(): void {

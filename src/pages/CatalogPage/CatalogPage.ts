@@ -22,6 +22,8 @@ export class CatalogPage {
   private priceSortIcon: HTMLElement = div({});
   private nameSortIcon: HTMLElement = div({});
   private breadcrumbs: HTMLElement = div({});
+  private limit: number = productsService.Limit;
+  private offset: number = productsService.Offset;
 
   public createPage(): HTMLElement {
     productsService.clearSearchQuery();
@@ -254,7 +256,6 @@ export class CatalogPage {
         this.updateCards(productsArray);
       });
       await category.create(mainList);
-      // console.log(`SUBTREE FOR ${item.name[`en-US`]}`, await category.getSubtrees());
     });
 
     container.append(mainList);
@@ -264,7 +265,6 @@ export class CatalogPage {
     const filtersContainer = div({ className: styles.filtersContainer });
     const filtersTitle = div({ className: styles.filtersTitle, txt: 'FILTERS' });
     const temperatureFilter = this.createTemperatureAttributeFilter();
-    // const timeFilter = this.createTimeAttributeFilter();
     const weightFilter = this.createWeightAttributeFilter();
     filtersContainer.append(filtersTitle, this.createPriceRange(), weightFilter, temperatureFilter);
 
@@ -385,45 +385,6 @@ export class CatalogPage {
     return container;
   }
 
-  // private createTimeAttributeFilter(): HTMLElement {
-  //   const container = div({ className: styles.attributeContainer });
-  //   const title = div({ className: styles.selectName, txt: `Brewing time` });
-  //   const selectContainer = div({ className: styles.selectContainer });
-  //   const selection = select({ className: styles.select, value: undefined });
-  //   const cancelBtn = div({ className: styles.selectCancel });
-  //   selectContainer.append(selection, cancelBtn);
-  //   cancelBtn.addEventListener('click', async () => {
-  //     optionInit.selected = true;
-  //     productsService.clearTimeQuery();
-  //     const productsData = await productsService.getFilteredByAttributes();
-  //     const products = productsData.body.results;
-  //     this.updateCards(products);
-  //   });
-  //   const optionInit = option({
-  //     className: styles.option,
-  //     value: undefined,
-  //     txt: `Select an option`,
-  //     disabled: true,
-  //     selected: true,
-  //     hidden: true,
-  //   });
-  //   const option1 = option({ className: styles.option, value: `0-5`, txt: `less than 5 min` });
-  //   const option2 = option({ className: styles.option, value: `5-10`, txt: `5 to 10 min` });
-  //   const option3 = option({ className: styles.option, value: `10-100`, txt: `more than 10 min` });
-  //   selection.append(optionInit, option1, option2, option3);
-
-  //   selection.addEventListener('change', async () => {
-  //     const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
-  //     productsService.getTimeFilterQuery(value);
-  //     const productsData = await productsService.getFilteredByAttributes();
-  //     const products = productsData.body.results;
-  //     this.updateCards(products);
-  //   });
-
-  //   container.append(title, selectContainer);
-  //   return container;
-  // }
-
   private createWeightAttributeFilter(): HTMLElement {
     const container = div({ className: styles.attributeContainer });
     const title = div({ className: styles.selectName, txt: `Weight` });
@@ -469,33 +430,77 @@ export class CatalogPage {
     if (productsArray) {
       products = productsArray;
     } else {
-      // products = await productsService.getProducts();
       products = await productsService.getFilteredAndSortedProducts();
     }
-    if (productsArray?.length === 0) {
+    // Checking offset to be equal to 0 means that was filtering, not loading due to infinite scroll. Show a corresponding message if there are no matching results
+    if (productsArray?.length === 0 && this.offset === 0) {
       const message = div({
         className: styles.noMatchingMessage,
         txt: `Sorry! There are no matching products for this filter.`,
       });
       this.cardsContainer.append(message);
     }
-    products.forEach(async (product) => {
-      const card = await productCard.createCard(product);
-      const productKey = product.key;
-      card.addEventListener('click', () => {
-        Router.go(`/catalog/${productKey}`, { addToHistory: true });
-      });
-      this.cardsContainer.append(card);
-    });
+
+    // Wait for all products to render and only after that run the observer
+    const loaded = await Promise.all(
+      products.map(async (product) => {
+        const card = await productCard.createCard(product);
+        const productKey = product.key;
+        card.addEventListener('click', () => {
+          Router.go(`/catalog/${productKey}`, { addToHistory: true });
+        });
+        this.cardsContainer.append(card);
+        return card;
+      }),
+    );
+
+    // If there are new rendered products, run the observer
+    if (loaded.length > 0) {
+      this.infiniteLoad();
+    }
   }
 
   private updateCards(productsArray?: ProductProjection[]): void {
     // Delete rendered cards
     this.cardsContainer.innerHTML = '';
 
+    // Reset offset when filtering products
+    this.offset = 0;
+
     // Render new cards
     if (this.cardsContainer.childNodes.length === 0) {
       this.createCards(productsArray);
+    }
+  }
+
+  private loadCards(productsArray?: ProductProjection[]): void {
+    // Render new cards
+    this.createCards(productsArray);
+  }
+
+  private infiniteLoad(): void {
+    const cardToObserve = this.cardsContainer.lastElementChild;
+
+    const observer = new IntersectionObserver(async (entries) => {
+      // Check for intersection
+      if (entries[0].isIntersecting) {
+        // Get next items in product list
+        this.offset += this.limit;
+
+        // Render new products
+        const loadedProducts = await productsService.getFilteredAndSortedProducts(this.limit, this.offset);
+        this.loadCards(loadedProducts);
+
+        // Unsubscribe the observer
+        if (cardToObserve) {
+          observer.unobserve(cardToObserve);
+        }
+      }
+    });
+
+    // Subscribe the observer
+    if (cardToObserve) {
+      observer.observe(cardToObserve);
     }
   }
 }
