@@ -1,6 +1,7 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
+import { BasketPage } from '@pages/BasketPage/BasketPage';
 import { CatalogPage } from '@pages/CatalogPage/CatalogPage';
 import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
@@ -94,6 +95,21 @@ export class PageRouting {
     return route;
   } */
 
+  private createLoginRoute(): Routes {
+    const route = {
+      pathname: '/login',
+      element: (): Element => {
+        const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+        if (isLoggedIn) {
+          Router.go('/');
+          return new HomePage().createPage();
+        }
+        return new LoginPage().createPage();
+      },
+    };
+    return route;
+  }
+
   private createRegistrationRoute(): Routes {
     const route = {
       pathname: '/registration',
@@ -109,6 +125,16 @@ export class PageRouting {
     return route;
   }
 
+  private createBasketRoute(): Routes {
+    const route = {
+      pathname: '/basket',
+      element: (): Element => {
+        return new BasketPage().createPage();
+      },
+    };
+    return route;
+  }
+
   public createRouting(): Routes[] {
     return [
       {
@@ -118,26 +144,13 @@ export class PageRouting {
         },
       },
       this.createCatalogRoute(),
-      // this.createRoute('/catalog', 'Catalog'),
-      // this.createDetailsRoute(),
       this.createRoute('/about', 'About'),
-      // this.createRoute('/registration', 'Registration'),
-      this.createRoute('/basket', 'Basket'),
-      // this.createRoute('/profile', 'Profile'),
+      this.createBasketRoute(),
       this.createItemRoute(),
       this.createProfileRoute(),
       this.createRegistrationRoute(),
-      {
-        pathname: '/login',
-        element: (): Element => {
-          const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
-          if (isLoggedIn) {
-            Router.go('/');
-            return new HomePage().createPage();
-          }
-          return new LoginPage().createPage();
-        },
-      },
+      this.createLoginRoute(),
+
       {
         pathname: '*',
         element: (): Element => {

@@ -1,4 +1,4 @@
-import type { ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
+import type { ProductProjection, ProductVariant, TypedMoney } from '@commercetools/platform-sdk';
 import { button, div, img, span } from '@control.ts/min';
 
 import cartService from '@services/CartService';
@@ -10,12 +10,12 @@ export class ProductCard {
     const picData = product.masterVariant.images ? product.masterVariant.images[0] : null;
     const card = div({ className: styles.card });
     // If a product is on sale, add sale class to a card
-    if (this.checkForDiscount(product)) {
+    if (this.checkForDiscount(product.masterVariant)) {
       card.classList.add(styles.sale);
 
       const salePercentage = div({
         className: styles.salePercentage,
-        txt: this.countDiscountPercentage(product),
+        txt: this.countDiscountPercentage(product.masterVariant),
       });
       card.append(salePercentage);
     }
@@ -42,7 +42,7 @@ export class ProductCard {
     return card;
   }
 
-  private async getProductPriceElement(product: ProductProjection): Promise<HTMLElement | null> {
+  public async getProductPriceElement(product: ProductProjection): Promise<HTMLElement | null> {
     if (product.masterVariant.prices) {
       const priceData = product.masterVariant.prices[0];
       const baseData = priceData.value;
@@ -53,7 +53,7 @@ export class ProductCard {
 
       finalPrice.append(basePrice);
 
-      if (this.checkForDiscount(product) && priceData.discounted) {
+      if (this.checkForDiscount(product.masterVariant) && priceData.discounted) {
         const discountedPrice = span({ className: styles.priceValue });
         const discountedData = priceData.discounted?.value;
         discountedPrice.innerText = this.formatPrice(discountedData);
@@ -72,7 +72,7 @@ export class ProductCard {
   private async createAddToCartBtn(product: ProductProjection): Promise<HTMLButtonElement> {
     const addToCartBtn = button({ className: styles.addToCartBtn });
 
-    const isProductInCart = await cartService.checkIfProductIsInCart(product);
+    const isProductInCart = await cartService.checkIfProductIsInCart(product.id);
 
     if (isProductInCart) {
       addToCartBtn.disabled = true;
@@ -91,7 +91,7 @@ export class ProductCard {
       addToCartBtn.dispatchEvent(addToCartStart);
       // const pendingEnd = new CustomEvent('pendingEnd');
       e.stopPropagation();
-      await cartService.addProductToCart(product);
+      await cartService.addProductToCart(product.id);
       addToCartBtn.disabled = true;
       const addToCartEnd = new CustomEvent('addToCartEnd');
       addToCartBtn.dispatchEvent(addToCartEnd);
@@ -100,7 +100,7 @@ export class ProductCard {
     return addToCartBtn;
   }
 
-  private formatPrice(price: TypedMoney): string {
+  public formatPrice(price: TypedMoney): string {
     const value = price.centAmount / 10 ** price.fractionDigits;
     return value.toLocaleString(undefined, {
       style: 'currency',
@@ -109,18 +109,18 @@ export class ProductCard {
     });
   }
 
-  private checkForDiscount(product: ProductProjection): boolean {
-    if (product.masterVariant.prices) {
-      return !!product.masterVariant.prices[0].discounted;
+  public checkForDiscount(variant: ProductVariant): boolean {
+    if (variant.prices) {
+      return !!variant.prices[0].discounted;
     }
     return false;
   }
 
-  private countDiscountPercentage(product: ProductProjection): string {
+  public countDiscountPercentage(variant: ProductVariant): string {
     let sale = '0% SALE';
-    if (product.masterVariant.prices && product.masterVariant.prices[0].discounted) {
-      const newPrice = product.masterVariant.prices[0].discounted.value.centAmount;
-      const oldPrice = product.masterVariant.prices[0].value.centAmount;
+    if (variant.prices && variant.prices[0].discounted) {
+      const newPrice = variant.prices[0].discounted.value.centAmount;
+      const oldPrice = variant.prices[0].value.centAmount;
       const percentage = Math.round(100 - (newPrice * 100) / oldPrice);
       sale = `${percentage}% SALE`;
     }
