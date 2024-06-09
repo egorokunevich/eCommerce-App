@@ -2,6 +2,7 @@ import type { Cart, CartDraft, ProductProjection } from '@commercetools/platform
 
 import clientService, { isFetchError } from './ClientService';
 
+export const updateBasketEvent = new Event('updateBasket');
 export class CartService {
   public async getActiveCart(): Promise<Cart | null> {
     try {
@@ -62,6 +63,7 @@ export class CartService {
           },
         })
         .execute();
+      document.dispatchEvent(updateBasketEvent);
       return response.body;
     }
     return null;
@@ -73,6 +75,33 @@ export class CartService {
     };
     const newCart = (await clientService.apiRoot.me().carts().post({ body: cartDraft }).execute()).body;
     return newCart;
+  }
+
+  public async getCartItemCount(): Promise<number> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      return cart.lineItems.reduce((total, item) => total + item.quantity, 0);
+    }
+    return 0;
+  }
+
+  public async removeProductFromCart(productId: string): Promise<void> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const ID = cart.id;
+      const { version } = cart;
+      await clientService.apiRoot
+        .carts()
+        .withId({ ID })
+        .post({
+          body: {
+            actions: [{ action: 'removeLineItem', lineItemId: productId }],
+            version,
+          },
+        })
+        .execute();
+      document.dispatchEvent(updateBasketEvent);
+    }
   }
 }
 
