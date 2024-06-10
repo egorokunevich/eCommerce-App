@@ -31,10 +31,16 @@ export default class BasketItem {
     }
     const controls = this.createQuantityControls();
     const total = this.createTotalPrice();
+    const deleteBtn = button({ className: styles.deleteBtn });
+
+    deleteBtn.addEventListener('click', () => {
+      // Implement functionality to remove the item from cart
+    });
+
     detailsContainer.append(name, moneyContainer);
     moneyContainer.append(price, controls, total);
 
-    container.append(picContainer, detailsContainer);
+    container.append(picContainer, detailsContainer, deleteBtn);
     picContainer.append(pic);
 
     return container;
