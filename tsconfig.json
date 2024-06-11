@@ -42,9 +42,6 @@
       "@services/*": [
         "src/services/*"
       ],
-      "@types/*": [
-        "src/types/*"
-      ],
       "@fonts/*": [
         "public/fonts/*"
       ],
