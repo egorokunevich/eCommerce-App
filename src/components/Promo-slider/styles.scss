@@ -1,0 +1,29 @@
+.promoArticle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiperPromoCode {
+  width: 300px;
+  height: 300px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// .swiper-slide img {
+//   display: block;
+//   width: 100%;
+// }
