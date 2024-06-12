@@ -1,4 +1,4 @@
-import { button, div, input, section } from '@control.ts/min';
+import { button, div, h2, input, section } from '@control.ts/min';
 
 import BasketItem from '@components/BasketItem/BasketItem';
 import cartService from '@services/CartService';
@@ -84,11 +84,52 @@ export class BasketPage {
 
     const clearCartBtn = div({ className: styles.clearCartBtn });
     clearCartBtn.addEventListener('click', () => {
-      cartService.deleteActiveCart();
+      this.clearCart();
     });
 
     header.append(pic, name, price, amount, total, clearCartBtn);
     return header;
+  }
+
+  private clearCart(): void {
+    const modalWrapper = div({ className: styles.modalWrapper });
+    const modalContainer = div({ className: styles.modalContainer });
+    const promptContainer = div({ className: styles.promptContainer });
+
+    const promptTitle = h2({
+      className: styles.promptTitle,
+      txt: `Are you sure?`,
+    });
+    const promptText = div({
+      className: styles.promptText,
+      txt: `The following action will delete all the items from your cart.`,
+    });
+
+    const buttonsContainer = div({ className: styles.buttonsContainer });
+    const confirmBtn = button({ className: styles.modalBtn, txt: `Confirm` });
+    const denyBtn = button({ className: styles.modalBtn, txt: `Cancel` });
+    denyBtn.classList.add(styles.denyBtn);
+
+    modalWrapper.append(modalContainer);
+    promptContainer.append(promptTitle, promptText);
+    modalContainer.append(promptContainer, buttonsContainer);
+    buttonsContainer.append(confirmBtn, denyBtn);
+
+    confirmBtn.addEventListener('click', () => {
+      cartService.deleteActiveCart();
+      modalWrapper.remove();
+    });
+
+    denyBtn.addEventListener('click', () => {
+      modalWrapper.remove();
+    });
+
+    modalWrapper.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        modalWrapper.remove();
+      }
+    });
+    document.body.append(modalWrapper);
   }
 
   private createItemsFooter(): HTMLElement {
