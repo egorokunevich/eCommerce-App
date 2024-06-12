@@ -99,7 +99,7 @@ export class ProductDetails extends ProductCard {
     btnRemove: HTMLButtonElement,
   ): Promise<void> {
     try {
-      await cartService.removeProductFromCart(productId);
+      await cartService.removeProductFromCartByProductId(productId);
       showToastMessage('Product removed from cart');
       btnRemove.disabled = true;
       btnAdd.disabled = false;

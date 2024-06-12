@@ -39,7 +39,7 @@ export default class BasketItem {
 
     deleteBtn.addEventListener('click', async () => {
       // Implement functionality to remove the item from cart
-      const response = await cartService.removeProductFromCart(this.lineItem.id);
+      const response = await cartService.removeProductFromCartByLineItemId(this.lineItem.id);
       if (response?.statusCode === 200) {
         this.destroy();
       } else if (response?.statusCode === 404) {

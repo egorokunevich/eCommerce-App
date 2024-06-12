@@ -121,14 +121,38 @@ export class CartService {
     return null;
   }
 
-  public async removeProductFromCart(productId: string): Promise<ClientResponse<Cart> | null> {
+  public async removeProductFromCartByProductId(productId: string): Promise<void> {
     const cart = await this.getActiveCart();
     if (cart) {
       const lineItemId = await this.getLineItemIdByProductId(productId);
       if (!lineItemId) {
         console.warn('LineItem not found for productId:', productId);
-        return null;
+        return;
       }
+      const ID = cart.id;
+      const { version } = cart;
+      await clientService.apiRoot
+        .carts()
+        .withId({ ID })
+        .post({
+          body: {
+            actions: [
+              {
+                action: 'removeLineItem',
+                lineItemId,
+              },
+            ],
+            version,
+          },
+        })
+        .execute();
+      document.dispatchEvent(updateBasketEvent);
+    }
+  }
+
+  public async removeProductFromCartByLineItemId(lineItemId: string): Promise<ClientResponse<Cart> | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
       const ID = cart.id;
       const { version } = cart;
       const response = await clientService.apiRoot
