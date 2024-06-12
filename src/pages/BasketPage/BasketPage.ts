@@ -14,8 +14,21 @@ export class BasketPage {
 
     this.createBasketList(pageContainer);
 
+    document.addEventListener('updateBasket', () => {
+      this.handleEmptyBasket(pageContainer);
+    });
+
     this.pageWrapper.append(pageContainer);
     return this.pageWrapper;
+  }
+
+  private async handleEmptyBasket(pageContainer: HTMLElement): Promise<void> {
+    const cart = await cartService.getActiveCart();
+    const items = cart?.lineItems;
+
+    if (items?.length === 0) {
+      pageContainer.innerHTML = '';
+    }
   }
 
   private async createBasketList(container: HTMLElement): Promise<void> {
@@ -71,7 +84,7 @@ export class BasketPage {
 
     const clearCartBtn = div({ className: styles.clearCartBtn });
     clearCartBtn.addEventListener('click', () => {
-      // Implement functionality to clear the cart
+      cartService.deleteActiveCart();
     });
 
     header.append(pic, name, price, amount, total, clearCartBtn);
@@ -82,7 +95,7 @@ export class BasketPage {
     const footer = div({ className: styles.itemsFooter });
 
     const promoCodeContainer = div({ className: styles.promoCodeContainer });
-    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `Promocode...` });
+    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `PROMO CODE...` });
     const promoCodeBtn = button({ className: styles.promoCodeBtn, txt: `Apply` });
     promoCodeContainer.append(promoCodeInput, promoCodeBtn);
 
