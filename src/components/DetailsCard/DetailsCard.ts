@@ -1,11 +1,13 @@
 import type { ProductProjection } from '@commercetools/platform-sdk';
-import { div, p, span } from '@control.ts/min';
+import { button, div, p, span } from '@control.ts/min';
 
 import 'swiper/css/bundle';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { ProductCard } from '@components/ProductCard/ProductCard';
 import styles from '@components/ProductCard/ProductCard.module.scss';
+import { ToastColors, showToastMessage } from '@components/Toast';
+import cartService, { productAddedToCartEvent, productRemovedFromCartEvent } from '@services/CartService';
 
 const attributeLabels: { [key: string]: string } = {
   full_description: 'Full Description',
@@ -26,6 +28,8 @@ export class ProductDetails extends ProductCard {
     const card = await super.createCard(product);
     card.classList.add(styles.details);
 
+    await this.addRemoveButton(card, product.id);
+
     const sliderContainer = this.createSlider(product);
     card.appendChild(sliderContainer);
 
@@ -36,6 +40,88 @@ export class ProductDetails extends ProductCard {
     card.append(attributesContainer);
 
     return card;
+  }
+
+  private async addRemoveButton(card: HTMLDivElement, productId: string): Promise<HTMLButtonElement> {
+    const btnFromCatalogPage = card.querySelector(`.${styles.addToCartBtn}`);
+    btnFromCatalogPage?.remove();
+    const btnRemove = button({ className: styles.addToCartBtn });
+    btnRemove.classList.add(styles.removeBtn);
+    btnRemove.disabled = true;
+    const btnAdd = button({ className: styles.addToCartBtn });
+    btnAdd.disabled = false;
+
+    const btnContainer = card.querySelector(`.${styles.price}`);
+    if (btnContainer) {
+      btnContainer.append(btnAdd, btnRemove);
+
+      try {
+        const isProductInCart = await cartService.checkIfProductIsInCart(productId);
+        btnRemove.disabled = !isProductInCart;
+        btnAdd.disabled = isProductInCart;
+      } catch (error) {
+        console.error('Failed to check if product is in cart:', error);
+      }
+
+      btnAdd.addEventListener('click', async () => this.addToCart(productId, btnAdd, btnRemove));
+      btnRemove.addEventListener('click', async () => this.removeFromCart(productId, btnAdd, btnRemove));
+
+      document.addEventListener('productAddedToCart', () => {
+        this.updateButtonState(productId, btnAdd, btnRemove);
+      });
+
+      document.addEventListener('productRemovedFromCart', () => {
+        this.updateButtonState(productId, btnAdd, btnRemove);
+      });
+    } else {
+      console.warn('Button container not found!');
+    }
+
+    return btnRemove;
+  }
+
+  private async addToCart(productId: string, btnAdd: HTMLButtonElement, btnRemove: HTMLButtonElement): Promise<void> {
+    try {
+      await cartService.addProductToCart(productId);
+      showToastMessage('Good choice! Product added to cart.', ToastColors.Green);
+      btnRemove.disabled = false;
+      btnAdd.disabled = true;
+      document.dispatchEvent(productAddedToCartEvent);
+    } catch (error) {
+      console.error('Failed to add product to cart:', error);
+      showToastMessage('Failed to add product to cart', ToastColors.Red);
+    }
+  }
+
+  private async removeFromCart(
+    productId: string,
+    btnAdd: HTMLButtonElement,
+    btnRemove: HTMLButtonElement,
+  ): Promise<void> {
+    try {
+      await cartService.removeProductFromCart(productId);
+      showToastMessage('Product removed from cart');
+      btnRemove.disabled = true;
+      btnAdd.disabled = false;
+      document.dispatchEvent(productRemovedFromCartEvent);
+    } catch (error) {
+      console.error('Failed to remove product from cart:', error);
+      showToastMessage('Failed to add product to cart', ToastColors.Red);
+    }
+  }
+
+  private async updateButtonState(
+    productId: string,
+    btnAdd: HTMLButtonElement,
+    btnRemove: HTMLButtonElement,
+  ): Promise<void> {
+    try {
+      const isProductInCart = await cartService.checkIfProductIsInCart(productId);
+      btnRemove.disabled = !isProductInCart;
+      btnAdd.disabled = isProductInCart;
+    } catch (error) {
+      console.error('Failed to update button state:', error);
+    }
   }
 
   private createSlider(product: ProductProjection): HTMLDivElement {

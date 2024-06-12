@@ -35,21 +35,6 @@ export class PageRouting {
           return ele;
         }
         const productDetailsPage = new ProductDetailsPage().createPage(productKey);
-        const btnBack = document.createElement('button');
-        btnBack.classList.add('btn-back');
-        btnBack.innerText = 'Go back';
-        btnBack.onclick = (): void => {
-          Router.back();
-        };
-        const btnForward = document.createElement('button');
-        btnForward.classList.add('btn-buy');
-        btnForward.innerText = 'Buy';
-        btnForward.onclick = (): void => {
-          Router.forward();
-        };
-
-        productDetailsPage.appendChild(btnBack);
-        productDetailsPage.appendChild(btnForward);
         return productDetailsPage;
       },
     };
