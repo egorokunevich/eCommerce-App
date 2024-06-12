@@ -3,6 +3,8 @@ import type { Cart, CartDraft, ClientResponse } from '@commercetools/platform-sd
 import clientService, { isFetchError } from './ClientService';
 
 export const updateBasketEvent = new Event('updateBasket');
+export const productAddedToCartEvent = new Event('productAddedToCart');
+export const productRemovedFromCartEvent = new Event('productRemovedFromCart');
 export class CartService {
   public async getActiveCart(): Promise<Cart | null> {
     try {
@@ -38,10 +40,7 @@ export class CartService {
       .carts()
       .get({ queryArgs: { where: `id="${activeCart?.id}" and lineItems(productId="${productId}")` } })
       .execute();
-    if (response.body.results.length > 0) {
-      return true;
-    }
-    return false;
+    return response.body.results.length > 0;
   }
 
   public async addProductToCart(productId: string): Promise<Cart | null> {
@@ -65,6 +64,7 @@ export class CartService {
         })
         .execute();
       document.dispatchEvent(updateBasketEvent);
+      document.dispatchEvent(productAddedToCartEvent);
       return response.body;
     }
     return null;
@@ -112,9 +112,23 @@ export class CartService {
     return 0;
   }
 
-  public async removeProductFromCart(lineItemId: string): Promise<ClientResponse<Cart> | null> {
+  private async getLineItemIdByProductId(productId: string): Promise<string | null> {
     const cart = await this.getActiveCart();
     if (cart) {
+      const lineItem = cart.lineItems.find((item) => item.productId === productId);
+      return lineItem ? lineItem.id : null;
+    }
+    return null;
+  }
+
+  public async removeProductFromCart(productId: string): Promise<ClientResponse<Cart> | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const lineItemId = await this.getLineItemIdByProductId(productId);
+      if (!lineItemId) {
+        console.warn('LineItem not found for productId:', productId);
+        return null;
+      }
       const ID = cart.id;
       const { version } = cart;
       const response = await clientService.apiRoot
