@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 40px;
 }
 
 .swiperPromoCode {
@@ -16,11 +17,35 @@
 }
 
 .swiper-slide {
+  background: radial-gradient(circle, rgba(227, 169, 120, 1) 0%, rgba(244, 236, 236, 1) 54%);
+  display: flex !important;
+}
+
+.swiperSlideCustom {
   background-position: center;
   background-size: cover;
   display: flex;
+  height: 100%;
   align-items: center;
   justify-content: center;
+  gap: 20px;
+  flex-direction: column;
+  padding: 30px 40px;
+}
+
+.textSwiper {
+  // padding: 10px;
+}
+
+.DiscountCodeBtn {
+  display: flex;
+  margin-top: auto;
+  cursor: pointer;
+
+  :hover {
+    background-color: #bec5c2;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+  }
 }
 
 // .swiper-slide img {

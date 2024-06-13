@@ -57,17 +57,10 @@ export function createSwiperDiscountCode(): void {
     centeredSlides: true,
     spaceBetween: 30,
     grabCursor: true,
+
+    // not work
+    autoplay: { delay: 1000, disableOnInteraction: false, pauseOnMouseEnter: false },
     loop: true,
-    effect: 'coverflow',
-    slidesPerView: 'auto',
-    autoplay: { delay: 2250, disableOnInteraction: false },
-    coverflowEffect: {
-      rotate: 50,
-      stretch: 0,
-      depth: 100,
-      modifier: 1,
-      slideShadows: true,
-    },
     navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
     pagination: {
       el: '.swiper-pagination',

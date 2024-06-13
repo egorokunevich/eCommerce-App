@@ -4,10 +4,10 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 import type { CartDiscount } from '@commercetools/platform-sdk';
-import { article, div } from '@control.ts/min';
+import { article, button, div, h3 } from '@control.ts/min';
 
 // import { createSwiperDiscountCode } from '@components/Swiper';
-// import { ToastColors, showToastMessage } from '@components/Toast';
+import { ToastColors, showToastMessage } from '@components/Toast';
 import clientService from '@services/ClientService';
 
 export class PromoCode {
@@ -29,12 +29,10 @@ export class PromoCode {
   private createSwiper(data: CartDiscount[]): HTMLElement {
     const swiperWrapper = div({ className: 'swiper-wrapper' });
     data.forEach((discount) => {
-      const nodeDiscount = div({ className: 'swiper-slide', txt: `${discount.key}` });
-      swiperWrapper.append(nodeDiscount);
+      this.createContentSwiperContainer(discount, swiperWrapper);
     });
     const node = div(
       { className: ['swiperPromoCode', 'swiper'].join(' ') },
-      // { className: Styles.swiperPromoCode },
       swiperWrapper,
       div({ className: 'swiper-pagination' }),
       div({ className: 'swiper-button-prev' }),
@@ -42,6 +40,38 @@ export class PromoCode {
     );
 
     return node;
+  }
+
+  private createContentSwiperContainer(discount: CartDiscount, swiperWrapper: HTMLElement): void {
+    const node = div({ className: 'swiper-slide' });
+
+    // node.setAttribute('data-swiper-autoplay', '2000');
+    const codePromo = button({ className: 'DiscountCodeBtn', txt: `${discount.key}` });
+    codePromo.addEventListener('click', () => {
+      const textCopy = codePromo.textContent;
+      if (textCopy) {
+        navigator.clipboard.writeText(textCopy);
+      }
+      showToastMessage('Promo Code is Copy', ToastColors.Green);
+      codePromo.disabled = true;
+
+      setTimeout(() => {
+        codePromo.disabled = false;
+      }, 3000);
+    });
+
+    const descriptionObj = discount.description;
+    if (descriptionObj) {
+      const description = Object.values(descriptionObj)[0];
+      const nodeDiscount = div(
+        { className: ['swiperSlideCustom'].join(' ') },
+        h3({ className: 'textSwiper', txt: `${description}` }),
+        codePromo,
+      );
+      node.append(nodeDiscount);
+
+      swiperWrapper.append(node);
+    }
   }
 }
 
