@@ -1,7 +1,7 @@
 import { button, div, h2, input, section } from '@control.ts/min';
 
-import BasketItem from '@components/BasketItem/BasketItem';
 import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
+import BasketItem from '@components/BasketItem/BasketItem';
 import cartService from '@services/CartService';
 
 import styles from './BasketPage.module.scss';
