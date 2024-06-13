@@ -1,3 +1,4 @@
+import type { Cart } from '@commercetools/platform-sdk';
 import { button, div, h2, input, section } from '@control.ts/min';
 
 import BasketItem from '@components/BasketItem/BasketItem';
@@ -7,32 +8,48 @@ import styles from './BasketPage.module.scss';
 
 export class BasketPage {
   private pageWrapper: HTMLElement = section({ className: styles.wrapper });
+  private pageContainer: HTMLElement = div({ className: styles.pageContainer });
   private scrollbarElement: HTMLElement = div({});
+  private baseTotalPriceElement: HTMLElement = div({});
+  // private discountedTotalPriceElement: HTMLElement = div({});
+  private cart: Cart | null = null;
 
   public createPage(): HTMLElement {
-    const pageContainer = div({ className: styles.pageContainer });
+    this.handleBasketUpdates();
 
-    this.createBasketList(pageContainer);
-
-    document.addEventListener('updateBasket', () => {
-      this.handleEmptyBasket(pageContainer);
-    });
-
-    this.pageWrapper.append(pageContainer);
+    this.pageWrapper.append(this.pageContainer);
     return this.pageWrapper;
   }
 
-  private async handleEmptyBasket(pageContainer: HTMLElement): Promise<void> {
+  private async handleBasketUpdates(): Promise<void> {
     const cart = await cartService.getActiveCart();
-    const items = cart?.lineItems;
+    this.cart = cart;
+
+    this.createBasketList(this.pageContainer);
+
+    document.addEventListener('updateBasket', async () => {
+      const updatedCart = await cartService.getActiveCart();
+      this.cart = updatedCart;
+      if (this.cart) {
+        const { totalPrice } = this.cart;
+        const currency = this.getCurrency(totalPrice.currencyCode);
+        this.baseTotalPriceElement.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${currency}`;
+      }
+
+      this.handleEmptyBasket();
+    });
+  }
+
+  private handleEmptyBasket(): void {
+    const items = this.cart?.lineItems;
 
     if (items?.length === 0) {
-      pageContainer.innerHTML = '';
+      this.pageContainer.innerHTML = '';
     }
   }
 
-  private async createBasketList(container: HTMLElement): Promise<void> {
-    const cartHasItems = await this.doesCartHasItems();
+  private createBasketList(container: HTMLElement): void {
+    const cartHasItems = this.doesCartHasItems();
 
     if (cartHasItems) {
       const header = this.createItemsHeader();
@@ -65,13 +82,8 @@ export class BasketPage {
     }
   }
 
-  private async doesCartHasItems(): Promise<boolean> {
-    const cart = await cartService.getActiveCart();
-
-    if (cart?.lineItems.length && cart.lineItems.length > 0) {
-      return true;
-    }
-    return false;
+  private doesCartHasItems(): boolean {
+    return Boolean(this.cart?.lineItems.length && this.cart.lineItems.length > 0);
   }
 
   private createItemsHeader(): HTMLElement {
@@ -132,7 +144,7 @@ export class BasketPage {
     document.body.append(modalWrapper);
   }
 
-  private async createItemsFooter(): Promise<HTMLElement> {
+  private createItemsFooter(): HTMLElement {
     const footer = div({ className: styles.itemsFooter });
     const promoCodeContainer = div({ className: styles.promoCodeContainer });
     const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `PROMO CODE...` });
@@ -142,6 +154,8 @@ export class BasketPage {
     const totalPriceContainer = div({ className: styles.totalPriceContainer });
     const baseTotalPrice = div({ className: styles.baseTotalPrice, txt: `999.99 EUR` });
     const discountedTotalPrice = div({ className: styles.discountedTotalPrice, txt: `999.99 EUR` });
+    this.baseTotalPriceElement = baseTotalPrice;
+    // this.discountedTotalPriceElement = discountedTotalPrice;
     totalPriceContainer.append(baseTotalPrice, discountedTotalPrice);
     const checkoutBtn = button({ className: styles.checkoutBtn, txt: `Checkout` });
     promoCodeBtn.addEventListener('click', () => {
@@ -151,31 +165,40 @@ export class BasketPage {
     });
     checkoutContainer.append(totalPriceContainer, checkoutBtn);
     footer.append(promoCodeContainer, checkoutContainer);
-    const cart = await cartService.getActiveCart();
-    if (cart) {
-      const totalPrice = cart?.totalPrice;
-      baseTotalPrice.innerText = `${totalPrice.centAmount / 10 ** totalPrice.fractionDigits} ${totalPrice.currencyCode}`;
+    if (this.cart) {
+      const { totalPrice } = this.cart;
+      const currency = this.getCurrency(totalPrice.currencyCode);
+      baseTotalPrice.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${currency}`;
     }
-    document.addEventListener('updateBasket', async () => {
-      const updatedCart = await cartService.getActiveCart();
-      if (updatedCart) {
-        const { totalPrice } = updatedCart;
-        baseTotalPrice.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${totalPrice.currencyCode}`;
-      }
-    });
+
     return footer;
   }
 
-  private async handleScrollbarOpacity(): Promise<void> {
-    const cart = await cartService.getActiveCart();
-    if (cart?.lineItems.length && cart?.lineItems.length > 5) {
+  private getCurrency(currencyCode: string): string {
+    let currency: string;
+    switch (currencyCode) {
+      case 'EUR':
+        currency = '€';
+        break;
+      case 'USD':
+        currency = '$';
+        break;
+      default:
+        currency = '€';
+        break;
+    }
+
+    return currency;
+  }
+
+  private handleScrollbarOpacity(): void {
+    if (this.cart?.lineItems.length && this.cart.lineItems.length > 5) {
       this.scrollbarElement.classList.remove(styles.hidden);
     }
   }
 
   private async renderItems(container: HTMLElement): Promise<void> {
-    const cart = await cartService.getActiveCart();
-    const items = cart?.lineItems;
+    const items = this.cart?.lineItems;
 
     if (items) {
       await Promise.all(
@@ -188,7 +211,7 @@ export class BasketPage {
         }),
       );
 
-      const footer = await this.createItemsFooter();
+      const footer = this.createItemsFooter();
       const itemsWrapper = container.parentNode;
       if (itemsWrapper) {
         itemsWrapper.parentNode?.append(footer);

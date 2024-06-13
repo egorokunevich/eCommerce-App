@@ -3,7 +3,7 @@ import { button, div, img, input } from '@control.ts/min';
 
 import productCard from '@components/ProductCard/ProductCard';
 import { ToastColors, showToastMessage } from '@components/Toast';
-import cartService, { updateBasketEvent } from '@services/CartService';
+import cartService from '@services/CartService';
 
 import styles from './BasketItem.module.scss';
 
@@ -87,7 +87,6 @@ export default class BasketItem {
         counter.value = (+counter.value - 1).toString();
       }
       this.updateTotalPrice(+counter.value);
-      document.dispatchEvent(updateBasketEvent);
     });
 
     increaseBtn.addEventListener('click', async () => {
@@ -95,7 +94,6 @@ export default class BasketItem {
         counter.value = (+counter.value + 1).toString();
       }
       this.updateTotalPrice(+counter.value);
-      document.dispatchEvent(updateBasketEvent);
     });
 
     counter.addEventListener('input', () => {
@@ -110,14 +108,13 @@ export default class BasketItem {
         counter.value = '99';
       }
       this.updateTotalPrice(+counter.value);
-      document.dispatchEvent(updateBasketEvent);
     });
 
     return container;
   }
 
-  private updateTotalPrice(value: number): void {
-    cartService.updateItemQuantityInCart(this.lineItem.id, value);
+  private async updateTotalPrice(value: number): Promise<void> {
+    await cartService.updateItemQuantityInCart(this.lineItem.id, value);
     const totalMoney = {
       centAmount: this.pricePerItem.centAmount,
       currencyCode: this.pricePerItem.currencyCode,

@@ -207,7 +207,6 @@
       position: absolute;
       left: 3rem;
       bottom: 0;
-      // transform: translateX(-50%);
       width: 90%;
       height: 1px;
       background-color: rgb(197, 197, 197);
@@ -216,8 +215,7 @@
   }
 
   @media screen and (max-width: 500px) {
-    height: 350px;
-    // border-radius: 15px 15px 0 0;
+    max-height: 350px;
   }
 }
 
