@@ -132,32 +132,37 @@ export class BasketPage {
     document.body.append(modalWrapper);
   }
 
-  private createItemsFooter(): HTMLElement {
+  private async createItemsFooter(): Promise<HTMLElement> {
     const footer = div({ className: styles.itemsFooter });
-
     const promoCodeContainer = div({ className: styles.promoCodeContainer });
     const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `PROMO CODE...` });
     const promoCodeBtn = button({ className: styles.promoCodeBtn, txt: `Apply` });
     promoCodeContainer.append(promoCodeInput, promoCodeBtn);
-
     const checkoutContainer = div({ className: styles.checkoutContainer });
-
     const totalPriceContainer = div({ className: styles.totalPriceContainer });
     const baseTotalPrice = div({ className: styles.baseTotalPrice, txt: `999.99 EUR` });
     const discountedTotalPrice = div({ className: styles.discountedTotalPrice, txt: `999.99 EUR` });
     totalPriceContainer.append(baseTotalPrice, discountedTotalPrice);
-
     const checkoutBtn = button({ className: styles.checkoutBtn, txt: `Checkout` });
-
     promoCodeBtn.addEventListener('click', () => {
       // Implement promo code applying. And display a Toast message for success/fail
       // To display discounted price:  totalPriceContainer.classList.add(styles.discounted);
       totalPriceContainer.classList.add(styles.discounted);
     });
-
     checkoutContainer.append(totalPriceContainer, checkoutBtn);
     footer.append(promoCodeContainer, checkoutContainer);
-
+    const cart = await cartService.getActiveCart();
+    if (cart) {
+      const totalPrice = cart?.totalPrice;
+      baseTotalPrice.innerText = `${totalPrice.centAmount / 10 ** totalPrice.fractionDigits} ${totalPrice.currencyCode}`;
+    }
+    document.addEventListener('updateBasket', async () => {
+      const updatedCart = await cartService.getActiveCart();
+      if (updatedCart) {
+        const { totalPrice } = updatedCart;
+        baseTotalPrice.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${totalPrice.currencyCode}`;
+      }
+    });
     return footer;
   }
 
@@ -183,7 +188,7 @@ export class BasketPage {
         }),
       );
 
-      const footer = this.createItemsFooter();
+      const footer = await this.createItemsFooter();
       const itemsWrapper = container.parentNode;
       if (itemsWrapper) {
         itemsWrapper.parentNode?.append(footer);
