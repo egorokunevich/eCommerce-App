@@ -1,4 +1,4 @@
-import type { Cart, CartDraft } from '@commercetools/platform-sdk';
+import type { Cart, CartDraft, ClientResponse } from '@commercetools/platform-sdk';
 
 import clientService, { isFetchError } from './ClientService';
 
@@ -24,14 +24,15 @@ export class CartService {
     return null;
   }
 
-  // private async deleteAllCarts(): Promise<void> {
-  //   const carts = (await clientService.apiRoot.me().carts().get().execute()).body.results;
-  //   carts.forEach(async (item) => {
-  //     const ID = item.id;
-  //     const version = item.version;
-  //     await clientService.apiRoot.carts().withId({ ID }).delete({ queryArgs: { version } }).execute();
-  //   });
-  // }
+  public async deleteActiveCart(): Promise<void> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const ID = cart.id;
+      const { version } = cart;
+      await clientService.apiRoot.carts().withId({ ID }).delete({ queryArgs: { version } }).execute();
+      document.dispatchEvent(updateBasketEvent);
+    }
+  }
 
   public async checkIfProductIsInCart(productId: string): Promise<boolean> {
     const activeCart = await this.getActiveCart();
@@ -120,7 +121,7 @@ export class CartService {
     return null;
   }
 
-  public async removeProductFromCart(productId: string): Promise<void> {
+  public async removeProductFromCartByProductId(productId: string): Promise<void> {
     const cart = await this.getActiveCart();
     if (cart) {
       const lineItemId = await this.getLineItemIdByProductId(productId);
@@ -135,14 +136,45 @@ export class CartService {
         .withId({ ID })
         .post({
           body: {
-            actions: [{ action: 'removeLineItem', lineItemId }],
+            actions: [
+              {
+                action: 'removeLineItem',
+                lineItemId,
+              },
+            ],
             version,
           },
         })
         .execute();
       document.dispatchEvent(updateBasketEvent);
-      document.dispatchEvent(productRemovedFromCartEvent);
     }
+  }
+
+  public async removeProductFromCartByLineItemId(lineItemId: string): Promise<ClientResponse<Cart> | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      const ID = cart.id;
+      const { version } = cart;
+      const response = await clientService.apiRoot
+        .carts()
+        .withId({ ID })
+        .post({
+          body: {
+            actions: [
+              {
+                action: 'removeLineItem',
+                lineItemId,
+              },
+            ],
+            version,
+          },
+        })
+        .execute();
+      document.dispatchEvent(updateBasketEvent);
+
+      return response;
+    }
+    return null;
   }
 }
 

@@ -2,6 +2,7 @@ import type { LineItem, TypedMoney } from '@commercetools/platform-sdk';
 import { button, div, img, input } from '@control.ts/min';
 
 import productCard from '@components/ProductCard/ProductCard';
+import { ToastColors, showToastMessage } from '@components/Toast';
 import cartService, { updateBasketEvent } from '@services/CartService';
 
 import styles from './BasketItem.module.scss';
@@ -9,12 +10,15 @@ import styles from './BasketItem.module.scss';
 export default class BasketItem {
   private pricePerItem: TypedMoney;
   private totalPriceElement: HTMLElement = div({});
+  private element: HTMLElement = div({});
+
   constructor(private readonly lineItem: LineItem) {
     this.pricePerItem = this.getActualPrice();
   }
   public async createBasketItem(): Promise<HTMLElement> {
     const picData = this.lineItem.variant.images ? this.lineItem.variant.images[0] : null;
     const container = div({ className: styles.basketItem });
+    this.element = container;
 
     const picContainer = div({ className: styles.picContainer });
     const pic = img({
@@ -31,10 +35,22 @@ export default class BasketItem {
     }
     const controls = this.createQuantityControls();
     const total = this.createTotalPrice();
+    const deleteBtn = button({ className: styles.deleteBtn });
+
+    deleteBtn.addEventListener('click', async () => {
+      // Implement functionality to remove the item from cart
+      const response = await cartService.removeProductFromCartByLineItemId(this.lineItem.id);
+      if (response?.statusCode === 200) {
+        this.destroy();
+      } else if (response?.statusCode === 404) {
+        showToastMessage('No product found :(', ToastColors.Red);
+      }
+    });
+
     detailsContainer.append(name, moneyContainer);
     moneyContainer.append(price, controls, total);
 
-    container.append(picContainer, detailsContainer);
+    container.append(picContainer, detailsContainer, deleteBtn);
     picContainer.append(pic);
 
     return container;
@@ -137,5 +153,9 @@ export default class BasketItem {
     }
 
     return priceContainer;
+  }
+
+  private destroy(): void {
+    this.element.remove();
   }
 }
