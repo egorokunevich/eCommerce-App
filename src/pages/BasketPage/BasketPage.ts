@@ -1,5 +1,6 @@
 import { button, div, h2, input, section } from '@control.ts/min';
 
+import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
 import cartService from '@services/CartService';
 
@@ -28,6 +29,8 @@ export class BasketPage {
 
     if (items?.length === 0) {
       pageContainer.innerHTML = '';
+      const emptyBasket = new BasketEmpty();
+      pageContainer.appendChild(emptyBasket.createBasketEmpty());
     }
   }
 
@@ -62,6 +65,9 @@ export class BasketPage {
       container.append(header, itemsWrapper);
 
       this.renderItems(itemsContainer);
+    } else {
+      const emptyBasket = new BasketEmpty();
+      container.appendChild(emptyBasket.createBasketEmpty());
     }
   }
 
