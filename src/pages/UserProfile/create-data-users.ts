@@ -1,4 +1,4 @@
-import type { Customer } from '@commercetools/platform-sdk';
+import type { AddressDraft, BaseAddress, Customer, Address as PlatformAddress } from '@commercetools/platform-sdk';
 import { article, button, div, h3, input, p, span } from '@control.ts/min';
 
 import { ToastColors, showToastMessage } from '@components/Toast';
@@ -8,6 +8,12 @@ import { validationText } from '@utils/RegistrationValidationsData';
 /* eslint-disable import/no-cycle */
 import { AddNewAddress } from './add-new-address';
 import styles from './styles.module.scss';
+
+interface Address extends Partial<BaseAddress> {
+  id: string;
+  country: string;
+  [key: string]: string | undefined;
+}
 
 export class CreateInformationUsers {
   private showAllAddressesStatus = false;
@@ -20,7 +26,6 @@ export class CreateInformationUsers {
 
   private async getDataFromServer(): Promise<Customer> {
     const data = await clientService.apiRoot.me().get().execute();
-    // console.log(data.body);
     return data.body;
   }
 
@@ -87,27 +92,31 @@ export class CreateInformationUsers {
 
     data.addresses.forEach((address) => {
       if (address.id === ID) {
-        Object.entries(address).forEach((addressData) => {
-          if (addressData[0] !== 'id') {
+        Object.entries(address).forEach(([key, value]) => {
+          if (key !== 'id') {
             const nodeInfoAddresses = div(
               { className: styles.accountProfileInfoContent },
-              p({ txt: `${addressData[0]}:` }),
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-              span({ txt: addressData[1] as string }),
+              p({ txt: `${key}:` }),
+              span({ txt: String(value) }),
             );
             node.append(nodeInfoAddresses);
           }
         });
+
         const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
         editButton.addEventListener('click', () => this.editAddressForm(address, node));
         node.append(editButton);
 
         const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        deleteButton.addEventListener('click', () => this.deleteAddress(address.id!, node));
+        if (address.id) {
+          deleteButton.addEventListener('click', () => this.deleteAddress(String(address.id), node));
+        } else {
+          console.error('Address ID is missing for delete operation.');
+        }
         node.append(deleteButton);
       }
     });
+
     return node;
   }
 
@@ -116,13 +125,12 @@ export class CreateInformationUsers {
 
     data.addresses.forEach((address) => {
       const nodeInfoAddressesContainer = div({ className: styles.profileAddresses });
-      Object.entries(address).forEach((addressData) => {
-        if (addressData[0] !== 'id') {
+      Object.entries(address).forEach(([key, value]) => {
+        if (key !== 'id') {
           const nodeInfoAddresses = div(
             { className: styles.accountProfileInfoContent },
-            p({ txt: `${addressData[0]}:` }),
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            span({ txt: addressData[1] as string }),
+            p({ txt: key }),
+            span({ txt: String(value) }),
           );
           nodeInfoAddressesContainer.append(nodeInfoAddresses);
         }
@@ -132,8 +140,13 @@ export class CreateInformationUsers {
       nodeInfoAddressesContainer.append(editButton);
 
       const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      deleteButton.addEventListener('click', () => this.deleteAddress(address.id!, nodeInfoAddressesContainer));
+      if (address.id) {
+        deleteButton.addEventListener('click', () =>
+          this.deleteAddress(String(address.id), nodeInfoAddressesContainer),
+        );
+      } else {
+        console.error('Address ID is missing for delete operation.');
+      }
       nodeInfoAddressesContainer.append(deleteButton);
 
       node.append(nodeInfoAddressesContainer);
@@ -153,15 +166,13 @@ export class CreateInformationUsers {
     });
     return buttonShowAllAddresses;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private editAddressForm(address: any, container: HTMLElement): void {
+  private editAddressForm(address: PlatformAddress, container: HTMLElement): void {
     const addressType = container.querySelector('h3')?.textContent?.includes('Billing') ? 'Billing' : 'Shipping';
     container.innerHTML = '';
 
     Object.entries(address).forEach(([key, value]) => {
       if (key !== 'id') {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const inputField = this.createInputField(key, value as string);
+        const inputField = this.createInputField(key, String(value));
         const nodeInfoAddresses = this.createAddressNodeInfo(key, inputField);
 
         if (validationText[key]) {
@@ -172,7 +183,7 @@ export class CreateInformationUsers {
       }
     });
 
-    this.addSaveButton(address.id, addressType, container);
+    this.addSaveButton(String(address.id), addressType, container);
   }
 
   private createInputField(key: string, value: string): HTMLInputElement {
@@ -222,18 +233,21 @@ export class CreateInformationUsers {
   private async saveAddress(addressId: string, container: HTMLElement): Promise<void> {
     const data = await this.getDataFromServer();
     const currentVersion = data.version;
-
     const editInputs = container.querySelectorAll('input');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updatedAddress: any = { id: addressId };
-
+    const updatedAddress: Partial<Address> = { id: addressId };
     editInputs.forEach((editInput) => {
       const { key } = editInput.dataset;
       if (key) {
         updatedAddress[key] = editInput.value;
       }
     });
-
+    const completeAddress: AddressDraft = {
+      country: updatedAddress.country ?? 'DefaultCountry',
+      streetName: updatedAddress.streetName || '',
+      postalCode: updatedAddress.postalCode || '',
+      city: updatedAddress.city || '',
+      ...updatedAddress,
+    };
     try {
       await clientService.apiRoot
         .me()
@@ -244,7 +258,7 @@ export class CreateInformationUsers {
               {
                 action: 'changeAddress',
                 addressId,
-                address: updatedAddress,
+                address: completeAddress,
               },
             ],
           },
