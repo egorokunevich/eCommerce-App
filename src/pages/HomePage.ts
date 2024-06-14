@@ -26,10 +26,10 @@ export class HomePage {
     articleContainer.append(articleTitle, articleInfo);
     this.pageWrapper.append(description, articleContainer);
 
-    this.aaa();
+    this.addSwiperPromo();
     return this.pageWrapper;
   }
-  private async aaa(): Promise<void> {
+  private async addSwiperPromo(): Promise<void> {
     this.pageWrapper.append(await promoCode.createSwiperNode());
     createSwiperDiscountCode();
   }
