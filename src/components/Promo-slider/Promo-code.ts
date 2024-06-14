@@ -54,6 +54,7 @@ export class PromoCode {
       }
       showToastMessage('Promo Code is Copy', ToastColors.Green);
       codePromo.disabled = true;
+      // console.log('delete');
 
       setTimeout(() => {
         codePromo.disabled = false;
