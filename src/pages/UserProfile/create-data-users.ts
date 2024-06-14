@@ -5,7 +5,6 @@ import { ToastColors, showToastMessage } from '@components/Toast';
 import clientService from '@services/ClientService';
 import { validationText } from '@utils/RegistrationValidationsData';
 
-/* eslint-disable import/no-cycle */
 import { AddNewAddress } from './add-new-address';
 import styles from './styles.module.scss';
 
