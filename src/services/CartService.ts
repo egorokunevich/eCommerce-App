@@ -1,5 +1,7 @@
 import type { Cart, CartDraft, ClientResponse } from '@commercetools/platform-sdk';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
+
 import clientService, { isFetchError } from './ClientService';
 
 export const updateBasketEvent = new Event('updateBasket');
@@ -66,6 +68,42 @@ export class CartService {
       document.dispatchEvent(updateBasketEvent);
       document.dispatchEvent(productAddedToCartEvent);
       return response.body;
+    }
+    return null;
+  }
+
+  public async applyPromoCodeToCart(code: string): Promise<Cart | null> {
+    const cart = await this.getActiveCart();
+    if (cart) {
+      try {
+        const ID = cart.id;
+        const { version } = cart;
+        const cartEndpoint = clientService.apiRoot.carts().withId({ ID });
+        const response = await cartEndpoint
+          .post({
+            body: {
+              actions: [
+                {
+                  action: 'addDiscountCode',
+                  code,
+                },
+              ],
+              version,
+            },
+          })
+          .execute();
+        document.dispatchEvent(updateBasketEvent);
+        if (response.statusCode === 200) {
+          showToastMessage('Promocode applied!', ToastColors.Green);
+          return response.body;
+        }
+      } catch (e) {
+        if (isFetchError(e)) {
+          if (e.statusCode === 400) {
+            showToastMessage('Wrong code!', ToastColors.Red);
+          }
+        }
+      }
     }
     return null;
   }

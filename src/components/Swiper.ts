@@ -62,10 +62,10 @@ export function createSwiperDiscountCode(): void {
     autoplay: { delay: 1000, disableOnInteraction: false, pauseOnMouseEnter: false },
     loop: true,
     navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
+    // pagination: {
+    //   el: '.swiper-pagination',
+    //   clickable: true,
+    // },
   });
   swiper.init();
 }

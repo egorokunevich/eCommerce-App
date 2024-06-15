@@ -3,7 +3,7 @@ import 'swiper/css/bundle';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-import type { CartDiscount } from '@commercetools/platform-sdk';
+import type { DiscountCode } from '@commercetools/platform-sdk';
 import { article, button, div, h3 } from '@control.ts/min';
 
 // import { createSwiperDiscountCode } from '@components/Swiper';
@@ -21,12 +21,12 @@ export class PromoCode {
     return nodeArticle;
   }
 
-  private async getAllDiscountCodes(): Promise<CartDiscount[]> {
-    const response = await clientService.apiRoot.cartDiscounts().get().execute();
+  private async getAllDiscountCodes(): Promise<DiscountCode[]> {
+    const response = await clientService.apiRoot.discountCodes().get().execute();
     return response.body.results;
   }
 
-  private createSwiper(data: CartDiscount[]): HTMLElement {
+  private createSwiper(data: DiscountCode[]): HTMLElement {
     const swiperWrapper = div({ className: 'swiper-wrapper' });
     data.forEach((discount) => {
       this.createContentSwiperContainer(discount, swiperWrapper);
@@ -42,19 +42,18 @@ export class PromoCode {
     return node;
   }
 
-  private createContentSwiperContainer(discount: CartDiscount, swiperWrapper: HTMLElement): void {
+  private createContentSwiperContainer(discount: DiscountCode, swiperWrapper: HTMLElement): void {
     const node = div({ className: 'swiper-slide' });
 
     // node.setAttribute('data-swiper-autoplay', '2000');
-    const codePromo = button({ className: 'DiscountCodeBtn', txt: `${discount.key}` });
+    const codePromo = button({ className: 'DiscountCodeBtn', id: discount.code });
     codePromo.addEventListener('click', () => {
-      const textCopy = codePromo.textContent;
+      const textCopy = codePromo.id;
       if (textCopy) {
         navigator.clipboard.writeText(textCopy);
       }
-      showToastMessage('Promo Code is Copy', ToastColors.Green);
+      showToastMessage('Promocode is copied!', ToastColors.Green);
       codePromo.disabled = true;
-      // console.log('delete');
 
       setTimeout(() => {
         codePromo.disabled = false;
