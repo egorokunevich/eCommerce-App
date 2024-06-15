@@ -1,5 +1,8 @@
 import { div, h2, p, section } from '@control.ts/min';
 
+import { promoCode } from '@components/Promo-slider/Promo-code';
+import { createSwiperDiscountCode } from '@components/Swiper';
+
 import styles from './HomePage.module.scss';
 
 export class HomePage {
@@ -23,6 +26,11 @@ export class HomePage {
     articleContainer.append(articleTitle, articleInfo);
     this.pageWrapper.append(description, articleContainer);
 
+    this.addSwiperPromo();
     return this.pageWrapper;
+  }
+  private async addSwiperPromo(): Promise<void> {
+    this.pageWrapper.append(await promoCode.createSwiperNode());
+    createSwiperDiscountCode();
   }
 }
