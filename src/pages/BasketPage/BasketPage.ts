@@ -41,13 +41,14 @@ export class BasketPage {
     });
   }
 
-  private handleEmptyBasket(): void {
-    const items = this.cart?.lineItems;
+  private async handleEmptyBasket(): Promise<void> {
+    const cart = await cartService.getActiveCart();
+    const items = cart?.lineItems;
 
     if (items?.length === 0) {
-      pageContainer.innerHTML = '';
+      this.pageContainer.innerHTML = '';
       const emptyBasket = new BasketEmpty();
-      pageContainer.appendChild(emptyBasket.createBasketEmpty());
+      this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
     }
   }
 
