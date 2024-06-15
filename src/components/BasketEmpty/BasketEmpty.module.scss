@@ -1,0 +1,40 @@
+.basket-empty-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-height: 80vh;
+  padding: 1rem;
+  gap: 2rem;
+  border: 1px solid;
+  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgb(4, 241, 4) 98%, rgb(56, 185, 23) 100%);
+  border-image-slice: 1;
+}
+
+.description {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.empty-icon {
+  width: 30%;
+  @media screen and (max-width: 750px) {
+    width: 50%;
+  }
+}
+
+.catalog-btn {
+  border-radius: 0;
+  padding: 0.5rem 0.8rem;
+  background-color: rgb(230, 230, 230);
+  border: 1px solid rgb(78, 78, 78);
+  cursor: pointer;
+  color: black;
+  transition: 0.2s;
+  font-size: 2rem;
+
+  &:hover {
+    background-color: rgb(60, 177, 99);
+    color: white;
+  }
+}
