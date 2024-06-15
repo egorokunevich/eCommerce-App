@@ -1,5 +1,6 @@
-import { button, div, input, section } from '@control.ts/min';
+import { button, div, h2, input, section } from '@control.ts/min';
 
+import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
 import cartService from '@services/CartService';
 
@@ -14,8 +15,23 @@ export class BasketPage {
 
     this.createBasketList(pageContainer);
 
+    document.addEventListener('updateBasket', () => {
+      this.handleEmptyBasket(pageContainer);
+    });
+
     this.pageWrapper.append(pageContainer);
     return this.pageWrapper;
+  }
+
+  private async handleEmptyBasket(pageContainer: HTMLElement): Promise<void> {
+    const cart = await cartService.getActiveCart();
+    const items = cart?.lineItems;
+
+    if (items?.length === 0) {
+      pageContainer.innerHTML = '';
+      const emptyBasket = new BasketEmpty();
+      pageContainer.appendChild(emptyBasket.createBasketEmpty());
+    }
   }
 
   private async createBasketList(container: HTMLElement): Promise<void> {
@@ -49,6 +65,9 @@ export class BasketPage {
       container.append(header, itemsWrapper);
 
       this.renderItems(itemsContainer);
+    } else {
+      const emptyBasket = new BasketEmpty();
+      container.appendChild(emptyBasket.createBasketEmpty());
     }
   }
 
@@ -71,18 +90,59 @@ export class BasketPage {
 
     const clearCartBtn = div({ className: styles.clearCartBtn });
     clearCartBtn.addEventListener('click', () => {
-      // Implement functionality to clear the cart
+      this.clearCart();
     });
 
     header.append(pic, name, price, amount, total, clearCartBtn);
     return header;
   }
 
+  private clearCart(): void {
+    const modalWrapper = div({ className: styles.modalWrapper });
+    const modalContainer = div({ className: styles.modalContainer });
+    const promptContainer = div({ className: styles.promptContainer });
+
+    const promptTitle = h2({
+      className: styles.promptTitle,
+      txt: `Are you sure?`,
+    });
+    const promptText = div({
+      className: styles.promptText,
+      txt: `The following action will delete all the items from your cart.`,
+    });
+
+    const buttonsContainer = div({ className: styles.buttonsContainer });
+    const confirmBtn = button({ className: styles.modalBtn, txt: `Confirm` });
+    const denyBtn = button({ className: styles.modalBtn, txt: `Cancel` });
+    denyBtn.classList.add(styles.denyBtn);
+
+    modalWrapper.append(modalContainer);
+    promptContainer.append(promptTitle, promptText);
+    modalContainer.append(promptContainer, buttonsContainer);
+    buttonsContainer.append(confirmBtn, denyBtn);
+
+    confirmBtn.addEventListener('click', () => {
+      cartService.deleteActiveCart();
+      modalWrapper.remove();
+    });
+
+    denyBtn.addEventListener('click', () => {
+      modalWrapper.remove();
+    });
+
+    modalWrapper.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        modalWrapper.remove();
+      }
+    });
+    document.body.append(modalWrapper);
+  }
+
   private createItemsFooter(): HTMLElement {
     const footer = div({ className: styles.itemsFooter });
 
     const promoCodeContainer = div({ className: styles.promoCodeContainer });
-    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `Promocode...` });
+    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `PROMO CODE...` });
     const promoCodeBtn = button({ className: styles.promoCodeBtn, txt: `Apply` });
     promoCodeContainer.append(promoCodeInput, promoCodeBtn);
 

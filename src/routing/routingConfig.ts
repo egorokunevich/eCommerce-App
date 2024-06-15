@@ -1,6 +1,7 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
+import { AboutUsPage } from '@pages/AboutUsPage/AboutUsPage';
 import { BasketPage } from '@pages/BasketPage/BasketPage';
 import { CatalogPage } from '@pages/CatalogPage/CatalogPage';
 import { HomePage } from '@pages/HomePage';
@@ -11,7 +12,7 @@ import RegistrationPage from '@pages/RegistrationPage';
 import { UserProfile } from '@pages/UserProfile/create-user-pages';
 
 export class PageRouting {
-  private createRoute(pathname: string, name: string): Routes {
+  /* private createRoute(pathname: string, name: string): Routes {
     return {
       pathname,
       element: (): Element => {
@@ -20,7 +21,7 @@ export class PageRouting {
         return ele;
       },
     };
-  }
+  } */
 
   private createItemRoute(): Routes {
     return {
@@ -34,21 +35,6 @@ export class PageRouting {
           return ele;
         }
         const productDetailsPage = new ProductDetailsPage().createPage(productKey);
-        const btnBack = document.createElement('button');
-        btnBack.classList.add('btn-back');
-        btnBack.innerText = 'Go back';
-        btnBack.onclick = (): void => {
-          Router.back();
-        };
-        const btnForward = document.createElement('button');
-        btnForward.classList.add('btn-buy');
-        btnForward.innerText = 'Buy';
-        btnForward.onclick = (): void => {
-          Router.forward();
-        };
-
-        productDetailsPage.appendChild(btnBack);
-        productDetailsPage.appendChild(btnForward);
         return productDetailsPage;
       },
     };
@@ -77,23 +63,6 @@ export class PageRouting {
     };
     return route;
   }
-
-  /* private createDetailsRoute(): Routes {
-    const route = {
-      pathname: '/card/:productId',
-      element: (): Element => {
-        const params = routeLocation().params;
-        const productId = params.productId;
-        if (!productId) {
-          const ele = document.createElement('h2');
-          ele.innerText = 'Product ID not found';
-          return ele;
-        }
-        return new ProductDetailsPage().createPage();
-      },
-    };
-    return route;
-  } */
 
   private createLoginRoute(): Routes {
     const route = {
@@ -135,6 +104,16 @@ export class PageRouting {
     return route;
   }
 
+  private createAboutUsRoute(): Routes {
+    const route = {
+      pathname: '/about',
+      element: (): Element => {
+        return new AboutUsPage().createPage();
+      },
+    };
+    return route;
+  }
+
   public createRouting(): Routes[] {
     return [
       {
@@ -144,7 +123,7 @@ export class PageRouting {
         },
       },
       this.createCatalogRoute(),
-      this.createRoute('/about', 'About'),
+      this.createAboutUsRoute(),
       this.createBasketRoute(),
       this.createItemRoute(),
       this.createProfileRoute(),

@@ -6,9 +6,6 @@ import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
 
-/* eslint-disable import/no-cycle */
-
-import { createInformationUsers } from './create-data-users';
 import styles from './styles.module.scss';
 
 interface UserInput {
@@ -82,10 +79,10 @@ export class AddNewAddress {
         const addressLayout = document.querySelector(`.${styles.usersInformationContainer}`);
         if (addressLayout) {
           addressLayout.innerHTML = '';
-          addressLayout.append(await createInformationUsers.createProfileAddresses());
+          // addressLayout.append(await createInformationUsers.createProfileAddresses());
         }
       } else {
-        showToastMessage('Write all Fields', ToastColors.Red);
+        showToastMessage('Please, fill in all Fields', ToastColors.Red);
       }
     });
     return btn;
