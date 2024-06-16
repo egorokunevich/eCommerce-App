@@ -56,11 +56,13 @@ export class ClientService {
     try {
       document.dispatchEvent(pendingStart);
       const response = await this.apiRoot
+        .me()
         .login()
         .post({
           body: {
             email,
             password,
+            activeCartSignInMode: 'MergeWithExistingCustomerCart', // This will merge anonymous cart with user's cart
           },
         })
         .execute();
