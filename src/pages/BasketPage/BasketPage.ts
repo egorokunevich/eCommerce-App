@@ -12,8 +12,9 @@ export class BasketPage {
   private pageContainer: HTMLElement = div({ className: styles.pageContainer });
   private scrollbarElement: HTMLElement = div({});
   private baseTotalPriceElement: HTMLElement = div({});
-  // private discountedTotalPriceElement: HTMLElement = div({});
+  private discountedTotalPriceElement: HTMLElement = div({});
   private cart: Cart | null = null;
+  private totalContainer: HTMLElement = div({});
 
   public createPage(): HTMLElement {
     this.handleBasketUpdates();
@@ -31,12 +32,7 @@ export class BasketPage {
     document.addEventListener('updateBasket', async () => {
       const updatedCart = await cartService.getActiveCart();
       this.cart = updatedCart;
-      if (this.cart) {
-        const { totalPrice } = this.cart;
-        const currency = this.getCurrency(totalPrice.currencyCode);
-        this.baseTotalPriceElement.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${currency}`;
-      }
-
+      this.handleTotalPrice();
       this.handleEmptyBasket();
     });
   }
@@ -154,31 +150,52 @@ export class BasketPage {
   private createItemsFooter(): HTMLElement {
     const footer = div({ className: styles.itemsFooter });
     const promoCodeContainer = div({ className: styles.promoCodeContainer });
-    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `PROMO CODE...` });
+    const promoCodeInput = input({ className: styles.promoCodeInput, placeholder: `Promocode...` });
     const promoCodeBtn = button({ className: styles.promoCodeBtn, txt: `Apply` });
     promoCodeContainer.append(promoCodeInput, promoCodeBtn);
     const checkoutContainer = div({ className: styles.checkoutContainer });
     const totalPriceContainer = div({ className: styles.totalPriceContainer });
+    this.totalContainer = totalPriceContainer;
     const baseTotalPrice = div({ className: styles.baseTotalPrice, txt: `999.99 EUR` });
     const discountedTotalPrice = div({ className: styles.discountedTotalPrice, txt: `999.99 EUR` });
     this.baseTotalPriceElement = baseTotalPrice;
-    // this.discountedTotalPriceElement = discountedTotalPrice;
+    this.discountedTotalPriceElement = discountedTotalPrice;
     totalPriceContainer.append(baseTotalPrice, discountedTotalPrice);
     const checkoutBtn = button({ className: styles.checkoutBtn, txt: `Checkout` });
-    promoCodeBtn.addEventListener('click', () => {
-      // Implement promo code applying. And display a Toast message for success/fail
-      // To display discounted price:  totalPriceContainer.classList.add(styles.discounted);
-      totalPriceContainer.classList.add(styles.discounted);
+    this.handleTotalPrice();
+    promoCodeBtn.addEventListener('click', async () => {
+      if (promoCodeInput.value.trim()) {
+        await cartService.applyPromoCodeToCart(promoCodeInput.value);
+      }
+      this.handleTotalPrice();
     });
     checkoutContainer.append(totalPriceContainer, checkoutBtn);
     footer.append(promoCodeContainer, checkoutContainer);
     if (this.cart) {
-      const { totalPrice } = this.cart;
-      const currency = this.getCurrency(totalPrice.currencyCode);
-      baseTotalPrice.innerText = `${(totalPrice.centAmount / 10 ** totalPrice.fractionDigits).toFixed(2)} ${currency}`;
+      this.handleTotalPrice();
     }
 
     return footer;
+  }
+
+  private handleTotalPrice(): void {
+    if (this.cart) {
+      const { totalPrice } = this.cart;
+      const currency = this.getCurrency(totalPrice.currencyCode);
+      if (this.cart.discountOnTotalPrice) {
+        this.totalContainer.classList.add(styles.discounted);
+        const price =
+          (totalPrice.centAmount + this.cart.discountOnTotalPrice.discountedAmount.centAmount) /
+          10 ** totalPrice.fractionDigits;
+        const discountedPrice = totalPrice.centAmount / 10 ** totalPrice.fractionDigits;
+        this.baseTotalPriceElement.innerText = `${price.toFixed(2)} ${currency}`;
+        this.discountedTotalPriceElement.innerText = `${discountedPrice.toFixed(2)} ${currency}`;
+      } else {
+        const price = totalPrice.centAmount / 10 ** totalPrice.fractionDigits;
+        this.baseTotalPriceElement.innerText = `${price.toFixed(2)} ${currency}`;
+        this.discountedTotalPriceElement.innerText = `${price.toFixed(2)} ${currency}`;
+      }
+    }
   }
 
   private getCurrency(currencyCode: string): string {

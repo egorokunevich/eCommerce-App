@@ -31,7 +31,6 @@
 }
 
 .article-info {
-  height: 35vh;
   width: 100%;
   padding-right: 30%;
   background-image: url('/assets/images/brand-cup.png');
@@ -39,4 +38,8 @@
   background-repeat: no-repeat;
   background-size: clamp(5rem, -1.393rem + 26.23vw, 15rem);
   font-size: clamp(0.7rem, 0.189rem + 2.098vw, 1.5rem);
+
+  @media screen and (min-width: 1300px) {
+    background-size: contain;
+  }
 }
