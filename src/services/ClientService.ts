@@ -43,7 +43,7 @@ export class ClientService {
   // On failed login / signup show a notification with error message
   public handleAuthError(error: unknown): void {
     if (isFetchError(error)) {
-      showToastMessage(error.message); // Show notification
+      showToastMessage('Failed to authenticate. Please, try again.'); // Show notification
     }
   }
 

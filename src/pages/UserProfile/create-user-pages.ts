@@ -43,7 +43,9 @@ export class UserProfile {
           if (this.profileInformationContainer) {
             this.profileInformationContainer.innerHTML = '';
             const node = await new CreateInformationUsers().createProfileInformation();
-            this.profileInformationContainer.append(node);
+            if (node) {
+              this.profileInformationContainer.append(node);
+            }
           }
         } catch (error) {
           throw new Error(`${error}`);
@@ -61,7 +63,9 @@ export class UserProfile {
         this.profileInformationContainer.innerHTML = '';
 
         const node = await new CreateInformationUsers().createProfileAddresses();
-        this.profileInformationContainer.append(node);
+        if (node) {
+          this.profileInformationContainer.append(node);
+        }
       }
     });
     return btn;
@@ -87,7 +91,9 @@ export class UserProfile {
         this.profileInformationContainer.innerHTML = '';
         // add inform
         const registrationPage = await new ChangeUserData().createChangeLayout();
-        this.profileInformationContainer.append(registrationPage);
+        if (registrationPage) {
+          this.profileInformationContainer.append(registrationPage);
+        }
       }
     });
     return btn;

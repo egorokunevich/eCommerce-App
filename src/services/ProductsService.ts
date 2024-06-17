@@ -6,9 +6,10 @@ import type {
   ProductProjectionPagedQueryResponse,
 } from '@commercetools/platform-sdk';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
 import Attributes from '@enums/Attributes';
 
-import clientService from './ClientService';
+import clientService, { isFetchError } from './ClientService';
 
 export class ProductsService {
   private sortQuery = '';
@@ -141,42 +142,46 @@ export class ProductsService {
   public async getFilteredAndSortedProducts(
     requestLimit?: number,
     requestOffset?: number,
-  ): Promise<ProductProjection[]> {
-    const limit = requestLimit || this.limit;
-    const offset = requestOffset || this.offset;
-    const fuzzyLevel = this.getFuzzyLevel();
-    const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
-    const response = await clientService.apiRoot
-      .productProjections()
-      .search()
-      .get({
-        queryArgs: {
-          limit,
-          offset,
-          markMatchingVariants: true,
-          'text.en-US': this.searchQuery,
-          fuzzy,
-          fuzzyLevel,
-          filter: [
-            this.categoryQuery,
-            this.priceRangeFilterQuery,
-            this.temperatureFilterQuery,
-            this.timeFilterQuery,
-            this.weightFilterQuery,
-          ],
-          sort: [this.sortQuery],
-          expand: ['categories[*]'],
-        },
-      })
-      .execute();
-
-    return response.body.results;
+  ): Promise<ProductProjection[] | null> {
+    try {
+      const fuzzyLevel = this.getFuzzyLevel();
+      const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
+      const response = await clientService.apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            limit: requestLimit || this.limit,
+            offset: requestOffset || this.offset,
+            markMatchingVariants: true,
+            'text.en-US': this.searchQuery,
+            fuzzy,
+            fuzzyLevel,
+            filter: [
+              this.categoryQuery,
+              this.priceRangeFilterQuery,
+              this.temperatureFilterQuery,
+              this.timeFilterQuery,
+              this.weightFilterQuery,
+            ],
+            sort: [this.sortQuery],
+            expand: ['categories[*]'],
+          },
+        })
+        .execute();
+      return response.body.results;
+    } catch (e) {
+      if (isFetchError(e)) {
+        showToastMessage('Failed to load products. Please, try again.', ToastColors.Red);
+        console.error('Failed to load products.', e);
+      }
+    }
+    return null;
   }
 
   public getCategoryQuery(category: Category): void {
     this.categoryQuery = `categories.id:subtree("${category.id}")`;
     this.currentCategory = category;
-    // this.categoryQuery = `categories.id:"${categoryId}"`;
   }
 
   public getCurrentCategory(): Category {
