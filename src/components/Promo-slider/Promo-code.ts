@@ -21,12 +21,12 @@ export class PromoCode {
     return nodeArticle;
   }
 
-  private async getAllDiscountCodes(): Promise<DiscountCode[]> {
+  public async getAllDiscountCodes(): Promise<DiscountCode[]> {
     const response = await clientService.apiRoot.discountCodes().get().execute();
     return response.body.results;
   }
 
-  private createSwiper(data: DiscountCode[]): HTMLElement {
+  public createSwiper(data: DiscountCode[]): HTMLElement {
     const swiperWrapper = div({ className: 'swiper-wrapper' });
     data.forEach((discount) => {
       this.createContentSwiperContainer(discount, swiperWrapper);
@@ -42,10 +42,9 @@ export class PromoCode {
     return node;
   }
 
-  private createContentSwiperContainer(discount: DiscountCode, swiperWrapper: HTMLElement): void {
+  public createContentSwiperContainer(discount: DiscountCode, swiperWrapper: HTMLElement): void {
     const node = div({ className: 'swiper-slide' });
 
-    // node.setAttribute('data-swiper-autoplay', '2000');
     const codePromo = button({ className: 'DiscountCodeBtn', id: discount.code });
     codePromo.addEventListener('click', () => {
       const textCopy = codePromo.id;
