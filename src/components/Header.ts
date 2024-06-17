@@ -7,7 +7,7 @@ import styles from './Header.module.scss';
 export default class Header {
   private headerElement: HTMLElement | null = null;
 
-  private createHeader(): void {
+  public createHeader(): void {
     const link = setAttributes(a({ href: '/', txt: 'COFFEE LOOP' }), {
       type: 'data-vanilla-route-link',
       text: 'spa',
