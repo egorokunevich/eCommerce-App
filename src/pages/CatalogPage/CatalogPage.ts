@@ -91,11 +91,15 @@ export class CatalogPage {
       if (this.currentSorting === 'price asc') {
         productsService.getSortingQuery('price', 'asc');
         const filtered = await productsService.getFilteredAndSortedProducts();
-        this.updateCards(this.sortWithDiscounted(filtered, 'asc'));
+        if (filtered) {
+          this.updateCards(this.sortWithDiscounted(filtered, 'asc'));
+        }
       } else if (this.currentSorting === 'price desc') {
         productsService.getSortingQuery('price', 'desc');
         const filtered = await productsService.getFilteredAndSortedProducts();
-        this.updateCards(this.sortWithDiscounted(filtered, 'desc'));
+        if (filtered) {
+          this.updateCards(this.sortWithDiscounted(filtered, 'desc'));
+        }
       }
     } catch (e) {
       clientService.handleAuthError(e);
@@ -131,11 +135,15 @@ export class CatalogPage {
       if (this.currentSorting === 'name asc') {
         productsService.getSortingQuery('name.en-US', 'asc');
         const filtered = await productsService.getFilteredAndSortedProducts();
-        this.updateCards(filtered);
+        if (filtered) {
+          this.updateCards(filtered);
+        }
       } else if (this.currentSorting === 'name desc') {
         productsService.getSortingQuery('name.en-US', 'desc');
         const filtered = await productsService.getFilteredAndSortedProducts();
-        this.updateCards(filtered);
+        if (filtered) {
+          this.updateCards(filtered);
+        }
       }
     } catch (e) {
       clientService.handleAuthError(e);
@@ -185,7 +193,9 @@ export class CatalogPage {
     if (this.currentSorting !== null) {
       productsService.clearSortQuery();
       const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+      if (products) {
+        this.updateCards(products);
+      }
 
       this.currentSorting = null;
       this.priceSortIcon.classList.add(styles.hidden);
@@ -223,7 +233,9 @@ export class CatalogPage {
       searchBar.value = '';
       productsService.clearSearchQuery();
       const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+      if (products) {
+        this.updateCards(products);
+      }
     });
     barContainer.append(searchBar, searchBtn, cancelBtn);
     searchContainer.append(searchTitle, barContainer);
@@ -234,7 +246,9 @@ export class CatalogPage {
   private async searchProducts(searchText: string): Promise<void> {
     productsService.getSearchQuery(searchText);
     const products = await productsService.getFilteredAndSortedProducts();
-    this.updateCards(products);
+    if (products) {
+      this.updateCards(products);
+    }
   }
 
   private createCategoriesList(): HTMLElement {
@@ -335,13 +349,14 @@ export class CatalogPage {
     const max = Math.floor(+range[1]) * 100; // Upper bound in cents
     productsService.getPriceRangeFilterQuery(min, max); // Create request query
     const products = await productsService.getFilteredAndSortedProducts(); // Get matching products
-
-    if (this.currentSorting === 'price asc') {
-      this.updateCards(this.sortWithDiscounted(products, 'asc'));
-    } else if (this.currentSorting === 'price desc') {
-      this.updateCards(this.sortWithDiscounted(products, 'desc'));
-    } else {
-      this.updateCards(products);
+    if (products) {
+      if (this.currentSorting === 'price asc') {
+        this.updateCards(this.sortWithDiscounted(products, 'asc'));
+      } else if (this.currentSorting === 'price desc') {
+        this.updateCards(this.sortWithDiscounted(products, 'desc'));
+      } else {
+        this.updateCards(products);
+      }
     }
   }
 
@@ -360,12 +375,8 @@ export class CatalogPage {
       selected: true,
       hidden: true,
     });
-    cancelBtn.addEventListener('click', async () => {
-      optionInit.selected = true;
-      savedFilters.brewingTemperature = '';
-      productsService.clearTemperatureQuery();
-      const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+    cancelBtn.addEventListener('click', () => {
+      this.cancelTemperatureFilter(optionInit);
     });
     const option2 = option({ className: styles.option, value: `25-50`, txt: `25 to 50 deg` });
     const option3 = option({ className: styles.option, value: `50-75`, txt: `50 to 75 deg` });
@@ -379,10 +390,22 @@ export class CatalogPage {
       const value = +selection.value ? +selection.value : selection.value.split('-').map((item) => +item);
       productsService.getTemperatureFilterQuery(value);
       const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+      if (products) {
+        this.updateCards(products);
+      }
     });
     container.append(title, selectContainer);
     return container;
+  }
+
+  private async cancelTemperatureFilter(optionInit: HTMLOptionElement): Promise<void> {
+    optionInit.selected = true;
+    savedFilters.brewingTemperature = '';
+    productsService.clearTemperatureQuery();
+    const products = await productsService.getFilteredAndSortedProducts();
+    if (products) {
+      this.updateCards(products);
+    }
   }
 
   private createWeightAttributeFilter(): HTMLElement {
@@ -400,12 +423,8 @@ export class CatalogPage {
       selected: true,
       hidden: true,
     });
-    cancelBtn.addEventListener('click', async () => {
-      optionInit.selected = true;
-      savedFilters.weight = '';
-      productsService.clearWeightQuery();
-      const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+    cancelBtn.addEventListener('click', () => {
+      this.cancelWeightFilter(optionInit);
     });
     const option50 = option({ className: styles.option, value: `50g`, txt: `50g` });
     const option100 = option({ className: styles.option, value: `100g`, txt: `100g` });
@@ -419,10 +438,22 @@ export class CatalogPage {
       productsService.getWeightFilterQuery(selection.value);
       savedFilters.weight = selection.value;
       const products = await productsService.getFilteredAndSortedProducts();
-      this.updateCards(products);
+      if (products) {
+        this.updateCards(products);
+      }
     });
     container.append(title, selectContainer);
     return container;
+  }
+
+  private async cancelWeightFilter(optionInit: HTMLOptionElement): Promise<void> {
+    optionInit.selected = true;
+    savedFilters.weight = '';
+    productsService.clearWeightQuery();
+    const products = await productsService.getFilteredAndSortedProducts();
+    if (products) {
+      this.updateCards(products);
+    }
   }
 
   private async createCards(productsArray?: ProductProjection[]): Promise<void> {
@@ -441,22 +472,24 @@ export class CatalogPage {
       this.cardsContainer.append(message);
     }
 
-    // Wait for all products to render and only after that run the observer
-    const loaded = await Promise.all(
-      products.map(async (product) => {
-        const card = await productCard.createCard(product);
-        const productKey = product.key;
-        card.addEventListener('click', () => {
-          Router.go(`/catalog/${productKey}`, { addToHistory: true });
-        });
-        this.cardsContainer.append(card);
-        return card;
-      }),
-    );
+    if (products) {
+      // Wait for all products to render and only after that run the observer
+      const loaded = await Promise.all(
+        products.map(async (product) => {
+          const card = await productCard.createCard(product);
+          const productKey = product.key;
+          card.addEventListener('click', () => {
+            Router.go(`/catalog/${productKey}`, { addToHistory: true });
+          });
+          this.cardsContainer.append(card);
+          return card;
+        }),
+      );
 
-    // If there are new rendered products, run the observer
-    if (loaded.length > 0) {
-      this.infiniteLoad();
+      // If there are new rendered products, run the observer
+      if (loaded.length > 0) {
+        this.infiniteLoad();
+      }
     }
   }
 
@@ -489,7 +522,9 @@ export class CatalogPage {
 
         // Render new products
         const loadedProducts = await productsService.getFilteredAndSortedProducts(this.limit, this.offset);
-        this.loadCards(loadedProducts);
+        if (loadedProducts) {
+          this.loadCards(loadedProducts);
+        }
 
         // Unsubscribe the observer
         if (cardToObserve) {

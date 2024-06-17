@@ -3,6 +3,7 @@ import { button, div, h2, input, section } from '@control.ts/min';
 
 import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
+import { showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
 
 import styles from './BasketPage.module.scss';
@@ -38,13 +39,18 @@ export class BasketPage {
   }
 
   private async handleEmptyBasket(): Promise<void> {
-    const cart = await cartService.getActiveCart();
-    const items = cart?.lineItems;
+    try {
+      const cart = await cartService.getActiveCart();
+      const items = cart?.lineItems;
 
-    if (items?.length === 0) {
-      this.pageContainer.innerHTML = '';
-      const emptyBasket = new BasketEmpty();
-      this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
+      if (cart && items?.length === 0) {
+        this.pageContainer.innerHTML = '';
+        const emptyBasket = new BasketEmpty();
+        this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
+      }
+    } catch (e) {
+      showToastMessage('Failed to load the cart. Please, try again.');
+      console.error(`Failed to load the cart.`, e);
     }
   }
 

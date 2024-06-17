@@ -21,6 +21,7 @@ export class CartService {
           // If there is no cart, create one
           return await this.createCart();
         }
+        showToastMessage('Failed to load the cart. Please, try again.');
       }
     }
     return null;

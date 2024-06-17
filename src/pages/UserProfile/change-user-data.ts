@@ -24,41 +24,48 @@ export class ChangeUserData {
   private inputLastName: null | HTMLElement = null;
   private inputDateOfBirth: null | HTMLElement = null;
 
-  private async getDataFromServer(): Promise<Customer> {
-    const data = await clientService.apiRoot.me().get().execute();
-    return data.body;
-  }
-
-  public async createChangeLayout(): Promise<HTMLElement> {
-    const node = article(
-      { className: styles.changeInformation },
-      await this.createInputs(),
-      await this.createBtnToSaveNewDataProfile(),
-    );
-    return node;
-  }
-
-  private async createInputs(): Promise<HTMLElement> {
-    const data = await this.getDataFromServer();
-    const node = div({});
-    const { email, firstName, lastName, dateOfBirth } = data;
-
-    if (email && firstName && lastName && dateOfBirth) {
-      const labelEmail = this.registrationPageClass.createFormLabel(email, validationText.email);
-      this.inputEmail = this.registrationPageClass.inputTag;
-
-      const labelFirstName = this.registrationPageClass.createFormLabel(firstName, validationText.firstName);
-      this.inputFirstName = this.registrationPageClass.inputTag;
-
-      const labelLastName = this.registrationPageClass.createFormLabel(lastName, validationText.lastName);
-      this.inputLastName = this.registrationPageClass.inputTag;
-
-      const labelDateOfBirth = this.registrationPageClass.createFormLabel('dateOfBirth', validationText.dateOfBirth);
-      this.inputDateOfBirth = this.registrationPageClass.inputTag;
-      node.append(labelFirstName, labelLastName, labelDateOfBirth, labelEmail);
+  private async getDataFromServer(): Promise<Customer | null> {
+    try {
+      const data = await clientService.apiRoot.me().get().execute();
+      return data.body;
+    } catch (e) {
+      showToastMessage('Failed to load data from server. Please, try again.');
     }
+    return null;
+  }
 
-    return node;
+  public async createChangeLayout(): Promise<HTMLElement | null> {
+    const inputs = await this.createInputs();
+    if (inputs) {
+      const node = article({ className: styles.changeInformation }, inputs, await this.createBtnToSaveNewDataProfile());
+      return node;
+    }
+    return null;
+  }
+
+  private async createInputs(): Promise<HTMLElement | null> {
+    const data = await this.getDataFromServer();
+    if (data) {
+      const node = div({});
+      const { email, firstName, lastName, dateOfBirth } = data;
+
+      if (email && firstName && lastName && dateOfBirth) {
+        const labelEmail = this.registrationPageClass.createFormLabel(email, validationText.email);
+        this.inputEmail = this.registrationPageClass.inputTag;
+
+        const labelFirstName = this.registrationPageClass.createFormLabel(firstName, validationText.firstName);
+        this.inputFirstName = this.registrationPageClass.inputTag;
+
+        const labelLastName = this.registrationPageClass.createFormLabel(lastName, validationText.lastName);
+        this.inputLastName = this.registrationPageClass.inputTag;
+
+        const labelDateOfBirth = this.registrationPageClass.createFormLabel('dateOfBirth', validationText.dateOfBirth);
+        this.inputDateOfBirth = this.registrationPageClass.inputTag;
+        node.append(labelFirstName, labelLastName, labelDateOfBirth, labelEmail);
+      }
+      return node;
+    }
+    return null;
   }
 
   private async createBtnToSaveNewDataProfile(): Promise<HTMLButtonElement> {
@@ -69,12 +76,15 @@ export class ChangeUserData {
       const inputsValue = this.checkInputsValue();
       if (inputsValue && isRegistrationActive(validationMessages) && this.isInputsValueEmpty()) {
         await this.updateMyCustomerData(this.updateActions(inputsValue));
-        showToastMessage('Your information was change', ToastColors.Green);
+        showToastMessage('Your information was changed', ToastColors.Green);
 
         const newArticle = document.querySelector(`.${styles.profileInformation}`);
         if (newArticle !== null) {
           newArticle.innerHTML = '';
-          newArticle.append(await this.createInputs(), await this.createBtnToSaveNewDataProfile());
+          const inputs = await this.createInputs();
+          if (inputs) {
+            newArticle.append(inputs, await this.createBtnToSaveNewDataProfile());
+          }
         }
       } else {
         showToastMessage('Write all Fields', ToastColors.Red);
@@ -83,18 +93,23 @@ export class ChangeUserData {
     return btn;
   }
 
-  private async updateMyCustomerData(actions: MyCustomerUpdateAction[]): Promise<Customer> {
-    const response = await clientService.apiRoot
-      .me()
-      .post({
-        body: {
-          version: (await this.getDataFromServer()).version,
-          actions,
-        },
-      })
-      .execute();
+  private async updateMyCustomerData(actions: MyCustomerUpdateAction[]): Promise<Customer | null> {
+    const data = await this.getDataFromServer();
+    if (data) {
+      const { version } = data;
+      const response = await clientService.apiRoot
+        .me()
+        .post({
+          body: {
+            version,
+            actions,
+          },
+        })
+        .execute();
 
-    return response.body;
+      return response.body;
+    }
+    return null;
   }
 
   private updateActions(objInputsValue: UserInput): MyCustomerUpdateAction[] {

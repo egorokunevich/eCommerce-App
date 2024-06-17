@@ -23,24 +23,31 @@ export class CreateInformationUsers {
   private defaultBillingAddressId: string | undefined = undefined;
   private defaultShippingAddressId: string | undefined = undefined;
 
-  private async getDataFromServer(): Promise<Customer> {
-    const data = await clientService.apiRoot.me().get().execute();
-    return data.body;
+  private async getDataFromServer(): Promise<Customer | null> {
+    try {
+      const data = await clientService.apiRoot.me().get().execute();
+      return data.body;
+    } catch (e) {
+      showToastMessage('Failed to load data from server. Please, try again.');
+    }
+    return null;
   }
 
-  public async createProfileInformation(): Promise<HTMLElement> {
+  public async createProfileInformation(): Promise<HTMLElement | null> {
     const data = await this.getDataFromServer();
+    if (data) {
+      const contentInfo = [
+        div({ className: styles.accountProfileInfoContent }, p({ txt: 'First Name:' }), span({ txt: data.firstName })),
+        div({ className: styles.accountProfileInfoContent }, p({ txt: 'Last Name:' }), span({ txt: data.lastName })),
+        div({ className: styles.accountProfileInfoContent }, p({ txt: 'Email:' }), span({ txt: data.email })),
+        div({ className: styles.accountProfileInfoContent }, p({ txt: 'Birthday:' }), span({ txt: data.dateOfBirth })),
+      ];
 
-    const contentInfo = [
-      div({ className: styles.accountProfileInfoContent }, p({ txt: 'First Name:' }), span({ txt: data.firstName })),
-      div({ className: styles.accountProfileInfoContent }, p({ txt: 'Last Name:' }), span({ txt: data.lastName })),
-      div({ className: styles.accountProfileInfoContent }, p({ txt: 'Email:' }), span({ txt: data.email })),
-      div({ className: styles.accountProfileInfoContent }, p({ txt: 'Birthday:' }), span({ txt: data.dateOfBirth })),
-    ];
+      const node = article({ className: styles.profileInformation }, ...contentInfo);
 
-    const node = article({ className: styles.profileInformation }, ...contentInfo);
-
-    return node;
+      return node;
+    }
+    return null;
   }
 
   private async createAddressButtonsContainer(showAllButton: HTMLButtonElement): Promise<HTMLDivElement> {
@@ -61,24 +68,26 @@ export class CreateInformationUsers {
     return container;
   }
 
-  public async createProfileAddresses(): Promise<HTMLElement> {
+  public async createProfileAddresses(): Promise<HTMLElement | null> {
     const data = await this.getDataFromServer();
     const node = article({ className: [styles.addressesInformationContainer].join(' ') });
 
-    this.defaultBillingAddressId = data.defaultBillingAddressId;
-    this.defaultShippingAddressId = data.defaultShippingAddressId;
-    if (this.defaultBillingAddressId && this.defaultShippingAddressId) {
-      const defaultAddressNode = div(
-        { className: styles.addresses },
-        await this.showDefaultAddresses(this.defaultBillingAddressId, 'Billing'),
-        await this.showDefaultAddresses(this.defaultShippingAddressId, 'Shipping'),
-      );
-      node.append(defaultAddressNode);
+    if (data) {
+      this.defaultBillingAddressId = data.defaultBillingAddressId;
+      this.defaultShippingAddressId = data.defaultShippingAddressId;
+      if (this.defaultBillingAddressId && this.defaultShippingAddressId) {
+        const defaultAddressNode = div(
+          { className: styles.addresses },
+          await this.showDefaultAddresses(this.defaultBillingAddressId, 'Billing'),
+          await this.showDefaultAddresses(this.defaultShippingAddressId, 'Shipping'),
+        );
+        node.append(defaultAddressNode);
+      }
+      this.allAddressesContainer = div({ className: styles.allAddressesContainer });
+      const buttonShowAllAddresses = this.buttonShowAllAddresses(this.allAddressesContainer);
+      const addressButtonsContainer = await this.createAddressButtonsContainer(buttonShowAllAddresses);
+      node.append(addressButtonsContainer, this.allAddressesContainer);
     }
-    this.allAddressesContainer = div({ className: styles.allAddressesContainer });
-    const buttonShowAllAddresses = this.buttonShowAllAddresses(this.allAddressesContainer);
-    const addressButtonsContainer = await this.createAddressButtonsContainer(buttonShowAllAddresses);
-    node.append(addressButtonsContainer, this.allAddressesContainer);
     return node;
   }
 
@@ -89,32 +98,34 @@ export class CreateInformationUsers {
       h3({ className: styles.defaultAddressesTitle, txt: `${text} Address` }),
     );
 
-    data.addresses.forEach((address) => {
-      if (address.id === ID) {
-        Object.entries(address).forEach(([key, value]) => {
-          if (key !== 'id') {
-            const nodeInfoAddresses = div(
-              { className: styles.accountProfileInfoContent },
-              p({ txt: `${key}:` }),
-              span({ txt: String(value) }),
-            );
-            node.append(nodeInfoAddresses);
+    if (data) {
+      data.addresses.forEach((address) => {
+        if (address.id === ID) {
+          Object.entries(address).forEach(([key, value]) => {
+            if (key !== 'id') {
+              const nodeInfoAddresses = div(
+                { className: styles.accountProfileInfoContent },
+                p({ txt: `${key}:` }),
+                span({ txt: String(value) }),
+              );
+              node.append(nodeInfoAddresses);
+            }
+          });
+
+          const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
+          editButton.addEventListener('click', () => this.editAddressForm(address, node));
+          node.append(editButton);
+
+          const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
+          if (address.id) {
+            deleteButton.addEventListener('click', () => this.deleteAddress(String(address.id), node));
+          } else {
+            console.error('Address ID is missing for delete operation.');
           }
-        });
-
-        const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
-        editButton.addEventListener('click', () => this.editAddressForm(address, node));
-        node.append(editButton);
-
-        const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
-        if (address.id) {
-          deleteButton.addEventListener('click', () => this.deleteAddress(String(address.id), node));
-        } else {
-          console.error('Address ID is missing for delete operation.');
+          node.append(deleteButton);
         }
-        node.append(deleteButton);
-      }
-    });
+      });
+    }
 
     return node;
   }
@@ -122,34 +133,36 @@ export class CreateInformationUsers {
   private async showAllAddresses(node: HTMLDivElement): Promise<HTMLDivElement> {
     const data = await this.getDataFromServer();
 
-    data.addresses.forEach((address) => {
-      const nodeInfoAddressesContainer = div({ className: styles.profileAddresses });
-      Object.entries(address).forEach(([key, value]) => {
-        if (key !== 'id') {
-          const nodeInfoAddresses = div(
-            { className: styles.accountProfileInfoContent },
-            p({ txt: key }),
-            span({ txt: String(value) }),
+    if (data) {
+      data.addresses.forEach((address) => {
+        const nodeInfoAddressesContainer = div({ className: styles.profileAddresses });
+        Object.entries(address).forEach(([key, value]) => {
+          if (key !== 'id') {
+            const nodeInfoAddresses = div(
+              { className: styles.accountProfileInfoContent },
+              p({ txt: key }),
+              span({ txt: String(value) }),
+            );
+            nodeInfoAddressesContainer.append(nodeInfoAddresses);
+          }
+        });
+        const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
+        editButton.addEventListener('click', () => this.editAddressForm(address, nodeInfoAddressesContainer));
+        nodeInfoAddressesContainer.append(editButton);
+
+        const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
+        if (address.id) {
+          deleteButton.addEventListener('click', () =>
+            this.deleteAddress(String(address.id), nodeInfoAddressesContainer),
           );
-          nodeInfoAddressesContainer.append(nodeInfoAddresses);
+        } else {
+          console.error('Address ID is missing for delete operation.');
         }
+        nodeInfoAddressesContainer.append(deleteButton);
+
+        node.append(nodeInfoAddressesContainer);
       });
-      const editButton = button({ className: styles.userInfoBtn, txt: 'Edit' });
-      editButton.addEventListener('click', () => this.editAddressForm(address, nodeInfoAddressesContainer));
-      nodeInfoAddressesContainer.append(editButton);
-
-      const deleteButton = button({ className: styles.userInfoBtn, txt: 'Delete' });
-      if (address.id) {
-        deleteButton.addEventListener('click', () =>
-          this.deleteAddress(String(address.id), nodeInfoAddressesContainer),
-        );
-      } else {
-        console.error('Address ID is missing for delete operation.');
-      }
-      nodeInfoAddressesContainer.append(deleteButton);
-
-      node.append(nodeInfoAddressesContainer);
-    });
+    }
     return node;
   }
 
@@ -231,67 +244,69 @@ export class CreateInformationUsers {
 
   private async saveAddress(addressId: string, container: HTMLElement): Promise<void> {
     const data = await this.getDataFromServer();
-    const currentVersion = data.version;
-    const editInputs = container.querySelectorAll('input');
-    const updatedAddress: Partial<Address> = { id: addressId };
-    editInputs.forEach((editInput) => {
-      const { key } = editInput.dataset;
-      if (key) {
-        updatedAddress[key] = editInput.value;
+    if (data) {
+      const updatedAddress: Partial<Address> = { id: addressId };
+      container.querySelectorAll('input').forEach((editInput) => {
+        const { key } = editInput.dataset;
+        if (key) {
+          updatedAddress[key] = editInput.value;
+        }
+      });
+      const completeAddress: AddressDraft = {
+        country: updatedAddress.country ?? 'DefaultCountry',
+        streetName: updatedAddress.streetName || '',
+        postalCode: updatedAddress.postalCode || '',
+        city: updatedAddress.city || '',
+        ...updatedAddress,
+      };
+      try {
+        await clientService.apiRoot
+          .me()
+          .post({
+            body: {
+              version: data.version,
+              actions: [
+                {
+                  action: 'changeAddress',
+                  addressId,
+                  address: completeAddress,
+                },
+              ],
+            },
+          })
+          .execute();
+        showToastMessage('Address updated successfully!', ToastColors.Green);
+      } catch (error) {
+        console.error('Error updating address:', error);
+        showToastMessage('Error updating address.');
       }
-    });
-    const completeAddress: AddressDraft = {
-      country: updatedAddress.country ?? 'DefaultCountry',
-      streetName: updatedAddress.streetName || '',
-      postalCode: updatedAddress.postalCode || '',
-      city: updatedAddress.city || '',
-      ...updatedAddress,
-    };
-    try {
-      await clientService.apiRoot
-        .me()
-        .post({
-          body: {
-            version: currentVersion,
-            actions: [
-              {
-                action: 'changeAddress',
-                addressId,
-                address: completeAddress,
-              },
-            ],
-          },
-        })
-        .execute();
-      showToastMessage('Address updated successfully!', ToastColors.Green);
-    } catch (error) {
-      console.error('Error updating address:', error);
-      showToastMessage('Error updating address.');
     }
   }
   private async deleteAddress(addressId: string, container: HTMLElement): Promise<void> {
     const data = await this.getDataFromServer();
-    const currentVersion = data.version;
+    if (data) {
+      const currentVersion = data.version;
 
-    try {
-      await clientService.apiRoot
-        .me()
-        .post({
-          body: {
-            version: currentVersion,
-            actions: [
-              {
-                action: 'removeAddress',
-                addressId,
-              },
-            ],
-          },
-        })
-        .execute();
-      showToastMessage('Address deleted successfully!', ToastColors.Green);
-      container.style.display = 'none';
-    } catch (error) {
-      console.error('Error deleting address:', error);
+      try {
+        await clientService.apiRoot
+          .me()
+          .post({
+            body: {
+              version: currentVersion,
+              actions: [
+                {
+                  action: 'removeAddress',
+                  addressId,
+                },
+              ],
+            },
+          })
+          .execute();
+        showToastMessage('Address deleted successfully!', ToastColors.Green);
+        container.style.display = 'none';
+      } catch (error) {
+        console.error('Error deleting address:', error);
+      }
     }
   }
 }
