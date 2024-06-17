@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { AboutUsPage } from '@pages/AboutUsPage/AboutUsPage';
 
 describe('AboutUsPage', () => {
@@ -15,7 +16,7 @@ describe('AboutUsPage', () => {
 
   it('should create and append the links section', () => {
     aboutUsPage.createPage();
-    
+
     const links = aboutUsPage.pageWrapper.querySelector('a');
     expect(links).toBeInstanceOf(HTMLAnchorElement);
   });
