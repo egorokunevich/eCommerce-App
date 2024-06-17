@@ -3,6 +3,9 @@
   justify-content: center;
   align-items: center;
   margin-top: 40px;
+  @media screen and (max-width: 600px) {
+    margin-top: 10px;
+  }
 }
 
 .swiperPromoCode {
@@ -32,7 +35,7 @@
 }
 
 .swiperSlideCustom {
-  border: 2px solid rgba(0, 0, 0, 0.192);
+  border: 1px solid red;
   background-position: center;
   background-size: cover;
   display: flex;
