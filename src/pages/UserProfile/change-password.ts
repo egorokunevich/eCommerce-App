@@ -21,9 +21,14 @@ export class ChangePassword {
   private newInputTagPassword: null | HTMLElement = null;
   private repeatInputTagPassword: null | HTMLElement = null;
 
-  private async getDataFromServer(): Promise<Customer> {
-    const data = await clientService.apiRoot.me().get().execute();
-    return data.body;
+  private async getDataFromServer(): Promise<Customer | null> {
+    try {
+      const data = await clientService.apiRoot.me().get().execute();
+      return data.body;
+    } catch (e) {
+      showToastMessage('Failed to save new password. Please, try again.');
+    }
+    return null;
   }
 
   public async creteNodePassword(): Promise<HTMLElement> {
@@ -60,25 +65,28 @@ export class ChangePassword {
       { type: 'button', text: true },
     );
     node.addEventListener('click', async () => {
-      const { email } = await this.getDataFromServer();
-      const newPassword = this.isValueInputs();
-      if (
-        isRegistrationActive(validationMessages) &&
-        newPassword !== '' &&
-        this.oldInputTagPassword instanceof HTMLInputElement
-      ) {
-        try {
-          await this.changePassword(this.oldInputTagPassword.value, newPassword);
+      const data = await this.getDataFromServer();
+      if (data) {
+        const { email } = data;
+        const newPassword = this.isValueInputs();
+        if (
+          isRegistrationActive(validationMessages) &&
+          newPassword !== '' &&
+          this.oldInputTagPassword instanceof HTMLInputElement
+        ) {
+          try {
+            await this.changePassword(this.oldInputTagPassword.value, newPassword);
 
-          showToastMessage('Password changed successfully', ToastColors.Green);
-          await clientService.logout();
+            showToastMessage('Password changed successfully', ToastColors.Green);
+            await clientService.logout();
 
-          await clientService.login(email, newPassword);
-        } catch {
-          showToastMessage('Your old password is wrong', ToastColors.Red);
+            await clientService.login(email, newPassword);
+          } catch {
+            showToastMessage('Your old password is wrong', ToastColors.Red);
+          }
+        } else {
+          showToastMessage('Your password is not the same', ToastColors.Red);
         }
-      } else {
-        showToastMessage('Your password is not the same', ToastColors.Red);
       }
     });
 
@@ -95,15 +103,20 @@ export class ChangePassword {
     return '';
   }
 
-  private async changePassword(currentPassword: string, newPassword: string): Promise<Customer> {
-    const changePasswordDraft: MyCustomerChangePassword = {
-      version: (await this.getDataFromServer()).version,
-      currentPassword,
-      newPassword,
-    };
+  private async changePassword(currentPassword: string, newPassword: string): Promise<Customer | null> {
+    const data = await this.getDataFromServer();
+    if (data) {
+      const { version } = data;
+      const changePasswordDraft: MyCustomerChangePassword = {
+        version,
+        currentPassword,
+        newPassword,
+      };
 
-    const response = await clientService.apiRoot.me().password().post({ body: changePasswordDraft }).execute();
+      const response = await clientService.apiRoot.me().password().post({ body: changePasswordDraft }).execute();
 
-    return response.body;
+      return response.body;
+    }
+    return null;
   }
 }

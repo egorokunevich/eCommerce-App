@@ -6,9 +6,10 @@ import type {
   ProductProjectionPagedQueryResponse,
 } from '@commercetools/platform-sdk';
 
+import { ToastColors, showToastMessage } from '@components/Toast';
 import Attributes from '@enums/Attributes';
 
-import clientService from './ClientService';
+import clientService, { isFetchError } from './ClientService';
 
 export class ProductsService {
   private sortQuery = '';
@@ -28,6 +29,8 @@ export class ProductsService {
     ancestors: [],
     orderHint: '',
   };
+  private limit = 10; // Show 5 products by default
+  private offset = 0; // Products offset
 
   public async getProducts(): Promise<ProductProjection[]> {
     const response = await clientService.apiRoot.productProjections().get().execute();
@@ -46,6 +49,40 @@ export class ProductsService {
       })
       .get()
       .execute();
+  }
+
+  public async addTaxForProducts(): Promise<void> {
+    const response = await clientService.apiRoot
+      .productProjections()
+      .get({
+        queryArgs: {
+          limit: 50,
+        },
+      })
+      .execute();
+    const products = response.body.results;
+    products.forEach(async (item) => {
+      const ID = item.id;
+      const { version } = item;
+      await clientService.apiRoot
+        .products()
+        .withId({ ID })
+        .post({
+          body: {
+            version,
+            actions: [
+              {
+                action: 'setTaxCategory',
+                taxCategory: {
+                  typeId: 'tax-category',
+                  key: 'basic-tax',
+                },
+              },
+            ],
+          },
+        })
+        .execute();
+    });
   }
 
   public async getDiscountById(ID: string): Promise<ClientResponse<ProductDiscount>> {
@@ -102,38 +139,49 @@ export class ProductsService {
     return response.body.results;
   }
 
-  public async getFilteredAndSortedProducts(): Promise<ProductProjection[]> {
-    const fuzzyLevel = this.getFuzzyLevel();
-    const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
-    const response = await clientService.apiRoot
-      .productProjections()
-      .search()
-      .get({
-        queryArgs: {
-          markMatchingVariants: true,
-          'text.en-US': this.searchQuery,
-          fuzzy,
-          fuzzyLevel,
-          filter: [
-            this.categoryQuery,
-            this.priceRangeFilterQuery,
-            this.temperatureFilterQuery,
-            this.timeFilterQuery,
-            this.weightFilterQuery,
-          ],
-          sort: [this.sortQuery],
-          expand: ['categories[*]'],
-        },
-      })
-      .execute();
-
-    return response.body.results;
+  public async getFilteredAndSortedProducts(
+    requestLimit?: number,
+    requestOffset?: number,
+  ): Promise<ProductProjection[] | null> {
+    try {
+      const fuzzyLevel = this.getFuzzyLevel();
+      const fuzzy = !!this.searchQuery; // true if there is a query, otherwise — false
+      const response = await clientService.apiRoot
+        .productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            limit: requestLimit || this.limit,
+            offset: requestOffset || this.offset,
+            markMatchingVariants: true,
+            'text.en-US': this.searchQuery,
+            fuzzy,
+            fuzzyLevel,
+            filter: [
+              this.categoryQuery,
+              this.priceRangeFilterQuery,
+              this.temperatureFilterQuery,
+              this.timeFilterQuery,
+              this.weightFilterQuery,
+            ],
+            sort: [this.sortQuery],
+            expand: ['categories[*]'],
+          },
+        })
+        .execute();
+      return response.body.results;
+    } catch (e) {
+      if (isFetchError(e)) {
+        showToastMessage('Failed to load products. Please, try again.', ToastColors.Red);
+        console.error('Failed to load products.', e);
+      }
+    }
+    return null;
   }
 
   public getCategoryQuery(category: Category): void {
     this.categoryQuery = `categories.id:subtree("${category.id}")`;
     this.currentCategory = category;
-    // this.categoryQuery = `categories.id:"${categoryId}"`;
   }
 
   public getCurrentCategory(): Category {
@@ -181,6 +229,22 @@ export class ProductsService {
     this.weightFilterQuery = filterQuery;
 
     return filterQuery;
+  }
+
+  public set Limit(value: number) {
+    this.limit = value;
+  }
+
+  public get Limit(): number {
+    return this.limit;
+  }
+
+  public set Offset(value: number) {
+    this.offset = value;
+  }
+
+  public get Offset(): number {
+    return this.offset;
   }
 
   public clearCategoryQuery(): void {

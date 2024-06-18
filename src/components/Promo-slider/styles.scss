@@ -1,0 +1,89 @@
+.promoArticle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.swiperPromoCode {
+  max-width: 1000px;
+  width: 100%;
+  // height: 100px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  & .swiper-button-prev,
+  & .swiper-button-next {
+    &::after {
+      filter: brightness(0%) invert(47%) sepia(3%) saturate(16%) hue-rotate(314deg) brightness(95%) contrast(84%);
+    }
+  }
+}
+
+.swiper-slide {
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  // background: radial-gradient(circle, rgba(227, 169, 120, 1) 0%, rgba(244, 236, 236, 1) 54%);
+  display: flex !important;
+}
+
+.swiperSlideCustom {
+  border: 1px solid red;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  // height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  // gap: 20px;
+  flex-direction: column;
+  padding: 0.5rem 2rem;
+}
+
+.textSwiper {
+  font-weight: 100;
+  padding: 10px;
+}
+
+.DiscountCodeBtn {
+  position: relative;
+  display: flex;
+  width: 30px;
+  height: 30px;
+  // margin-top: auto;
+  cursor: pointer;
+  background-color: rgb(233, 233, 233);
+  border: 1px solid black;
+  border-radius: 50%;
+  scale: 100%;
+  transition: 0.1s;
+
+  &:hover {
+    background-color: #a8ffd9;
+    scale: 110%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    z-index: 100;
+    background-image: url('/assets/icons/copy.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+// .swiper-slide img {
+//   display: block;
+//   width: 100%;
+// }

@@ -1,6 +1,8 @@
 import { Router, routeLocation } from 'vanilla-routing';
 import type { Routes } from 'vanilla-routing';
 
+import { AboutUsPage } from '@pages/AboutUsPage/AboutUsPage';
+import { BasketPage } from '@pages/BasketPage/BasketPage';
 import { CatalogPage } from '@pages/CatalogPage/CatalogPage';
 import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
@@ -10,7 +12,7 @@ import RegistrationPage from '@pages/RegistrationPage';
 import { UserProfile } from '@pages/UserProfile/create-user-pages';
 
 export class PageRouting {
-  private createRoute(pathname: string, name: string): Routes {
+  /* private createRoute(pathname: string, name: string): Routes {
     return {
       pathname,
       element: (): Element => {
@@ -19,7 +21,7 @@ export class PageRouting {
         return ele;
       },
     };
-  }
+  } */
 
   private createItemRoute(): Routes {
     return {
@@ -33,21 +35,6 @@ export class PageRouting {
           return ele;
         }
         const productDetailsPage = new ProductDetailsPage().createPage(productKey);
-        const btnBack = document.createElement('button');
-        btnBack.classList.add('btn-back');
-        btnBack.innerText = 'Go back';
-        btnBack.onclick = (): void => {
-          Router.back();
-        };
-        const btnForward = document.createElement('button');
-        btnForward.classList.add('btn-buy');
-        btnForward.innerText = 'Buy';
-        btnForward.onclick = (): void => {
-          Router.forward();
-        };
-
-        productDetailsPage.appendChild(btnBack);
-        productDetailsPage.appendChild(btnForward);
         return productDetailsPage;
       },
     };
@@ -77,22 +64,20 @@ export class PageRouting {
     return route;
   }
 
-  /* private createDetailsRoute(): Routes {
+  private createLoginRoute(): Routes {
     const route = {
-      pathname: '/card/:productId',
+      pathname: '/login',
       element: (): Element => {
-        const params = routeLocation().params;
-        const productId = params.productId;
-        if (!productId) {
-          const ele = document.createElement('h2');
-          ele.innerText = 'Product ID not found';
-          return ele;
+        const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+        if (isLoggedIn) {
+          Router.go('/');
+          return new HomePage().createPage();
         }
-        return new ProductDetailsPage().createPage();
+        return new LoginPage().createPage();
       },
     };
     return route;
-  } */
+  }
 
   private createRegistrationRoute(): Routes {
     const route = {
@@ -109,6 +94,26 @@ export class PageRouting {
     return route;
   }
 
+  private createBasketRoute(): Routes {
+    const route = {
+      pathname: '/basket',
+      element: (): Element => {
+        return new BasketPage().createPage();
+      },
+    };
+    return route;
+  }
+
+  private createAboutUsRoute(): Routes {
+    const route = {
+      pathname: '/about',
+      element: (): Element => {
+        return new AboutUsPage().createPage();
+      },
+    };
+    return route;
+  }
+
   public createRouting(): Routes[] {
     return [
       {
@@ -118,26 +123,13 @@ export class PageRouting {
         },
       },
       this.createCatalogRoute(),
-      // this.createRoute('/catalog', 'Catalog'),
-      // this.createDetailsRoute(),
-      this.createRoute('/about', 'About'),
-      // this.createRoute('/registration', 'Registration'),
-      this.createRoute('/basket', 'Basket'),
-      // this.createRoute('/profile', 'Profile'),
+      this.createAboutUsRoute(),
+      this.createBasketRoute(),
       this.createItemRoute(),
       this.createProfileRoute(),
       this.createRegistrationRoute(),
-      {
-        pathname: '/login',
-        element: (): Element => {
-          const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
-          if (isLoggedIn) {
-            Router.go('/');
-            return new HomePage().createPage();
-          }
-          return new LoginPage().createPage();
-        },
-      },
+      this.createLoginRoute(),
+
       {
         pathname: '*',
         element: (): Element => {

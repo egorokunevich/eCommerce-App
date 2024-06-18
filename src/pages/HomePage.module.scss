@@ -1,19 +1,32 @@
 .home-page-wrapper {
   width: 100%;
   height: 100%;
-  padding: clamp(0.625rem, 0.225rem + 1.639vw, 1.25rem);
-  background-image: url('/assets/images/login-background.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  padding: 0.2rem;
 }
 
 .page-description {
-  margin: 20px;
-  padding: 2rem;
+  padding: 4rem 0.5rem 0.5rem;
+  padding-left: 50%;
+  min-height: 250px;
   backdrop-filter: blur(10px) brightness(95%);
   background-color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(1rem, 0.552rem + 1.836vw, 1.7rem);
+  background-image: url('/assets/images/lending.jpg');
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 1.5rem;
+  @media screen and (max-width: 1300px) {
+    font-size: 1.2rem;
+    background-size: 47%;
+  }
+  @media screen and (max-width: 750px) {
+    margin: 0;
+    padding: 0.5rem;
+    padding-top: 40%;
+    background-size: 100%;
+    background-position: top;
+    font-size: 1rem;
+  }
 }
 
 .article-container {
@@ -21,22 +34,39 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: clamp(0.7rem, -0.131rem + 3.41vw, 2rem);
+  padding: 0.5rem;
   border: 2px solid rgba(0, 0, 0, 0.192);
   background-color: rgba(255, 255, 255, 0.9);
 }
 
 .article-title {
-  font-size: clamp(1rem, 0.361rem + 2.623vw, 2rem);
+  font-size: 1.5rem;
+  @media screen and (max-width: 600px) {
+    font-size: 1.2rem;
+  }
 }
 
 .article-info {
-  height: 35vh;
   width: 100%;
+  min-height: 180px;
   padding-right: 30%;
   background-image: url('/assets/images/brand-cup.png');
   background-position: right;
   background-repeat: no-repeat;
-  background-size: clamp(5rem, -1.393rem + 26.23vw, 15rem);
-  font-size: clamp(0.7rem, 0.189rem + 2.098vw, 1.5rem);
+  background-size: 170px;
+  font-size: 1.2rem;
+
+  @media screen and (min-width: 1160px) {
+    background-size: contain;
+  }
+
+  @media screen and (max-width: 600px) {
+    padding: 0.5rem;
+    padding-bottom: 40%;
+    background-position: bottom;
+    font-size: 1rem;
+  }
+  @media screen and (max-width: 420px) {
+    padding-bottom: 50%;
+  }
 }

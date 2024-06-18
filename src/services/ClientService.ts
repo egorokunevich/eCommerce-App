@@ -13,13 +13,19 @@ import { ToastColors, showToastMessage } from '@components/Toast';
 import { getAnonymousClient } from './BuildAnonymousFlowClient';
 import { getExistingTokenClient } from './BuildExistingTokenClient';
 import { getPasswordClient } from './BuildPasswordFlowClient';
+// import { getRefreshTokenClient } from './BuildRefreshTokenClient';
 import { getRefreshTokenClient } from './BuildRefreshTokenClient';
 import tokenCache from './TokenCache';
 
 const { VITE_CTP_PROJECT_KEY: projectKey } = import.meta.env;
 
-interface FetchError extends Error {
+export interface FetchError extends Error {
   statusCode?: number;
+}
+
+// Is used to handle unknown error as an object with statusCode property.
+export function isFetchError(error: unknown): error is FetchError {
+  return typeof error === 'object' && error !== null && 'statusCode' in error;
 }
 
 export class ClientService {
@@ -36,8 +42,8 @@ export class ClientService {
 
   // On failed login / signup show a notification with error message
   public handleAuthError(error: unknown): void {
-    if (this.isFetchError(error)) {
-      showToastMessage(error.message); // Show notification
+    if (isFetchError(error)) {
+      showToastMessage('Failed to authenticate. Please, try again.'); // Show notification
     }
   }
 
@@ -50,11 +56,13 @@ export class ClientService {
     try {
       document.dispatchEvent(pendingStart);
       const response = await this.apiRoot
+        .me()
         .login()
         .post({
           body: {
             email,
             password,
+            activeCartSignInMode: 'MergeWithExistingCustomerCart', // This will merge anonymous cart with user's cart
           },
         })
         .execute();
@@ -134,11 +142,6 @@ export class ClientService {
     document.dispatchEvent(this.loggedStatusEvent);
 
     showToastMessage('Logged out', ToastColors.Blue); // Show notification
-  }
-
-  // Is used to handle unknown error as an object with statusCode property.
-  private isFetchError(error: unknown): error is FetchError {
-    return typeof error === 'object' && error !== null && 'statusCode' in error;
   }
 
   //   public async getAllCustomers(

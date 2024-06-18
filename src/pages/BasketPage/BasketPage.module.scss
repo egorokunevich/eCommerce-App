@@ -1,0 +1,455 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding: 2rem 1rem;
+  background-color: rgb(180, 190, 161);
+  gap: 2rem;
+
+  @media screen and (max-width: 915px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.items-header {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 10px 10px 10px 3rem;
+  font-size: 1.2rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: 15px 15px 0 0;
+  z-index: 20;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.116);
+
+  & div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  & .header-pic {
+    max-width: 80px;
+    width: 100%;
+  }
+
+  & .header-name {
+    max-width: 200px;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  & .header-price {
+    max-width: 120px;
+    width: 100%;
+  }
+
+  & .header-amount {
+    max-width: 100px;
+    width: 100%;
+  }
+
+  & .header-total {
+    max-width: 100px;
+    width: 100%;
+  }
+
+  & .clear-cart-btn {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(201, 201, 201);
+    left: 1rem;
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(0, -50%);
+    cursor: pointer;
+    transition: 0.2s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 28px;
+      height: 28px;
+      background-image: url('/assets/icons/clear-cart.png');
+      background-position: center;
+      background-size: cover;
+      transition: 0.2s;
+    }
+
+    &:hover {
+      background-color: rgb(255, 99, 99);
+      &::after {
+        filter: invert(100%);
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      width: 25px;
+      height: 25px;
+      left: 0.5rem;
+      &::after {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 620px) {
+    height: 70px;
+    padding: 10px 10px 10px 2rem;
+
+    & .header-pic {
+      max-width: 50px;
+      height: 50px;
+    }
+
+    & .header-name {
+      font-size: 1rem;
+      max-width: 120px;
+      padding: 0.5rem;
+    }
+
+    & .header-price {
+      max-width: 80px;
+      font-size: 1rem;
+    }
+
+    & .header-amount {
+      max-width: 4.5rem;
+      font-size: 1rem;
+    }
+
+    & .header-total {
+      font-size: 1rem;
+    }
+  }
+  @media screen and (max-width: 500px) {
+    height: 45px;
+
+    & .header-pic,
+    & .header-name,
+    & .header-price,
+    & .header-amount,
+    & .header-total {
+      display: none;
+    }
+  }
+}
+
+.items-wrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+
+  & .scrollbar {
+    position: absolute;
+    right: 0.2rem;
+    top: 0;
+    border-radius: 5px;
+    width: 10px;
+    height: 100px;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 100%;
+
+    &.hidden {
+      opacity: 0;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 5px;
+      width: 10px;
+      height: 80px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+.items-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 500px;
+  overflow: auto;
+
+  // Hide scrollbar for Chrome
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  // Hide scrollbar for IE and Edge
+  -ms-overflow-style: none;
+  // Hide scrollbar for Firefox
+  scrollbar-width: none;
+
+  & > *:nth-last-child(n + 2) {
+    &::after {
+      content: '';
+      position: absolute;
+      left: 3rem;
+      bottom: 0;
+      width: 90%;
+      height: 1px;
+      background-color: rgb(197, 197, 197);
+      z-index: 5;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    max-height: 350px;
+  }
+}
+
+.items-footer {
+  display: flex;
+  width: 100%;
+  padding: 10px 3rem;
+  font-size: 1.2rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: 0 0 15px 15px;
+  z-index: 20;
+  box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.116);
+}
+
+.promo-code-container {
+  display: flex;
+  align-items: center;
+  max-width: 300px;
+  width: 100%;
+  gap: 1rem;
+}
+
+.promo-code-input {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(78, 78, 78);
+  border-radius: 5px;
+  width: 100%;
+}
+
+.promo-code-btn,
+.checkout-btn {
+  border: 1px solid rgb(78, 78, 78);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  background-color: rgb(92, 214, 133);
+  color: black;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: rgb(60, 177, 99);
+    color: white;
+  }
+}
+
+.total-price-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+  max-width: 300px;
+  overflow: hidden;
+  padding: 1rem;
+
+  &.discounted {
+    & .base-total-price {
+      transform: translateX(-80%) translateY(35%);
+      color: rgb(70, 70, 70);
+    }
+
+    & .discounted-total-price {
+      right: 5%;
+    }
+  }
+}
+
+.base-total-price {
+  position: relative;
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  transform: translateY(35%);
+  align-items: center;
+  transition: 0.2s;
+
+  &:after {
+    content: 'TOTAL PRICE';
+    position: absolute;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    top: 0;
+    right: 0;
+    width: 100%;
+    transform: translate(0, -100%);
+    color: rgb(70, 70, 70);
+    font-size: 0.7rem;
+  }
+}
+
+.discounted-total-price {
+  position: absolute;
+  width: 50%;
+  justify-content: flex-start;
+  transform: translateY(35%);
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  display: flex;
+  right: -100%;
+  top: 0;
+  transition: 0.2s;
+  background-color: rgb(255, 99, 99);
+  color: rgb(255, 255, 255);
+
+  &:after {
+    content: 'WITH PROMOCODE';
+    position: absolute;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform: translate(0, 100%);
+    color: rgb(70, 70, 70);
+    font-size: 0.7rem;
+  }
+}
+
+.checkout-btn {
+  max-height: 40px;
+  align-self: center;
+}
+
+.checkout-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+@media screen and (max-width: 900px) {
+  .checkout-container {
+    flex-direction: column;
+  }
+
+  .promo-code-container {
+    flex-direction: column;
+    max-width: 200px;
+  }
+
+  .items-footer {
+    padding: 10px 1.5rem;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .items-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .promo-code-container {
+    max-width: 350px;
+  }
+
+  .checkout-container {
+    gap: 1rem;
+  }
+}
+
+.modal-wrapper {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.226);
+  backdrop-filter: blur(5px);
+}
+
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 300px;
+  width: 100%;
+  max-height: 200px;
+  height: 100%;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #f3f3f3;
+  border-radius: 15px;
+
+  & .prompt-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    & .prompt-title {
+      font-family: 'Inter';
+      font-size: 1.8rem;
+    }
+
+    & .prompt-text {
+      // font-family: 'Inter';
+      font-size: 1.2rem;
+    }
+  }
+
+  & .buttons-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5rem 1.5rem;
+
+    & .modal-btn {
+      border-radius: 0;
+      padding: 0.5rem 0.8rem;
+      background-color: rgb(230, 230, 230);
+      border: 1px solid rgb(78, 78, 78);
+      cursor: pointer;
+      color: black;
+      transition: 0.2s;
+
+      &:hover {
+        background-color: rgb(60, 177, 99);
+        color: white;
+
+        &.deny-btn {
+          background-color: rgb(255, 99, 99);
+        }
+      }
+    }
+  }
+}

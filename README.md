@@ -24,6 +24,18 @@ Coffee Loop is built using modern technologies to ensure performance, scalabilit
 - **_Vite_**: Lightning-fast build tool for modern web development.
 - **_Vitest_**: Efficient testing framework for unit and integration testing.
 
+## Libraries
+
+We have used libraries in our project:
+
+- **_@control.ts/min_**: UI library for building modern web applications with ease. It simplifies the process of creating dynamic user interfaces.
+- **_popperjs/core_**: A library that helps you position any UI element that "pops out" from the flow of your document.
+- **_nouislider_**: A lightweight JavaScript range slider with full touch support.
+- **_swiper_**: A library for building complex touch galleries on websites, web apps and mobile apps.
+- **_toastify-js_**: A pure JavaScript library that lets you create notifications toasts/messages.
+- **_vanilla-routing_**: A lightweight and versatile routing solution designed for vanilla JavaScript web applications. 
+
+
 ## Available Scripts
 
 ### `npm run start`

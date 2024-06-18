@@ -21,7 +21,10 @@ export default class CategoryItem {
     listItem.addEventListener('click', async (event) => {
       event.stopPropagation();
       productsService.getCategoryQuery(this.category);
-      this.onClick(await productsService.getFilteredAndSortedProducts());
+      const newProducts = await productsService.getFilteredAndSortedProducts();
+      if (newProducts) {
+        this.onClick(newProducts);
+      }
       const currentCategory = productsService.getCurrentCategory();
       baseCrumb = this.initializeBreadcrumbs();
       let category = div({ className: styles.crumb });
@@ -43,16 +46,20 @@ export default class CategoryItem {
     const subtrees = await this.getSubtrees();
     mainList.append(listItem);
     if (subtrees.length > 0) {
-      const childrenList = ul({ className: styles.listItemParent });
-      listItem.append(childrenList);
-      subtrees.forEach(async (item) => {
-        const category = new CategoryItem(item, this.breadcrumbsContainer, this.onClick);
-        await category.create(childrenList);
-      });
+      this.expandCategory(listItem, subtrees);
     } else {
       listItem.classList.add(styles.sub);
     }
     return listItem;
+  }
+
+  private expandCategory(listItem: HTMLElement, subtrees: Category[]): void {
+    const childrenList = ul({ className: styles.listItemParent });
+    listItem.append(childrenList);
+    subtrees.forEach(async (item) => {
+      const category = new CategoryItem(item, this.breadcrumbsContainer, this.onClick);
+      await category.create(childrenList);
+    });
   }
 
   private initializeBreadcrumbs(): HTMLElement {
@@ -79,7 +86,9 @@ export default class CategoryItem {
       e.stopPropagation();
       productsService.clearCategoryQuery();
       const newProducts = await productsService.getFilteredAndSortedProducts();
-      this.onClick(newProducts);
+      if (newProducts) {
+        this.onClick(newProducts);
+      }
 
       delete Breadcrumbs.category;
       delete Breadcrumbs.subcategory;
@@ -93,7 +102,9 @@ export default class CategoryItem {
         productsService.getCategoryQuery(Breadcrumbs.category);
       }
       const newProducts = await productsService.getFilteredAndSortedProducts();
-      this.onClick(newProducts);
+      if (newProducts) {
+        this.onClick(newProducts);
+      }
 
       delete Breadcrumbs.subcategory;
       category.nextSibling?.remove();
@@ -105,7 +116,9 @@ export default class CategoryItem {
         productsService.getCategoryQuery(Breadcrumbs.subcategory);
       }
       const newProducts = await productsService.getFilteredAndSortedProducts();
-      this.onClick(newProducts);
+      if (newProducts) {
+        this.onClick(newProducts);
+      }
     });
   }
 
