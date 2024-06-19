@@ -79,6 +79,7 @@ export class ProductCard {
       addToCartBtn.disabled = true;
     }
     const addToCartStart = new CustomEvent('addToCartStart');
+    const addToCartEnd = new CustomEvent('addToCartEnd');
     const loader = div({ className: styles.loader });
     addToCartBtn.addEventListener('addToCartStart', () => {
       addToCartBtn.classList.add(styles.loading);
@@ -97,7 +98,7 @@ export class ProductCard {
       } else {
         showToastMessage('Failed to add a product. Please, try again.');
       }
-      const addToCartEnd = new CustomEvent('addToCartEnd');
+
       addToCartBtn.dispatchEvent(addToCartEnd);
     });
 

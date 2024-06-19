@@ -1,7 +1,7 @@
 import type { Cart } from '@commercetools/platform-sdk';
 import { button, div, h2, input, section } from '@control.ts/min';
 
-import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
+import emptyBasket from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
 import { ToastColors, showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
@@ -10,7 +10,7 @@ import { isFetchError } from '@services/ClientService';
 import styles from './BasketPage.module.scss';
 
 export class BasketPage {
-  private pageWrapper: HTMLElement = section({ className: styles.wrapper });
+  public pageWrapper: HTMLElement = section({ className: styles.wrapper });
   private pageContainer: HTMLElement = div({ className: styles.pageContainer });
   private scrollbarElement: HTMLElement = div({});
   private baseTotalPriceElement: HTMLElement = div({});
@@ -22,6 +22,14 @@ export class BasketPage {
     this.handleBasketUpdates();
 
     this.pageWrapper.append(this.pageContainer);
+
+    document.addEventListener('updateBasket', async () => {
+      const updatedCart = await cartService.getActiveCart();
+      this.cart = updatedCart;
+      this.handleTotalPrice();
+      this.handleEmptyBasket();
+    });
+
     return this.pageWrapper;
   }
 
@@ -30,26 +38,19 @@ export class BasketPage {
     this.cart = cart;
 
     this.createBasketList(this.pageContainer);
-
-    document.addEventListener('updateBasket', async () => {
-      const updatedCart = await cartService.getActiveCart();
-      this.cart = updatedCart;
-      this.handleTotalPrice();
-      this.handleEmptyBasket();
-    });
   }
 
   private async handleEmptyBasket(): Promise<void> {
     try {
       const cart = await cartService.getActiveCart();
       const items = cart?.lineItems;
-      if (cart && items?.length === 0) {
+      if (items && items?.length === 0) {
         this.pageContainer.innerHTML = '';
-        const emptyBasket = new BasketEmpty();
         this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
-      } else {
-        showToastMessage('Failed to load the cart. Please, try again.');
       }
+      // else {
+      //   showToastMessage('Failed to load the cart. Please, try again.');
+      // }
     } catch (e) {
       showToastMessage('Failed to load the cart. Please, try again.');
       console.error(`Failed to load the cart.`, e);
