@@ -2,7 +2,7 @@ import type { Cart, ClientResponse, LineItem, TypedMoney } from '@commercetools/
 import { button, div, img, input } from '@control.ts/min';
 
 import productCard from '@components/ProductCard/ProductCard';
-import { ToastColors, showToastMessage } from '@components/Toast';
+import { showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
 
 import styles from './BasketItem.module.scss';
@@ -39,18 +39,18 @@ export default class BasketItem {
     const deleteBtn = button({ className: styles.deleteBtn });
 
     deleteBtn.addEventListener('click', async () => {
-      // Implement functionality to remove the item from cart
+      deleteBtn.classList.add(styles.pending);
       const response = await cartService.removeProductFromCartByLineItemId(this.lineItem.id);
       if (response?.statusCode === 200) {
         this.destroy();
-      } else if (response?.statusCode === 404) {
-        showToastMessage('No product found :(', ToastColors.Red);
+      } else {
+        showToastMessage('Failed to delete this product. Please, try again.');
       }
+      deleteBtn.classList.remove(styles.pending);
     });
 
     detailsContainer.append(name, moneyContainer);
     moneyContainer.append(price, controls, total);
-
     container.append(picContainer, detailsContainer, deleteBtn);
     picContainer.append(pic);
 

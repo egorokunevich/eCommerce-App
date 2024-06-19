@@ -231,6 +231,10 @@
   background-repeat: no-repeat;
   background-position: center;
 
+  &.pending {
+    pointer-events: none;
+  }
+
   &:hover {
     scale: 110%;
     transform: translateY(-45%);

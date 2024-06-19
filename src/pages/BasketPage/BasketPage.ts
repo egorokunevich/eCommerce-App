@@ -3,8 +3,9 @@ import { button, div, h2, input, section } from '@control.ts/min';
 
 import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
-import { showToastMessage } from '@components/Toast';
+import { ToastColors, showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
+import { isFetchError } from '@services/ClientService';
 
 import styles from './BasketPage.module.scss';
 
@@ -42,11 +43,12 @@ export class BasketPage {
     try {
       const cart = await cartService.getActiveCart();
       const items = cart?.lineItems;
-
       if (cart && items?.length === 0) {
         this.pageContainer.innerHTML = '';
         const emptyBasket = new BasketEmpty();
         this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
+      } else {
+        showToastMessage('Failed to load the cart. Please, try again.');
       }
     } catch (e) {
       showToastMessage('Failed to load the cart. Please, try again.');
@@ -86,8 +88,7 @@ export class BasketPage {
 
       this.renderItems(itemsContainer);
     } else {
-      const emptyBasket = new BasketEmpty();
-      container.appendChild(emptyBasket.createBasketEmpty());
+      this.handleEmptyBasket();
     }
   }
 
@@ -164,7 +165,7 @@ export class BasketPage {
     });
     confirmBtn.addEventListener('click', async () => {
       confirmBtn.dispatchEvent(clearEventStart);
-      this.confirmCartClean(modalWrapper);
+      await this.confirmCartClean(modalWrapper);
       confirmBtn.dispatchEvent(clearEventEnd);
     });
     denyBtn.addEventListener('click', () => {
@@ -196,7 +197,18 @@ export class BasketPage {
     this.handleTotalPrice();
     promoCodeBtn.addEventListener('click', async () => {
       if (promoCodeInput.value.trim()) {
-        await cartService.applyPromoCodeToCart(promoCodeInput.value);
+        try {
+          const response = await cartService.applyPromoCodeToCart(promoCodeInput.value);
+          if (response?.statusCode === 200) {
+            showToastMessage('Promocode applied!', ToastColors.Green);
+          } else {
+            showToastMessage('Failed to apply promocode. Please, try again.');
+          }
+        } catch (e) {
+          if (isFetchError(e) && e.statusCode === 400) {
+            showToastMessage('Incorrect promocode', ToastColors.Blue);
+          }
+        }
       }
       this.handleTotalPrice();
     });
@@ -205,7 +217,6 @@ export class BasketPage {
     if (this.cart) {
       this.handleTotalPrice();
     }
-
     return footer;
   }
 
