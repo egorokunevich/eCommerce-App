@@ -21,7 +21,7 @@ export class CartService {
           // If there is no cart, create one
           return await this.createCart();
         }
-        showToastMessage('Failed to load the cart. Please, try again.');
+        // showToastMessage('Failed to load the cart. Please, try again.');
       }
     }
     return null;
@@ -46,29 +46,33 @@ export class CartService {
     return response.body.results.length > 0;
   }
 
-  public async addProductToCart(productId: string): Promise<Cart | null> {
+  public async addProductToCart(productId: string): Promise<ClientResponse<Cart> | null> {
     const cart = await this.getActiveCart();
     if (cart) {
-      const ID = cart.id;
-      const { version } = cart;
-      const cartEndpoint = clientService.apiRoot.carts().withId({ ID });
-      const response = await cartEndpoint
-        .post({
-          body: {
-            actions: [
-              {
-                action: 'addLineItem',
-                productId,
-                quantity: 1,
-              },
-            ],
-            version,
-          },
-        })
-        .execute();
-      document.dispatchEvent(updateBasketEvent);
-      document.dispatchEvent(productAddedToCartEvent);
-      return response.body;
+      try {
+        const ID = cart.id;
+        const { version } = cart;
+        const cartEndpoint = clientService.apiRoot.carts().withId({ ID });
+        const response = await cartEndpoint
+          .post({
+            body: {
+              actions: [
+                {
+                  action: 'addLineItem',
+                  productId,
+                  quantity: 1,
+                },
+              ],
+              version,
+            },
+          })
+          .execute();
+        document.dispatchEvent(updateBasketEvent);
+        document.dispatchEvent(productAddedToCartEvent);
+        return response;
+      } catch (e) {
+        console.error('Failed to add product: ', e);
+      }
     }
     return null;
   }
@@ -160,17 +164,17 @@ export class CartService {
     return null;
   }
 
-  public async removeProductFromCartByProductId(productId: string): Promise<void> {
+  public async removeProductFromCartByProductId(productId: string): Promise<ClientResponse<Cart> | null> {
     const cart = await this.getActiveCart();
     if (cart) {
       const lineItemId = await this.getLineItemIdByProductId(productId);
       if (!lineItemId) {
         console.warn('LineItem not found for productId:', productId);
-        return;
+        return null;
       }
       const ID = cart.id;
       const { version } = cart;
-      await clientService.apiRoot
+      const response = await clientService.apiRoot
         .carts()
         .withId({ ID })
         .post({
@@ -185,8 +189,13 @@ export class CartService {
           },
         })
         .execute();
-      document.dispatchEvent(updateBasketEvent);
+      if (response.statusCode === 200) {
+        document.dispatchEvent(updateBasketEvent);
+        return response;
+      }
+      return null;
     }
+    return null;
   }
 
   public async removeProductFromCartByLineItemId(lineItemId: string): Promise<ClientResponse<Cart> | null> {
