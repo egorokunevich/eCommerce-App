@@ -434,6 +434,7 @@
     padding: 0.5rem 1.5rem;
 
     & .modal-btn {
+      position: relative;
       border-radius: 0;
       padding: 0.5rem 0.8rem;
       background-color: rgb(230, 230, 230);
@@ -442,14 +443,53 @@
       color: black;
       transition: 0.2s;
 
+      &.loading {
+        color: transparent;
+
+        &.deny-btn {
+          color: black;
+        }
+      }
+
       &:hover {
         background-color: rgb(60, 177, 99);
         color: white;
+
+        &.loading {
+          color: transparent;
+
+          &.deny-btn {
+            color: white;
+          }
+        }
 
         &.deny-btn {
           background-color: rgb(255, 99, 99);
         }
       }
     }
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 30px;
+  left: 30%;
+  top: 0;
+  padding: 2px;
+  margin: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000000;
+  --_m: conic-gradient(#0000 10%, #575757), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
   }
 }

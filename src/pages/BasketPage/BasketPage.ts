@@ -112,9 +112,18 @@ export class BasketPage {
     return header;
   }
 
-  private clearCart(): void {
-    const modalWrapper = div({ className: styles.modalWrapper });
+  private async confirmCartClean(wrapper: HTMLElement): Promise<void> {
+    const response = await cartService.deleteActiveCart();
+    if (response?.statusCode === 200) {
+      wrapper.remove();
+    } else {
+      showToastMessage('Failed to clear the cart. Please, try again.');
+    }
+  }
+
+  private createModalContainer(): HTMLElement {
     const modalContainer = div({ className: styles.modalContainer });
+
     const promptContainer = div({ className: styles.promptContainer });
 
     const promptTitle = h2({
@@ -126,25 +135,41 @@ export class BasketPage {
       txt: `The following action will delete all the items from your cart.`,
     });
 
+    promptContainer.append(promptTitle, promptText);
+    modalContainer.append(promptContainer);
+
+    return modalContainer;
+  }
+
+  private clearCart(): void {
+    const modalWrapper = div({ className: styles.modalWrapper });
+    const modalContainer = this.createModalContainer();
     const buttonsContainer = div({ className: styles.buttonsContainer });
     const confirmBtn = button({ className: styles.modalBtn, txt: `Confirm` });
     const denyBtn = button({ className: styles.modalBtn, txt: `Cancel` });
     denyBtn.classList.add(styles.denyBtn);
-
     modalWrapper.append(modalContainer);
-    promptContainer.append(promptTitle, promptText);
-    modalContainer.append(promptContainer, buttonsContainer);
+    modalContainer.append(buttonsContainer);
     buttonsContainer.append(confirmBtn, denyBtn);
-
-    confirmBtn.addEventListener('click', () => {
-      cartService.deleteActiveCart();
-      modalWrapper.remove();
+    const clearEventStart = new CustomEvent('clearStart');
+    const clearEventEnd = new CustomEvent('clearEnd');
+    const loader = div({ className: styles.loader });
+    confirmBtn.addEventListener('clearStart', () => {
+      confirmBtn.classList.add(styles.loading);
+      confirmBtn.append(loader);
     });
-
+    confirmBtn.addEventListener('clearEnd', () => {
+      confirmBtn.classList.remove(styles.loading);
+      confirmBtn.removeChild(loader);
+    });
+    confirmBtn.addEventListener('click', async () => {
+      confirmBtn.dispatchEvent(clearEventStart);
+      this.confirmCartClean(modalWrapper);
+      confirmBtn.dispatchEvent(clearEventEnd);
+    });
     denyBtn.addEventListener('click', () => {
       modalWrapper.remove();
     });
-
     modalWrapper.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         modalWrapper.remove();

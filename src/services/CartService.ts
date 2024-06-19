@@ -27,14 +27,18 @@ export class CartService {
     return null;
   }
 
-  public async deleteActiveCart(): Promise<void> {
+  public async deleteActiveCart(): Promise<ClientResponse<Cart> | null> {
     const cart = await this.getActiveCart();
     if (cart) {
       const ID = cart.id;
       const { version } = cart;
-      await clientService.apiRoot.carts().withId({ ID }).delete({ queryArgs: { version } }).execute();
-      document.dispatchEvent(updateBasketEvent);
+      const response = await clientService.apiRoot.carts().withId({ ID }).delete({ queryArgs: { version } }).execute();
+      if (response.statusCode === 200) {
+        document.dispatchEvent(updateBasketEvent);
+      }
+      return response;
     }
+    return null;
   }
 
   public async checkIfProductIsInCart(productId: string): Promise<boolean> {
@@ -113,7 +117,7 @@ export class CartService {
     return null;
   }
 
-  public async updateItemQuantityInCart(lineItemId: string, quantity: number): Promise<Cart | null> {
+  public async updateItemQuantityInCart(lineItemId: string, quantity: number): Promise<ClientResponse<Cart> | null> {
     const cart = await this.getActiveCart();
     if (cart) {
       const ID = cart.id;
@@ -134,7 +138,7 @@ export class CartService {
         })
         .execute();
       document.dispatchEvent(updateBasketEvent);
-      return response.body;
+      return response;
     }
     return null;
   }

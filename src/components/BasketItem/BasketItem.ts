@@ -1,4 +1,4 @@
-import type { LineItem, TypedMoney } from '@commercetools/platform-sdk';
+import type { Cart, ClientResponse, LineItem, TypedMoney } from '@commercetools/platform-sdk';
 import { button, div, img, input } from '@control.ts/min';
 
 import productCard from '@components/ProductCard/ProductCard';
@@ -11,6 +11,7 @@ export default class BasketItem {
   private pricePerItem: TypedMoney;
   private totalPriceElement: HTMLElement = div({});
   private element: HTMLElement = div({});
+  private latestQuantity = 1;
 
   constructor(private readonly lineItem: LineItem) {
     this.pricePerItem = this.getActualPrice();
@@ -75,55 +76,106 @@ export default class BasketItem {
     return price;
   }
 
+  private async decreaseQuantity(
+    container: HTMLElement,
+    counter: HTMLInputElement,
+    loader: HTMLElement,
+  ): Promise<void> {
+    const defaultValue = counter.value;
+    container.classList.add(styles.loading);
+    container.append(loader);
+    if (+counter.value > 1) {
+      counter.value = (+counter.value - 1).toString();
+    }
+    const response = await this.updateTotalPrice(+counter.value);
+    if (response?.statusCode !== 200) {
+      counter.value = defaultValue;
+    }
+    container.classList.remove(styles.loading);
+    container.removeChild(loader);
+  }
+
+  private async increaseQuantity(
+    container: HTMLElement,
+    counter: HTMLInputElement,
+    loader: HTMLElement,
+  ): Promise<void> {
+    const defaultValue = counter.value;
+    container.classList.add(styles.loading);
+    container.append(loader);
+    if (+counter.value < 99) {
+      counter.value = (+counter.value + 1).toString();
+    }
+    const response = await this.updateTotalPrice(+counter.value);
+    if (response?.statusCode !== 200) {
+      counter.value = defaultValue;
+    }
+    container.classList.remove(styles.loading);
+    container.removeChild(loader);
+  }
+
+  private async inputQuantity(container: HTMLElement, counter: HTMLInputElement, loader: HTMLElement): Promise<void> {
+    counter.value = this.correctCounterValue(counter.value);
+    if (!+counter.value) {
+      counter.value = '1';
+    }
+    if (+counter.value < 1) {
+      counter.value = '1';
+    }
+    if (+counter.value > 99) {
+      counter.value = '99';
+    }
+    container.classList.add(styles.loading);
+    container.append(loader);
+
+    const response = await this.updateTotalPrice(+counter.value);
+    if (response?.statusCode !== 200) {
+      counter.value = this.latestQuantity.toString();
+    } else {
+      this.latestQuantity = +counter.value;
+    }
+    container.classList.remove(styles.loading);
+    container.removeChild(loader);
+  }
+
   private createQuantityControls(): HTMLElement {
     const container = div({ className: styles.quantityContainer });
     const counter = input({ className: styles.quantityInput, value: this.lineItem.quantity.toString() });
     const decreaseBtn = button({ className: styles.quantityBtn, txt: '-' });
     const increaseBtn = button({ className: styles.quantityBtn, txt: '+' });
     container.append(decreaseBtn, counter, increaseBtn);
-
-    decreaseBtn.addEventListener('click', () => {
-      if (+counter.value > 1) {
-        counter.value = (+counter.value - 1).toString();
-      }
-      this.updateTotalPrice(+counter.value);
+    const loader = div({ className: styles.loader });
+    decreaseBtn.addEventListener('click', async () => {
+      this.decreaseQuantity(container, counter, loader);
     });
 
     increaseBtn.addEventListener('click', async () => {
-      if (+counter.value < 99) {
-        counter.value = (+counter.value + 1).toString();
-      }
-      this.updateTotalPrice(+counter.value);
+      this.increaseQuantity(container, counter, loader);
     });
 
-    counter.addEventListener('input', () => {
-      counter.value = this.correctCounterValue(counter.value);
-      if (!+counter.value) {
-        counter.value = '1';
-      }
-      if (+counter.value < 1) {
-        counter.value = '1';
-      }
-      if (+counter.value > 99) {
-        counter.value = '99';
-      }
-      this.updateTotalPrice(+counter.value);
+    counter.addEventListener('input', async () => {
+      this.inputQuantity(container, counter, loader);
     });
 
     return container;
   }
 
-  private async updateTotalPrice(value: number): Promise<void> {
-    await cartService.updateItemQuantityInCart(this.lineItem.id, value);
-    const totalMoney = {
-      centAmount: this.pricePerItem.centAmount,
-      currencyCode: this.pricePerItem.currencyCode,
-      fractionDigits: this.pricePerItem.fractionDigits,
-      type: this.pricePerItem.type,
-      preciseAmount: this.pricePerItem.centAmount,
-    };
-    totalMoney.centAmount *= value;
-    this.totalPriceElement.innerText = productCard.formatPrice(totalMoney);
+  private async updateTotalPrice(value: number): Promise<ClientResponse<Cart> | null> {
+    const response = await cartService.updateItemQuantityInCart(this.lineItem.id, value);
+    if (response?.statusCode === 200) {
+      const totalMoney = {
+        centAmount: this.pricePerItem.centAmount,
+        currencyCode: this.pricePerItem.currencyCode,
+        fractionDigits: this.pricePerItem.fractionDigits,
+        type: this.pricePerItem.type,
+        preciseAmount: this.pricePerItem.centAmount,
+      };
+      totalMoney.centAmount *= value;
+      this.totalPriceElement.innerText = productCard.formatPrice(totalMoney);
+      return response;
+    }
+    showToastMessage('Failed to change quantity. Please, try again.');
+    return null;
   }
 
   private correctCounterValue(value: string): string {
