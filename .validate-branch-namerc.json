@@ -1,0 +1,4 @@
+{
+  "pattern": "^(feat|fix|chore|refactor|docs)/RSS-ECOMM-(\\d)_(\\d+)_\\w+",
+  "errorMsg": "Branch name doesn't follow the defined repository rules"
+}

@@ -1,0 +1,71 @@
+.registration-switch {
+  display: inline-block;
+  // display: flex;
+  gap: 10px;
+  position: relative;
+  width: 50px;
+  height: 25px;
+  margin: 10px 0;
+}
+
+.registration-switch input {
+  opacity: 1;
+  width: 0;
+  height: 0;
+}
+
+.registration-move {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #fff;
+  border-radius: 1.5rem;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.registration-move::before {
+  position: absolute;
+  content: '';
+  background: #fff;
+  width: 20px;
+  height: 20px;
+  border-radius: 1.5rem;
+  top: 2px;
+  bottom: 0;
+  left: 0.12rem;
+  box-shadow: 0 0.2rem 0.5rem #000;
+  transition: 0.3s;
+  z-index: 2;
+}
+
+.switch-input:checked + .registration-move {
+  background-color: #5fdd54;
+  // border: 0.1rem solid transparent;
+}
+
+.switch-input:checked + .registration-move::before {
+  transform: translateX(1.5rem);
+}
+
+.default-input {
+  width: 20px !important;
+  height: 20px;
+}
+
+@media screen and (max-width: 650px) {
+  .registration-switch {
+    width: 40px;
+    height: 20px;
+  }
+  .registration-move::before {
+    width: 16px;
+    height: 16px;
+    top: 2px;
+  }
+  .switch-input:checked + .registration-move::before {
+    transform: translateX(1.2rem);
+  }
+}

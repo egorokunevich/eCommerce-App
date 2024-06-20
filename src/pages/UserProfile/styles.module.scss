@@ -1,0 +1,232 @@
+.profile-container {
+  //height: 100%;
+  display: flex;
+  padding: 10px 0;
+  justify-content: center;
+  align-items: flex-start;
+  background: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(192, 208, 212, 1) 1%, rgba(233, 233, 241, 1) 100%);
+  overflow: hidden;
+  @media screen and (max-width: 505px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+.profile-title {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 250px;
+  height: 100vh;
+  padding: 10px 15px 0;
+  @media screen and (max-width: 505px) {
+    padding: 10px 15px 0;
+    height: 45vh;
+  }
+}
+
+.title-user {
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+}
+
+.users-information_container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100vw;
+  height: 100%;
+  border-left: 1px solid;
+  padding: 10px 15px 0;
+  margin-top: 40px;
+  @media screen and (max-width: 505px) {
+    margin-top: -20px;
+  }
+}
+
+.user-info-btn {
+  width: 200px;
+  height: 35px;
+  border-radius: 0;
+  background-color: #ccd4d1;
+  border: 1px solid #56615c;
+  font-size: clamp(0.75rem, 0.462rem + 1.18vw, 1.2rem);
+  transition: 0.1s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e5eeea;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  &:disabled {
+    background-color: #ccd4d1;
+    color: #56615c;
+  }
+  @media screen and (max-width: 650px) {
+    width: 150px;
+  }
+}
+
+.profile-information {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid;
+  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(4, 164, 241, 1) 98%, rgba(17, 172, 236, 1) 100%);
+  border-image-slice: 1;
+  padding: 20px;
+  align-self: flex-start;
+
+  &::after {
+    content: 'Users Profile';
+    position: absolute;
+    top: -45px;
+    left: 0;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    color: #131729;
+  }
+}
+
+.change-information {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid;
+  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(4, 164, 241, 1) 98%, rgba(17, 172, 236, 1) 100%);
+  border-image-slice: 1;
+  padding: 20px;
+  align-self: flex-start;
+
+  &::after {
+    content: 'Change Users Information';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    color: #131729;
+  }
+  @media screen and (max-width: 460px) {
+    padding: 5px;
+  }
+}
+
+.addresses-information_container {
+  display: inline-flex;
+  flex-direction: row;
+  position: relative;
+  gap: 10px;
+
+  &::after {
+    content: 'Users Addresses';
+    position: absolute;
+    top: -40px;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    color: #131729;
+    @media screen and (max-width: 960px) {
+      top: -3rem;
+    }
+  }
+
+  @media screen and (max-width: 790px) {
+    flex-direction: column;
+  }
+}
+
+.defaultAddressesTitle {
+  font-size: clamp(1rem, 0.68rem + 1.311vw, 1.5rem);
+  padding-bottom: 20px;
+  @media screen and (max-width: 960px) {
+    font-size: clamp(0.7rem, 0.508rem + 0.787vw, 1rem);
+  }
+}
+
+.profile-addresses {
+  border: 1px solid;
+  border-image: linear-gradient(90deg, rgba(69, 237, 6, 1) 0%, rgba(4, 164, 241, 1) 100%, rgba(17, 172, 236, 1) 100%);
+  border-image-slice: 1;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.edit-input {
+  border: 1px solid green;
+}
+
+.addresses {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// .addresses-content {
+//
+// }
+
+///////// Edit adresses
+
+.error-msg {
+  height: 1.2rem;
+  max-height: 2.4rem;
+  opacity: 100%;
+  margin-bottom: 3px;
+  font-size: 1rem;
+  font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
+  color: red;
+}
+
+.address-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.all-addresses-btn {
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.all-addresses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.account-profile-info__content {
+  display: flex;
+  font-size: 1.5rem;
+
+  span {
+    padding-left: 5px;
+    font-weight: 700;
+  }
+
+  @media screen and (max-width: 960px) {
+    font-size: clamp(0.7rem, 0.508rem + 0.787vw, 1rem);
+  }
+  @media screen and (max-width: 450px) {
+    font-size: 1rem;
+  }
+}
+
+// .addresses-info {
+//   border: 1px solid green;
+// }
+
+.profile-change-password {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.save-btn-password {
+  cursor: pointer;
+}

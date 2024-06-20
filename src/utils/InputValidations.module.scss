@@ -1,0 +1,89 @@
+.login-form__error-msg {
+  font-weight: 300;
+  color: red;
+  transition: 0.2s;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.error-msg_active {
+  height: 1.2rem;
+  max-height: 2.4rem;
+  opacity: 100%;
+  margin-bottom: 3px;
+  font-size: 1rem;
+  font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
+}
+
+.login-form__input-label {
+  position: relative;
+  transition: 0.2s;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    z-index: 5;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: 0.2s;
+    opacity: 0;
+  }
+
+  @media screen and (max-width: 650px) {
+    &::before {
+      top: 10px;
+    }
+  }
+}
+
+.input_warning-icon {
+  &::before {
+    opacity: 100% !important;
+    background-image: url('/assets/icons/warning.png');
+  }
+}
+
+.input_accept-icon {
+  &::before {
+    background-image: url('/assets/icons/accept.png');
+    opacity: 100% !important;
+  }
+}
+
+.show-password-btn {
+  display: block;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 24px;
+  height: 24px;
+  z-index: 5;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('/assets/icons/show.png');
+  transition: 0.2s;
+  cursor: pointer;
+  filter: invert(20%);
+  padding: 2px;
+
+  &:hover {
+    scale: 110%;
+    filter: invert(0);
+  }
+
+  &.hide {
+    background-image: url('/assets/icons/hide.png');
+  }
+
+  @media screen and (max-width: 650px) {
+    top: 6px;
+  }
+}
