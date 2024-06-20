@@ -87,15 +87,25 @@
 }
 
 .quantity-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: 100px;
   width: 100%;
   border: 2px solid rgb(109, 109, 109);
+
+  &.loading {
+    pointer-events: none;
+
+    .quantity-input {
+      color: transparent;
+    }
+  }
 }
 
 .quantity-input {
+  position: relative;
   width: 2rem;
   height: 2.4rem;
   border: none;
@@ -173,6 +183,7 @@
   }
 
   .quantity-input {
+    font-size: 1rem;
     height: 1.6rem;
     width: 1.5rem;
   }
@@ -220,6 +231,10 @@
   background-repeat: no-repeat;
   background-position: center;
 
+  &.pending {
+    pointer-events: none;
+  }
+
   &:hover {
     scale: 110%;
     transform: translateY(-45%);
@@ -229,5 +244,35 @@
     left: 0.5rem;
     width: 18px;
     height: 18px;
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 32px;
+  left: 45%;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 2px;
+  margin: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #000000;
+  --_m: conic-gradient(#0000 10%, #575757), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+
+  @media screen and (max-width: 620px) {
+    left: 42%;
+    top: -5%;
+    width: 20px;
+  }
+}
+@keyframes l3 {
+  to {
+    transform: translateX(-50%) rotate(1turn);
   }
 }

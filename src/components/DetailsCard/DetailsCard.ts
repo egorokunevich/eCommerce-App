@@ -82,15 +82,31 @@ export class ProductDetails extends ProductCard {
 
   private async addToCart(productId: string, btnAdd: HTMLButtonElement, btnRemove: HTMLButtonElement): Promise<void> {
     try {
-      await cartService.addProductToCart(productId);
-      showToastMessage('Good choice! Product added to cart.', ToastColors.Green);
-      btnRemove.disabled = false;
-      btnAdd.disabled = true;
-      document.dispatchEvent(productAddedToCartEvent);
+      const addToCartStart = new CustomEvent('addToCartStart');
+      const loader = div({ className: styles.loader });
+      btnAdd.addEventListener('addToCartStart', () => {
+        btnAdd.classList.add(styles.loading);
+        btnAdd.append(loader);
+      });
+      btnAdd.addEventListener('addToCartEnd', () => {
+        btnAdd.classList.remove(styles.loading);
+        btnAdd.removeChild(loader);
+      });
+      btnAdd.dispatchEvent(addToCartStart);
+      const response = await cartService.addProductToCart(productId);
+      if (response?.statusCode === 200) {
+        showToastMessage('Good choice! Product added to cart.', ToastColors.Green);
+        btnRemove.disabled = false;
+        btnAdd.disabled = true;
+        document.dispatchEvent(productAddedToCartEvent);
+      } else {
+        showToastMessage('Failed to add this product to cart', ToastColors.Red);
+      }
     } catch (error) {
       console.error('Failed to add product to cart:', error);
-      showToastMessage('Failed to add product to cart', ToastColors.Red);
     }
+    const addToCartEnd = new CustomEvent('addToCartEnd');
+    btnAdd.dispatchEvent(addToCartEnd);
   }
 
   private async removeFromCart(
@@ -99,15 +115,32 @@ export class ProductDetails extends ProductCard {
     btnRemove: HTMLButtonElement,
   ): Promise<void> {
     try {
-      await cartService.removeProductFromCartByProductId(productId);
-      showToastMessage('Product removed from cart');
-      btnRemove.disabled = true;
-      btnAdd.disabled = false;
+      const addToCartStart = new CustomEvent('addToCartStart');
+      const loader = div({ className: styles.loader });
+      btnRemove.addEventListener('addToCartStart', () => {
+        btnRemove.classList.add(styles.loading);
+        btnRemove.append(loader);
+      });
+      btnRemove.addEventListener('addToCartEnd', () => {
+        btnRemove.classList.remove(styles.loading);
+        btnRemove.removeChild(loader);
+      });
+      btnRemove.dispatchEvent(addToCartStart);
+      const response = await cartService.removeProductFromCartByProductId(productId);
+      if (response && response.statusCode === 200) {
+        showToastMessage('Product removed from cart');
+        btnRemove.disabled = true;
+        btnAdd.disabled = false;
+      } else {
+        showToastMessage('Failed to remove this product from cart', ToastColors.Red);
+      }
       document.dispatchEvent(productRemovedFromCartEvent);
     } catch (error) {
       console.error('Failed to remove product from cart:', error);
       showToastMessage('Failed to add product to cart', ToastColors.Red);
     }
+    const addToCartEnd = new CustomEvent('addToCartEnd');
+    btnRemove.dispatchEvent(addToCartEnd);
   }
 
   private async updateButtonState(

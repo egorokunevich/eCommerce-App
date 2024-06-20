@@ -1,15 +1,16 @@
 import type { Cart } from '@commercetools/platform-sdk';
 import { button, div, h2, input, section } from '@control.ts/min';
 
-import { BasketEmpty } from '@components/BasketEmpty/BasketEmpty';
+import emptyBasket from '@components/BasketEmpty/BasketEmpty';
 import BasketItem from '@components/BasketItem/BasketItem';
-import { showToastMessage } from '@components/Toast';
+import { ToastColors, showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
+import { isFetchError } from '@services/ClientService';
 
 import styles from './BasketPage.module.scss';
 
 export class BasketPage {
-  private pageWrapper: HTMLElement = section({ className: styles.wrapper });
+  public pageWrapper: HTMLElement = section({ className: styles.wrapper });
   private pageContainer: HTMLElement = div({ className: styles.pageContainer });
   private scrollbarElement: HTMLElement = div({});
   private baseTotalPriceElement: HTMLElement = div({});
@@ -21,6 +22,14 @@ export class BasketPage {
     this.handleBasketUpdates();
 
     this.pageWrapper.append(this.pageContainer);
+
+    document.addEventListener('updateBasket', async () => {
+      const updatedCart = await cartService.getActiveCart();
+      this.cart = updatedCart;
+      this.handleTotalPrice();
+      this.handleEmptyBasket();
+    });
+
     return this.pageWrapper;
   }
 
@@ -29,25 +38,19 @@ export class BasketPage {
     this.cart = cart;
 
     this.createBasketList(this.pageContainer);
-
-    document.addEventListener('updateBasket', async () => {
-      const updatedCart = await cartService.getActiveCart();
-      this.cart = updatedCart;
-      this.handleTotalPrice();
-      this.handleEmptyBasket();
-    });
   }
 
   private async handleEmptyBasket(): Promise<void> {
     try {
       const cart = await cartService.getActiveCart();
       const items = cart?.lineItems;
-
-      if (cart && items?.length === 0) {
+      if (items && items?.length === 0) {
         this.pageContainer.innerHTML = '';
-        const emptyBasket = new BasketEmpty();
         this.pageContainer.appendChild(emptyBasket.createBasketEmpty());
       }
+      // else {
+      //   showToastMessage('Failed to load the cart. Please, try again.');
+      // }
     } catch (e) {
       showToastMessage('Failed to load the cart. Please, try again.');
       console.error(`Failed to load the cart.`, e);
@@ -86,8 +89,7 @@ export class BasketPage {
 
       this.renderItems(itemsContainer);
     } else {
-      const emptyBasket = new BasketEmpty();
-      container.appendChild(emptyBasket.createBasketEmpty());
+      this.handleEmptyBasket();
     }
   }
 
@@ -112,9 +114,18 @@ export class BasketPage {
     return header;
   }
 
-  private clearCart(): void {
-    const modalWrapper = div({ className: styles.modalWrapper });
+  private async confirmCartClean(wrapper: HTMLElement): Promise<void> {
+    const response = await cartService.deleteActiveCart();
+    if (response?.statusCode === 200) {
+      wrapper.remove();
+    } else {
+      showToastMessage('Failed to clear the cart. Please, try again.');
+    }
+  }
+
+  private createModalContainer(): HTMLElement {
     const modalContainer = div({ className: styles.modalContainer });
+
     const promptContainer = div({ className: styles.promptContainer });
 
     const promptTitle = h2({
@@ -126,25 +137,41 @@ export class BasketPage {
       txt: `The following action will delete all the items from your cart.`,
     });
 
+    promptContainer.append(promptTitle, promptText);
+    modalContainer.append(promptContainer);
+
+    return modalContainer;
+  }
+
+  private clearCart(): void {
+    const modalWrapper = div({ className: styles.modalWrapper });
+    const modalContainer = this.createModalContainer();
     const buttonsContainer = div({ className: styles.buttonsContainer });
     const confirmBtn = button({ className: styles.modalBtn, txt: `Confirm` });
     const denyBtn = button({ className: styles.modalBtn, txt: `Cancel` });
     denyBtn.classList.add(styles.denyBtn);
-
     modalWrapper.append(modalContainer);
-    promptContainer.append(promptTitle, promptText);
-    modalContainer.append(promptContainer, buttonsContainer);
+    modalContainer.append(buttonsContainer);
     buttonsContainer.append(confirmBtn, denyBtn);
-
-    confirmBtn.addEventListener('click', () => {
-      cartService.deleteActiveCart();
-      modalWrapper.remove();
+    const clearEventStart = new CustomEvent('clearStart');
+    const clearEventEnd = new CustomEvent('clearEnd');
+    const loader = div({ className: styles.loader });
+    confirmBtn.addEventListener('clearStart', () => {
+      confirmBtn.classList.add(styles.loading);
+      confirmBtn.append(loader);
     });
-
+    confirmBtn.addEventListener('clearEnd', () => {
+      confirmBtn.classList.remove(styles.loading);
+      confirmBtn.removeChild(loader);
+    });
+    confirmBtn.addEventListener('click', async () => {
+      confirmBtn.dispatchEvent(clearEventStart);
+      await this.confirmCartClean(modalWrapper);
+      confirmBtn.dispatchEvent(clearEventEnd);
+    });
     denyBtn.addEventListener('click', () => {
       modalWrapper.remove();
     });
-
     modalWrapper.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         modalWrapper.remove();
@@ -171,7 +198,18 @@ export class BasketPage {
     this.handleTotalPrice();
     promoCodeBtn.addEventListener('click', async () => {
       if (promoCodeInput.value.trim()) {
-        await cartService.applyPromoCodeToCart(promoCodeInput.value);
+        try {
+          const response = await cartService.applyPromoCodeToCart(promoCodeInput.value);
+          if (response?.statusCode === 200) {
+            showToastMessage('Promocode applied!', ToastColors.Green);
+          } else {
+            showToastMessage('Failed to apply promocode. Please, try again.');
+          }
+        } catch (e) {
+          if (isFetchError(e) && e.statusCode === 400) {
+            showToastMessage('Incorrect promocode', ToastColors.Blue);
+          }
+        }
       }
       this.handleTotalPrice();
     });
@@ -180,7 +218,6 @@ export class BasketPage {
     if (this.cart) {
       this.handleTotalPrice();
     }
-
     return footer;
   }
 

@@ -4,7 +4,10 @@ import { Router } from 'vanilla-routing';
 import styles from './BasketEmpty.module.scss';
 
 export class BasketEmpty {
+  private container: HTMLElement = div({});
+
   public createBasketEmpty(): HTMLDivElement {
+    this.destroy();
     const basketEmptyContainer = div({ className: styles.basketEmptyContainer });
     const description = p({
       className: styles.description,
@@ -20,6 +23,14 @@ export class BasketEmpty {
       Router.go('/catalog');
     });
     basketEmptyContainer.append(description, emptyIcon, suggestion, catalogBtn);
+    this.container = basketEmptyContainer;
     return basketEmptyContainer;
   }
+
+  private destroy(): void {
+    this.container.remove();
+  }
 }
+
+const emptyBasket = new BasketEmpty();
+export default emptyBasket;

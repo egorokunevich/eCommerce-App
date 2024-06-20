@@ -1,6 +1,7 @@
 import type { ProductProjection, ProductVariant, TypedMoney } from '@commercetools/platform-sdk';
 import { button, div, img, span } from '@control.ts/min';
 
+import { showToastMessage } from '@components/Toast';
 import cartService from '@services/CartService';
 
 import styles from './ProductCard.module.scss';
@@ -78,6 +79,7 @@ export class ProductCard {
       addToCartBtn.disabled = true;
     }
     const addToCartStart = new CustomEvent('addToCartStart');
+    const addToCartEnd = new CustomEvent('addToCartEnd');
     const loader = div({ className: styles.loader });
     addToCartBtn.addEventListener('addToCartStart', () => {
       addToCartBtn.classList.add(styles.loading);
@@ -89,11 +91,14 @@ export class ProductCard {
     });
     addToCartBtn.addEventListener('click', async (e) => {
       addToCartBtn.dispatchEvent(addToCartStart);
-      // const pendingEnd = new CustomEvent('pendingEnd');
       e.stopPropagation();
-      await cartService.addProductToCart(product.id);
-      addToCartBtn.disabled = true;
-      const addToCartEnd = new CustomEvent('addToCartEnd');
+      const response = await cartService.addProductToCart(product.id);
+      if (response?.statusCode === 200) {
+        addToCartBtn.disabled = true;
+      } else {
+        showToastMessage('Failed to add a product. Please, try again.');
+      }
+
       addToCartBtn.dispatchEvent(addToCartEnd);
     });
 
