@@ -1,21 +1,21 @@
 import { div } from '@control.ts/min';
 
-import Header from '@components/Header';
+// import Header from '@components/Header';
 import NavMain from '@components/NavMain';
 
 import styles from './Layout.module.scss';
 
 export class Layout {
   private layoutElement: HTMLElement | null = null;
-  private header = new Header();
+  // private header = new Header();
   public navMain = new NavMain();
 
   private createLayout(): void {
     const layout = div({ className: styles.headerWrapper });
-    const headerElement = this.header.getHeaderElement();
-    if (headerElement) {
-      layout.appendChild(headerElement);
-    }
+    // const headerElement = this.header.getHeaderElement();
+    // if (headerElement) {
+    //   layout.appendChild(headerElement);
+    // }
 
     const menuElement = this.navMain.getMenuElement();
     if (menuElement) {

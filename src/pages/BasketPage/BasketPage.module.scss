@@ -4,7 +4,8 @@
   align-items: flex-start;
   width: 100%;
   padding: 2rem 1rem;
-  background-color: rgb(180, 190, 161);
+  // background-color: rgb(180, 190, 161);
+  background-color: rgb(241, 241, 241);
   gap: 2rem;
 
   @media screen and (max-width: 915px) {
@@ -251,13 +252,14 @@
   border-radius: 5px;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  background-color: rgb(92, 214, 133);
-  color: black;
+  background-color: #9cffa1;
+  // background-color: rgb(92, 214, 133);
+  color: rgb(0, 0, 0);
   transition: 0.2s;
 
   &:hover {
-    background-color: rgb(60, 177, 99);
-    color: white;
+    background-color: #41ff4b;
+    color: rgb(0, 0, 0);
   }
 }
 

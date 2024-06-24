@@ -6,8 +6,8 @@
   max-height: 80vh;
   padding: 1rem;
   gap: 2rem;
-  border: 1px solid;
-  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgb(4, 241, 4) 98%, rgb(56, 185, 23) 100%);
+  // border: 1px solid;
+  // border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgb(4, 241, 4) 98%, rgb(56, 185, 23) 100%);
   border-image-slice: 1;
 }
 
@@ -29,12 +29,13 @@
   background-color: rgb(230, 230, 230);
   border: 1px solid rgb(78, 78, 78);
   cursor: pointer;
-  color: black;
+  color: rgb(41, 41, 41);
   transition: 0.2s;
   font-size: 2rem;
 
   &:hover {
-    background-color: rgb(60, 177, 99);
-    color: white;
+    // background-color: rgb(60, 177, 99);
+    background-color: #41ff4b;
+    color: rgb(0, 0, 0);
   }
 }

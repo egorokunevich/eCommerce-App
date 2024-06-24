@@ -11,6 +11,7 @@
   max-width: 250px;
   width: 100%;
   background-color: #ccd4d1;
+  border: 1px solid rgb(201, 201, 201);
   transition: 0.3s;
   cursor: pointer;
   border-radius: 15px;
@@ -23,10 +24,12 @@
   animation-fill-mode: forwards;
 
   &:hover {
-    background-color: #e0f7e3;
+    // background-color: #e0f7e3;
+    background-color: #3dff47;
     box-shadow:
       2px 2px 15px 0px rgba(0, 0, 0, 0.5),
       -2px -2px 15px 0px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgb(148, 148, 148);
 
     & .pic {
       scale: 110%;

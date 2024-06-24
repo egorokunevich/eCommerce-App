@@ -4,7 +4,7 @@
   align-items: flex-start;
   width: 100%;
   padding: 2rem 1rem;
-  background-color: rgb(180, 190, 161);
+  background-color: rgb(241, 241, 241);
   gap: 2rem;
 
   @media screen and (max-width: 915px) {
@@ -101,13 +101,14 @@
   font-family: 'Futura Light';
   letter-spacing: 0.2rem;
   transition: 0.2s;
+  color: rgb(97, 97, 97);
 
   &::after {
     color: black;
   }
 
   &:hover {
-    color: white;
+    color: rgb(0, 0, 0);
 
     &::after {
       color: black;
@@ -165,7 +166,8 @@
   transition: 0.2s;
 
   &:hover {
-    background-color: #e0f7e3;
+    background-color: #94f8a1;
+    // background-color: #e0f7e3;
     &.cancel {
       background-color: rgb(209, 122, 122);
       & .cancel-icon {
