@@ -14,7 +14,6 @@ export default class NavMain {
     { href: '/catalog', txt: 'Catalog' },
     { href: '/about', txt: 'About us' },
   ];
-
   public logoutBtn: HTMLElement = div({});
   private menuElement: HTMLElement | null = null;
   public nav: HTMLElement = div({});
@@ -49,6 +48,14 @@ export default class NavMain {
     document.addEventListener('updateBasket', () => {
       this.updateBasketCount();
     });
+  }
+
+  public showBurgerMenu(): void {
+    this.nav.classList.add(styles.active);
+  }
+
+  public hideBurgerMenu(): void {
+    this.nav.classList.remove(styles.active);
   }
 
   public getMenuElement(): HTMLElement | null {

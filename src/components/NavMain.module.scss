@@ -3,16 +3,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // border-bottom: 2px solid #e5eeea;
   background-color: #ccd4d1;
-  // height: clamp(3rem, 2.361rem + 2.623vw, 4rem);
   height: 60px;
+  transition: 0.3s;
 
   @media screen and (max-width: 650px) {
-    gap: 2px;
-    background-color: #bcc0bf;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    padding: 3rem 0;
+    gap: 0;
+    z-index: 1000;
     flex-direction: column;
-    height: 75px;
+    height: 100%;
+
+    &.active {
+      right: 0;
+    }
   }
 }
 
@@ -26,10 +33,13 @@
   height: 100%;
   padding: 0;
   background-color: #ccd4d1;
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 .menu-item {
-  // font-size: clamp(0.6rem, 0.184rem + 1.705vw, 1.25rem);
   width: 100%;
   height: 100%;
 
@@ -42,7 +52,6 @@
 
     &:hover {
       background-color: #41ff4b;
-      // background-color: #e5eeea;
       cursor: pointer;
     }
   }
@@ -53,11 +62,19 @@
     padding: clamp(0rem, -0.599rem + 2.459vw, 0.938rem);
     transition: all 0.2s ease-out;
   }
+
+  @media screen and (max-width: 650px) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & .link {
+      padding: 2rem;
+    }
+  }
 }
 
 .main {
-  // height: 100%;
-  // background-color: rgb(180, 190, 161);
   background-color: rgb(241, 241, 241);
 }
 
@@ -77,10 +94,13 @@
 
   @media screen and (max-width: 650px) {
     max-width: 650px;
+    flex-direction: column;
+    gap: 0;
   }
 }
 
 .auth-btn {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -103,6 +123,7 @@
 }
 
 .link {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -116,10 +137,10 @@
 
   @media screen and (max-width: 650px) {
     flex-direction: row;
+    padding: 2rem;
   }
 
   &:hover {
-    // backdrop-filter: brightness(110%);
     background-color: #41ff4b;
     color: black;
   }
@@ -128,20 +149,20 @@
 .icon {
   width: 1.5rem;
   height: 1.5rem;
-  // width: clamp(0.5rem, -0.179rem + 2.787vw, 1.563rem);
-  // height: clamp(0.5rem, -0.179rem + 2.787vw, 1.563rem);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
 
   @media screen and (max-width: 650px) {
-    width: 1.2rem;
-    height: 1.2rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-250%, -50%);
+    display: none;
   }
 }
 
 .basket-icon {
-  position: relative;
   background-image: url(/assets/icons/basket.png);
 }
 
@@ -158,16 +179,11 @@
 }
 
 .name {
-  // font-size: clamp(0.6rem, 0.344rem + 1.049vw, 1rem);
   text-decoration: none;
   color: #56615c;
 
   &:hover {
     color: black;
-  }
-
-  @media screen and (max-width: 650px) {
-    font-size: 0.9rem;
   }
 }
 
@@ -186,4 +202,10 @@
   align-items: center;
   background: red;
   color: white;
+
+  @media screen and (max-width: 650px) {
+    right: 50%;
+    top: 50%;
+    transform: translate(300%, -50%);
+  }
 }

@@ -1,7 +1,80 @@
 .header-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
   width: 100%;
+
+  & .title {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    z-index: 100000;
+    padding: 0.5rem;
+    color: rgb(53, 53, 53);
+    letter-spacing: 0.2rem;
+  }
+
+  @media screen and (max-width: 650px) {
+    min-height: 3rem;
+    background-color: #ccd4d1;
+
+    & .title {
+      display: flex;
+    }
+  }
 }
 
-.test {
-  background-color: red;
+.burger-btn {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  right: 0.5rem;
+  top: 0.5rem;
+  border: none;
+  z-index: 10000;
+  background-color: transparent;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.2s;
+
+  & .burger-btn-stripe {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    transition: 0.2s;
+  }
+
+  &.active {
+    & :nth-child(2n) {
+      display: none;
+    }
+
+    & :first-child {
+      width: 200%;
+      transform: rotate(45deg) translateY(120%);
+    }
+
+    & :last-child {
+      width: 200%;
+      transform: rotate(-45deg) translateY(-120%);
+    }
+  }
+
+  @media screen and (max-width: 650px) {
+    display: flex;
+  }
+}
+
+body {
+  &.scroll-locked {
+    overflow-y: hidden;
+  }
 }
