@@ -20,8 +20,8 @@ export class ProfilePage {
     const userData = await profileService.getUserData();
     const container = div({ className: styles.container });
     if (userData && userData.statusCode === 200) {
-      const title = h2({ className: styles.title, txt: `Welcome, ${userData.body.firstName}!` });
-      const oldProfile = div({ className: styles.profileBtn, txt: `OLD PROFILE` });
+      const title = h2({ className: styles.title, txt: `${userData.body.firstName}'s profile` });
+      const oldProfile = div({ className: styles.oldProfileBtn, txt: `OLD PROFILE` });
       oldProfile.addEventListener('click', () => {
         Router.go('/profile', { addToHistory: true });
       });
