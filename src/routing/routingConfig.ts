@@ -8,8 +8,9 @@ import { HomePage } from '@pages/HomePage';
 import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { ProductDetailsPage } from '@pages/ProductDetailsPage/ProductDetailsPage';
+import { ProfilePage } from '@pages/ProfilePage/ProfilePage';
+import { UserProfile } from '@pages/ProfilePage/UserProfile';
 import RegistrationPage from '@pages/RegistrationPage';
-import { UserProfile } from '@pages/UserProfile/UserProfile';
 
 export class PageRouting {
   /* private createRoute(pathname: string, name: string): Routes {
@@ -50,6 +51,21 @@ export class PageRouting {
           return new HomePage().createPage();
         }
         return new UserProfile().createUserPage();
+      },
+    };
+    return route;
+  }
+
+  private createNewProfileRoute(): Routes {
+    const route = {
+      pathname: '/profile-new',
+      element: (): Element => {
+        const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') ?? 'null');
+        if (!isLoggedIn) {
+          Router.go('/login');
+          return new HomePage().createPage();
+        }
+        return new ProfilePage().createPage();
       },
     };
     return route;
@@ -127,6 +143,7 @@ export class PageRouting {
       this.createBasketRoute(),
       this.createItemRoute(),
       this.createProfileRoute(),
+      this.createNewProfileRoute(),
       this.createRegistrationRoute(),
       this.createLoginRoute(),
 

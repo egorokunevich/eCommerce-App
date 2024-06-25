@@ -65,13 +65,6 @@ export default class NavMain {
     return this.menuElement;
   }
 
-  /* public renderNav(): void {
-    const menu = this.getMenuElement();
-    if (menu) {
-      document.body.appendChild(menu);
-    }
-  } */
-
   private createNavBtn(buttonName: string, iconClassName: string): HTMLElement {
     const btn = div({ className: styles.authBtn });
 
@@ -135,7 +128,7 @@ export default class NavMain {
     const logoutBtn = this.createNavBtn('Log Out', styles.logoutIcon);
 
     profileBtn.addEventListener('click', () => {
-      Router.go('/profile', { addToHistory: true });
+      Router.go('/profile-new', { addToHistory: true });
     });
 
     logoutBtn.addEventListener('click', () => {
