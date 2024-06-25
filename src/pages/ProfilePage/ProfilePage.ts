@@ -47,8 +47,10 @@ export class ProfilePage {
   private createFirstNameItem(value: string): HTMLElement {
     const container = div({ className: styles.itemContainer });
     const title = div({ className: styles.itemTitle, txt: `First name` });
+    const subContainer = div({ className: styles.subContainer });
     const data = input({ className: styles.itemData, value, disabled: true });
     const editBtn = div({ className: styles.editBtn });
+    subContainer.append(data, editBtn);
     editBtn.addEventListener('click', async () => {
       this.updateFirstName(data);
     });
@@ -57,15 +59,17 @@ export class ProfilePage {
         this.updateFirstName(data);
       }
     });
-    container.append(title, data, editBtn);
+    container.append(title, subContainer);
     return container;
   }
 
   private createLastNameItem(value: string): HTMLElement {
     const container = div({ className: styles.itemContainer });
     const title = div({ className: styles.itemTitle, txt: `Last name` });
+    const subContainer = div({ className: styles.subContainer });
     const data = input({ className: styles.itemData, value, disabled: true });
     const editBtn = div({ className: styles.editBtn });
+    subContainer.append(data, editBtn);
     editBtn.addEventListener('click', async () => {
       this.updateLastName(data);
     });
@@ -74,15 +78,17 @@ export class ProfilePage {
         this.updateLastName(data);
       }
     });
-    container.append(title, data, editBtn);
+    container.append(title, subContainer);
     return container;
   }
 
   private createEmailItem(value: string): HTMLElement {
     const container = div({ className: styles.itemContainer });
     const title = div({ className: styles.itemTitle, txt: `Email` });
+    const subContainer = div({ className: styles.subContainer });
     const data = input({ className: styles.itemData, value, disabled: true });
     const editBtn = div({ className: styles.editBtn });
+    subContainer.append(data, editBtn);
     editBtn.addEventListener('click', async () => {
       this.updateEmail(data);
     });
@@ -91,15 +97,17 @@ export class ProfilePage {
         this.updateEmail(data);
       }
     });
-    container.append(title, data, editBtn);
+    container.append(title, subContainer);
     return container;
   }
 
   private createDateOfBirthItem(value: string): HTMLElement {
     const container = div({ className: styles.itemContainer });
     const title = div({ className: styles.itemTitle, txt: `Birthday` });
+    const subContainer = div({ className: styles.subContainer });
     const data = input({ className: styles.itemData, type: 'date', value, disabled: true });
     const editBtn = div({ className: styles.editBtn });
+    subContainer.append(data, editBtn);
     editBtn.addEventListener('click', async () => {
       this.updateDateOfBirth(data);
     });
@@ -108,7 +116,7 @@ export class ProfilePage {
         this.updateDateOfBirth(data);
       }
     });
-    container.append(title, data, editBtn);
+    container.append(title, subContainer);
     return container;
   }
 
