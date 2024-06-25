@@ -4,7 +4,7 @@
   padding: 10px 0;
   justify-content: center;
   align-items: flex-start;
-  background: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(192, 208, 212, 1) 1%, rgba(233, 233, 241, 1) 100%);
+  background-color: rgb(241, 241, 241);
   overflow: hidden;
   @media screen and (max-width: 505px) {
     flex-direction: column;
@@ -27,7 +27,7 @@
 
 .title-user {
   padding-bottom: 10px;
-  border-bottom: 1px solid;
+  // border-bottom: 1px solid;
 }
 
 .users-information_container {
@@ -36,7 +36,6 @@
   justify-content: space-between;
   width: 100vw;
   height: 100%;
-  border-left: 1px solid;
   padding: 10px 15px 0;
   margin-top: 40px;
   @media screen and (max-width: 505px) {
@@ -73,9 +72,6 @@
   position: relative;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid;
-  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(4, 164, 241, 1) 98%, rgba(17, 172, 236, 1) 100%);
-  border-image-slice: 1;
   padding: 20px;
   align-self: flex-start;
 
@@ -95,9 +91,6 @@
   position: relative;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid;
-  border-image: linear-gradient(90deg, rgba(246, 246, 246, 1) 0%, rgba(4, 164, 241, 1) 98%, rgba(17, 172, 236, 1) 100%);
-  border-image-slice: 1;
   padding: 20px;
   align-self: flex-start;
 
@@ -147,9 +140,6 @@
 }
 
 .profile-addresses {
-  border: 1px solid;
-  border-image: linear-gradient(90deg, rgba(69, 237, 6, 1) 0%, rgba(4, 164, 241, 1) 100%, rgba(17, 172, 236, 1) 100%);
-  border-image-slice: 1;
   display: inline-flex;
   flex-direction: column;
   gap: 10px;

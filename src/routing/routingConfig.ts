@@ -9,7 +9,7 @@ import { LoginPage } from '@pages/LoginPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { ProductDetailsPage } from '@pages/ProductDetailsPage/ProductDetailsPage';
 import RegistrationPage from '@pages/RegistrationPage';
-import { UserProfile } from '@pages/UserProfile/create-user-pages';
+import { UserProfile } from '@pages/UserProfile/UserProfile';
 
 export class PageRouting {
   /* private createRoute(pathname: string, name: string): Routes {

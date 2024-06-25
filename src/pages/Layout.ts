@@ -1,6 +1,6 @@
 import { button, div, span } from '@control.ts/min';
+import { Router } from 'vanilla-routing';
 
-// import Header from '@components/Header';
 import NavMain from '@components/NavMain';
 
 import styles from './Layout.module.scss';
@@ -13,6 +13,9 @@ export class Layout {
   private createLayout(): void {
     const layout = div({ className: styles.headerWrapper });
     const title = div({ className: styles.title, txt: 'COFFEE LOOP' });
+    title.addEventListener('click', () => {
+      Router.go('/', { addToHistory: true });
+    });
     const burgerBtn = button(
       { className: styles.burgerBtn },
       span({ className: styles.burgerBtnStripe }),

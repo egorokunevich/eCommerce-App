@@ -6,7 +6,7 @@ import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
 
-import styles from './styles.module.scss';
+import styles from './UserProfile.module.scss';
 
 interface UserInput {
   streetName: string;
@@ -39,7 +39,6 @@ export class AddNewAddress {
   }
 
   private createInputs(): HTMLElement {
-    // const data = await this.getDataFromServer();
     const node = div({});
 
     const labelStreetName = this.registrationPageClass.createFormLabel('streetName', validationText.streetNameBilling);
@@ -79,7 +78,6 @@ export class AddNewAddress {
         const addressLayout = document.querySelector(`.${styles.usersInformationContainer}`);
         if (addressLayout) {
           addressLayout.innerHTML = '';
-          // addressLayout.append(await createInformationUsers.createProfileAddresses());
         }
       } else {
         showToastMessage('Please, fill in all Fields', ToastColors.Red);
@@ -148,7 +146,6 @@ export class AddNewAddress {
       .execute();
     this.makeDefaultAddress(response.body);
     return response.body;
-    // return updateActions.body;
   }
 
   private async makeDefaultAddress(response: Customer): Promise<void> {

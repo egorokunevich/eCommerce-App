@@ -1,9 +1,9 @@
 import { button, div, h2 } from '@control.ts/min';
 
-import { ChangePassword } from './change-password';
-import { ChangeUserData } from './change-user-data';
-import { CreateInformationUsers } from './create-data-users';
-import styles from './styles.module.scss';
+import { PasswordUpdate } from './PasswordUpdate';
+import { UserInfo } from './UserInfo';
+import { UserInfoUpdate } from './UserInfoUpdate';
+import styles from './UserProfile.module.scss';
 
 export class UserProfile {
   public profileInformationContainer: null | HTMLDivElement = null;
@@ -25,11 +25,6 @@ export class UserProfile {
     return node;
   }
 
-  // private async getDataFromServer(): Promise<Customer> {
-  //   const data = await clientService.apiRoot.me().get().execute();
-  //   return data.body;
-  // }
-
   private createProfileInformationContainer(): HTMLDivElement {
     this.profileInformationContainer = div({ className: styles.usersInformationContainer });
     return this.profileInformationContainer;
@@ -42,7 +37,7 @@ export class UserProfile {
         try {
           if (this.profileInformationContainer) {
             this.profileInformationContainer.innerHTML = '';
-            const node = await new CreateInformationUsers().createProfileInformation();
+            const node = await new UserInfo().createProfileInformation();
             if (node) {
               this.profileInformationContainer.append(node);
             }
@@ -62,7 +57,7 @@ export class UserProfile {
       if (this.profileInformationContainer) {
         this.profileInformationContainer.innerHTML = '';
 
-        const node = await new CreateInformationUsers().createProfileAddresses();
+        const node = await new UserInfo().createProfileAddresses();
         if (node) {
           this.profileInformationContainer.append(node);
         }
@@ -76,8 +71,7 @@ export class UserProfile {
     btn.addEventListener('click', async () => {
       if (this.profileInformationContainer) {
         this.profileInformationContainer.innerHTML = '';
-        // add inform
-        const node = await new ChangePassword().creteNodePassword();
+        const node = await new PasswordUpdate().creteNodePassword();
         this.profileInformationContainer.append(node);
       }
     });
@@ -89,8 +83,7 @@ export class UserProfile {
     btn.addEventListener('click', async () => {
       if (this.profileInformationContainer) {
         this.profileInformationContainer.innerHTML = '';
-        // add inform
-        const registrationPage = await new ChangeUserData().createChangeLayout();
+        const registrationPage = await new UserInfoUpdate().createChangeLayout();
         if (registrationPage) {
           this.profileInformationContainer.append(registrationPage);
         }

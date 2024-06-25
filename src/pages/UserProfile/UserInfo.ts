@@ -5,8 +5,8 @@ import { ToastColors, showToastMessage } from '@components/Toast';
 import clientService from '@services/ClientService';
 import { validationText } from '@utils/RegistrationValidationsData';
 
-import { AddNewAddress } from './add-new-address';
-import styles from './styles.module.scss';
+import { AddNewAddress } from './AddNewAddress';
+import styles from './UserProfile.module.scss';
 
 interface Address extends Partial<BaseAddress> {
   id: string;
@@ -14,7 +14,7 @@ interface Address extends Partial<BaseAddress> {
   [key: string]: string | undefined;
 }
 
-export class CreateInformationUsers {
+export class UserInfo {
   private showAllAddressesStatus = false;
   private showNewAddressesStatus = false;
 
@@ -55,7 +55,6 @@ export class CreateInformationUsers {
     const addAddressButton = button({ className: styles.userInfoBtn, txt: 'Add Address' });
     const newAddress = await this.addNewAddress.addNewAddressContainer();
     addAddressButton.addEventListener('click', () => {
-      // her change info for add address
       if (this.showNewAddressesStatus) {
         newAddress.remove();
       } else {
@@ -311,4 +310,4 @@ export class CreateInformationUsers {
   }
 }
 
-export const createInformationUsers = new CreateInformationUsers();
+export const userInfo = new UserInfo();

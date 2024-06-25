@@ -8,11 +8,10 @@ import clientService from '@services/ClientService';
 import { setAttributes } from '@utils/BaseComponentProps';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
 
-import styles from './styles.module.scss';
+import styles from './UserProfile.module.scss';
 
-export class ChangePassword {
+export class PasswordUpdate {
   private registrationPageClass: RegistrationPage = new RegistrationPage();
-  // maybe it need deleted
   private oldLabelPassword: null | HTMLElement = null;
   private newLabelPassword: null | HTMLElement = null;
   private repeatLabelPassword: null | HTMLElement = null;

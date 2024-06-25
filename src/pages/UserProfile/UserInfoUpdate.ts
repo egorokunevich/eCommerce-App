@@ -7,7 +7,7 @@ import RegistrationPage from '@pages/RegistrationPage';
 import clientService from '@services/ClientService';
 import { isRegistrationActive, validationText } from '@utils/RegistrationValidationsData';
 
-import styles from './styles.module.scss';
+import styles from './UserProfile.module.scss';
 
 interface UserInput {
   inputEmail: string;
@@ -16,7 +16,7 @@ interface UserInput {
   inputDateOfBirth: string;
 }
 
-export class ChangeUserData {
+export class UserInfoUpdate {
   private registrationPageClass: RegistrationPage = new RegistrationPage();
 
   private inputEmail: null | HTMLElement = null;
