@@ -1,5 +1,5 @@
 import type { Customer } from '@commercetools/platform-sdk';
-import { div, h2, input, section } from '@control.ts/min';
+import { button, div, h2, input, section } from '@control.ts/min';
 import { Router } from 'vanilla-routing';
 
 import { showToastMessage } from '@components/Toast';
@@ -26,10 +26,32 @@ export class ProfilePage {
         Router.go('/profile', { addToHistory: true });
       });
       const info = this.createUserInfo(userData.body);
-      container.append(title, oldProfile, info);
+      const editPassword = button({ className: styles.profileBtn, txt: `Update Password` });
+      editPassword.addEventListener('click', () => {
+        this.createModalForPasswordUpdate();
+      });
+      container.append(title, oldProfile, info, editPassword);
     }
     this.pageWrapper.append(container);
     return container;
+  }
+
+  private createModalForPasswordUpdate(): void {
+    const wrapper = div({ className: styles.modalWrapper });
+    const container = div({ className: styles.modalContainer });
+
+    const prompt = div({ className: styles.modalPrompt, txt: `Change password` });
+
+    const oldPassword = input({ className: styles.itemData, placeholder: `Old password` });
+    const newPassword = input({ className: styles.itemData, placeholder: `New password` });
+    const repeatPassword = input({ className: styles.itemData, placeholder: `Repeat password` });
+
+    const submit = button({ className: styles.profileBtn, txt: `Save` });
+
+    container.append(prompt, oldPassword, newPassword, repeatPassword, submit);
+    wrapper.append(container);
+
+    this.pageWrapper.append(wrapper);
   }
 
   private createUserInfo(data: Customer): HTMLElement {
