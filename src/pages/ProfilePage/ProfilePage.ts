@@ -26,13 +26,38 @@ export class ProfilePage {
         Router.go('/profile', { addToHistory: true });
       });
       const info = this.createUserInfo(userData.body);
-      const editPassword = button({ className: styles.profileBtn, txt: `Update Password` });
-      editPassword.addEventListener('click', () => {
-        this.createModalForPasswordUpdate();
-      });
-      container.append(title, oldProfile, info, editPassword);
+      container.append(title, oldProfile, info);
     }
     this.pageWrapper.append(container);
+    return container;
+  }
+
+  private createUserInfo(data: Customer): HTMLElement {
+    const container = div({ className: styles.infoContainer });
+
+    const title = div({ className: styles.infoTitle, txt: `Personal information` });
+
+    const firstName = this.createFirstNameItem(`${data.firstName}`);
+    const lastName = this.createLastNameItem(`${data.lastName}`);
+    const email = this.createEmailItem(`${data.email}`);
+    const birthday = this.createDateOfBirthItem(`${data.dateOfBirth}`);
+    const password = this.createPasswordItem();
+
+    container.append(title, firstName, lastName, email, birthday, password);
+    return container;
+  }
+
+  private createPasswordItem(): HTMLElement {
+    const container = div({ className: styles.itemContainer });
+    const title = div({ className: styles.itemTitle, txt: `Password` });
+    const subContainer = div({ className: styles.subContainer });
+    const data = input({ className: styles.itemData, value: `********`, disabled: true });
+    const editBtn = div({ className: styles.editBtn });
+    subContainer.append(data, editBtn);
+    editBtn.addEventListener('click', async () => {
+      this.createModalForPasswordUpdate();
+    });
+    container.append(title, subContainer);
     return container;
   }
 
@@ -40,30 +65,26 @@ export class ProfilePage {
     const wrapper = div({ className: styles.modalWrapper });
     const container = div({ className: styles.modalContainer });
 
+    const closeBtn = div({ className: styles.modalCloseBtn });
+
     const prompt = div({ className: styles.modalPrompt, txt: `Change password` });
 
     const oldPassword = input({ className: styles.itemData, placeholder: `Old password` });
     const newPassword = input({ className: styles.itemData, placeholder: `New password` });
     const repeatPassword = input({ className: styles.itemData, placeholder: `Repeat password` });
 
+    wrapper.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget || e.target === closeBtn) {
+        wrapper.remove();
+      }
+    });
+
     const submit = button({ className: styles.profileBtn, txt: `Save` });
 
-    container.append(prompt, oldPassword, newPassword, repeatPassword, submit);
+    container.append(closeBtn, prompt, oldPassword, newPassword, repeatPassword, submit);
     wrapper.append(container);
 
     this.pageWrapper.append(wrapper);
-  }
-
-  private createUserInfo(data: Customer): HTMLElement {
-    const container = div({ className: styles.infoContainer });
-
-    const firstName = this.createFirstNameItem(`${data.firstName}`);
-    const lastName = this.createLastNameItem(`${data.lastName}`);
-    const email = this.createEmailItem(`${data.email}`);
-    const birthday = this.createDateOfBirthItem(`${data.dateOfBirth}`);
-
-    container.append(firstName, lastName, email, birthday);
-    return container;
   }
 
   private createFirstNameItem(value: string): HTMLElement {
